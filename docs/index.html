@@ -2,16 +2,149 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>html-share-guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML 一键分享工作流</title>
 <style>
-  body { font-family: -apple-system, sans-serif; max-width: 720px; margin: 80px auto; padding: 0 24px; color: #222; }
-  h1 { font-size: 28px; }
-  code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #0b0f1a; color: #e8ecf3; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+  .container { max-width: 880px; margin: 0 auto; padding: 60px 32px; }
+  .hero { text-align: center; padding: 40px 0 60px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 56px; }
+  .badge { display: inline-block; padding: 6px 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 24px; }
+  h1 { font-size: 42px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; background: linear-gradient(135deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { font-size: 17px; color: #94a3b8; max-width: 620px; margin: 0 auto; }
+  section { margin-bottom: 56px; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 8px; font-size: 15px; font-weight: 700; }
+  h3 { font-size: 17px; font-weight: 600; margin: 24px 0 12px; color: #cbd5e1; }
+  p { margin-bottom: 14px; color: #cbd5e1; }
+  ul { margin: 12px 0 18px; padding-left: 22px; color: #cbd5e1; }
+  li { margin-bottom: 6px; }
+  pre { background: #0a0e1a; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px 20px; overflow-x: auto; margin: 14px 0 22px; font-size: 13.5px; line-height: 1.65; }
+  code { font-family: "SF Mono", Menlo, Monaco, Consolas, monospace; color: #93c5fd; }
+  p code, li code, td code { background: rgba(147,197,253,0.1); padding: 2px 7px; border-radius: 4px; font-size: 0.9em; color: #93c5fd; }
+  pre code { background: none; padding: 0; color: #e0e7ff; }
+  .box { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.3); border-radius: 10px; padding: 18px 22px; margin: 20px 0; }
+  .box.success { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.3); }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0 24px; font-size: 14.5px; }
+  th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  th { background: rgba(99,102,241,0.1); font-weight: 600; color: #c7d2fe; }
+  .flow { background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.06)); border: 1px solid rgba(99,102,241,0.2); border-radius: 12px; padding: 28px; margin: 20px 0; text-align: center; font-family: "SF Mono", Menlo, monospace; font-size: 14px; line-height: 2.4; color: #c7d2fe; }
+  .flow .arrow { color: #8b5cf6; font-size: 18px; }
+  .tldr { background: linear-gradient(135deg, #1e1b4b, #312e81); border: 1px solid rgba(139,92,246,0.4); border-radius: 14px; padding: 24px 28px; margin: 20px 0 32px; }
+  .tldr h3 { margin-top: 0; color: #c4b5fd; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; }
+  .tldr p { color: #e0e7ff; margin-bottom: 0; font-size: 15px; }
+  footer { text-align: center; padding: 40px 0 0; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.08); color: #64748b; font-size: 13px; }
+  footer a { color: #93c5fd; text-decoration: none; }
+  @media (max-width: 640px) { .container { padding: 40px 20px; } h1 { font-size: 32px; } h2 { font-size: 20px; } pre { font-size: 12.5px; padding: 14px 16px; } table { font-size: 13px; } }
 </style>
 </head>
 <body>
-  <h1>html-share-guide</h1>
-  <p>这是 GitHub Pages 占位页。把你的 HTML 内容写到 <code>docs/index.html</code>，push 后自动更新。</p>
-  <p>创建于 2026-05-19</p>
+<div class="container">
+  <div class="hero">
+    <span class="badge">⚡ INTERNAL TOOLING</span>
+    <h1>HTML 一键分享工作流</h1>
+    <p>一行命令建项目、AI 写 HTML、自动 push 到 GitHub Pages，几分钟拿到可分享链接。基于 macOS + Claude Code/Codex + GitHub Pages。</p>
+  </div>
+
+  <div class="tldr">
+    <h3>TL;DR</h3>
+    <p><code>newproject 项目名 --pages</code> 建项目 → 进 AI 写 HTML → AI 自己 push → 1-2 分钟拿链接发同事。不用记命令、不用碰网页、不用配置部署。</p>
+  </div>
+
+  <section>
+    <h2><span class="num">1</span>这套方案能做什么</h2>
+    <p><strong>输入</strong>：一句话需求（"做个 XX 网页"）</p>
+    <p><strong>输出</strong>：一条公开访问的链接，同事点击就能看。</p>
+    <p>链接格式：<code>https://&lt;用户名&gt;.github.io/&lt;项目名&gt;/</code></p>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span>一次性环境准备 (~20 分钟)</h2>
+    <h3>装 GitHub CLI 并登录</h3>
+    <pre><code>brew install gh
+gh auth login
+gh auth refresh -h github.com -s repo,workflow</code></pre>
+    <h3>配 git 全局身份</h3>
+    <pre><code>git config --global user.name "&lt;你的 GitHub 用户名&gt;"
+git config --global user.email "&lt;你的 GitHub 邮箱&gt;"</code></pre>
+    <h3>把 ~/.local/bin 加进 PATH</h3>
+    <pre><code>echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc</code></pre>
+    <h3>安装 newproject 脚本</h3>
+    <p>完整脚本请联系作者获取（约 100 行）。装好后 <code>chmod +x ~/.local/bin/newproject</code> 即可使用。</p>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>日常使用</h2>
+    <h3>第一步：建项目</h3>
+    <pre><code>newproject q3-sales-report --pages</code></pre>
+    <p>自动建本地目录 + GitHub 仓库 + 开启 Pages。</p>
+    <h3>第二步：进项目用 AI 写内容</h3>
+    <pre><code>cd ~/Documents/Github/q3-sales-report
+claude    # 或 codex</code></pre>
+    <div class="box">
+      "把 docs/index.html 改成 Q3 销售汇报，包括核心数据卡片、趋势图、TOP 3 客户案例。风格现代简洁，做完 commit & push"
+    </div>
+    <h3>第三步：等 1-2 分钟拿链接</h3>
+    <pre><code>https://&lt;用户名&gt;.github.io/q3-sales-report/</code></pre>
+    <p>发同事即可 ✨</p>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>命令速查</h2>
+    <table>
+      <tr><th>命令</th><th>用途</th></tr>
+      <tr><td><code>newproject 名字</code></td><td>私有仓库</td></tr>
+      <tr><td><code>newproject 名字 --public</code></td><td>公开仓库</td></tr>
+      <tr><td><code>newproject 名字 --pages</code></td><td><strong>公开 + 自动开 Pages ⭐</strong></td></tr>
+      <tr><td><code>newproject 名字 --no-remote</code></td><td>只本地</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span>整体流程</h2>
+    <div class="flow">
+      你的需求（一句话）<br>
+      <span class="arrow">↓</span><br>
+      <code>newproject 项目名 --pages</code><br>
+      <span class="arrow">↓</span><br>
+      本地目录 + GitHub 仓库 + Pages 部署（一键完成）<br>
+      <span class="arrow">↓</span><br>
+      进 claude / codex 写 HTML<br>
+      <span class="arrow">↓</span><br>
+      让 AI 自己 commit & push<br>
+      <span class="arrow">↓</span><br>
+      等 1-2 分钟<br>
+      <span class="arrow">↓</span><br>
+      拿到链接发同事 ✨
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span>常见坑</h2>
+    <table>
+      <tr><th>坑</th><th>解决</th></tr>
+      <tr><td>HTML 必须放 <code>docs/index.html</code></td><td>Pages 只支持根目录或 <code>/docs</code></td></tr>
+      <tr><td>资源用相对路径</td><td><code>./images/x.png</code>，不要 <code>/images/x.png</code></td></tr>
+      <tr><td>视频不能传 Pages</td><td>Pages 只支持静态文件，用外链</td></tr>
+      <tr><td><code>--pages</code> 必须 public</td><td>private 仓库要 Pages 需 GitHub Pro</td></tr>
+      <tr><td>第一次部署慢</td><td>首次 1-2 分钟，之后 20-30 秒</td></tr>
+      <tr><td>改完没看到更新</td><td>浏览器强刷 Cmd+Shift+R</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="num">7</span>一句话学会</h2>
+    <div class="box success">
+      <p style="margin:0"><strong><code>newproject 项目名 --pages</code></strong> 建项目 → <code>cd</code> 进去开 AI → 自然语言告诉 AI 要什么 → AI 自己 push → 1-2 分钟拿链接发同事。</p>
+    </div>
+    <p>不用记命令、不用碰网页、不用配置部署。</p>
+  </section>
+
+  <footer>
+    <p>整理自团队 HTML 分享工作流实践 · 2026/05/19</p>
+    <p style="margin-top:8px">本页本身就用这套流程发布 · <a href="https://github.com/jiangjoannamiaomiao-spec/html-share-guide">查看源码</a></p>
+  </footer>
+</div>
 </body>
 </html>
