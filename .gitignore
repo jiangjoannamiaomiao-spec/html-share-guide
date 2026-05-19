@@ -1,0 +1,42 @@
+# AI runs 产物
+runs/
+
+# macOS
+.DS_Store
+._*
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境变量和敏感信息
+.env
+.env.*
+*.key
+*.token
+*.pem
+credentials*
+secrets*
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.bak
+*.cache
+
+# 依赖目录
+node_modules/
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# 构建产物
+dist/
+build/
+*.egg-info/
