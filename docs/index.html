@@ -292,6 +292,45 @@ claude    # 或 codex</code></pre>
     <div class="box success">
       <p style="margin:0">参考实现可看：<a href="https://jiangjoannamiaomiao-spec.github.io/html-share-guide/AI-%E9%A9%B1%E5%8A%A8%E5%90%8D%E5%88%9B-IP-%E8%BF%90%E8%90%A5%E6%88%98%E7%95%A5.html" style="color:#93c5fd">AI 驱动名创 IP 运营战略</a>（已 patch,手机端可正常翻页）。</p>
     </div>
+
+    <h3>嵌入了 iframe（demo / 探针库 / 数据看板）？还有一层坑</h3>
+    <p>如果你的 deck 里有 <code>&lt;iframe srcdoc="..."&gt;</code> 嵌入了另一份 HTML（比如可交互 demo、Lark Base 看板、原型预览），<strong>外层这套 mobile patch 完全管不到 iframe 内部</strong>。iframe 里的 HTML 是独立文档,它自己的 CSS 不知道外面 viewport 多宽,经常做出 1280px+ 固定布局,手机上只能看到左上角。</p>
+
+    <p>必须往 <strong>iframe 里的那份 HTML</strong> 也注入一段 mobile CSS,然后再 base64 / srcdoc 进去。Python 流程示例：</p>
+
+    <pre><code>PANEL_MOBILE_CSS = """
+&lt;style&gt;
+@media (max-width: 768px) {
+  :root { --col: 0 !important; }
+  html, body { overflow: auto !important; height: auto !important; min-height: 100vh; }
+  .shell {                          /* 你内部 HTML 的最外层 grid 容器 */
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    min-width: 0 !important;        /* 干掉 desktop 锁的 min-width: 1280px */
+    height: auto !important;
+  }
+  aside, .sidebar, .left, .right { width: 100% !important; }
+}
+&lt;/style&gt;
+"""
+
+# 内层 HTML 先注入,再编码
+inner_html = inner_html.replace("&lt;/head&gt;", PANEL_MOBILE_CSS + "&lt;/head&gt;", 1)
+inner_b64  = base64.b64encode(inner_html.encode("utf-8")).decode("ascii")</code></pre>
+
+    <p>这个 build-time string replace 是必须的 —— iframe 里 desktop 设计常见的几个坑会同时全中：</p>
+    <ul>
+      <li><code>html, body { overflow: hidden; height: 100% }</code> 让内容无法垂直滚动 → 覆盖成 <code>overflow: auto; height: auto</code></li>
+      <li>隐藏的 <code>@media (max-width: 1200px) { .shell { min-width: 1280px } }</code> 把最小宽度锁死 → 覆盖成 <code>min-width: 0</code></li>
+      <li>固定 grid columns 像 <code>320px 1fr 560px</code> → 收成 <code>1fr</code> 单列</li>
+      <li>desktop sidebar <code>position: absolute</code> 在窄屏溢出 → <code>position: static; width: 100%</code></li>
+    </ul>
+
+    <p>验证方法：base64 解开 iframe 内部 HTML,grep 一下 mobile CSS 标记和 <code>min-width: 0 !important</code> 是否真的写进去了。</p>
+
+    <div class="box">
+      <p style="margin:0">把这段也告诉你的 AI：<strong>"deck 里如果有 iframe（demo / 看板 / 探针库 / 嵌入页），iframe 内部的 HTML 是独立文档,外面 mobile @media 不会作用进去。请在 build 脚本里对每份 iframe 内容做 string 替换,在 <code>&lt;/head&gt;</code> 之前注入 mobile @media block,然后再 base64 / srcdoc 编码。"</strong></p>
+    </div>
   </section>
 
   <section>
@@ -303,7 +342,7 @@ claude    # 或 codex</code></pre>
   </section>
 
   <footer>
-    <p>整理自团队 HTML 分享工作流实践 · 2026/05/19 · 加入 mobile patch 2026/05/21</p>
+    <p>整理自团队 HTML 分享工作流实践 · 2026/05/19 · mobile patch 2026/05/21 · iframe srcdoc 补丁 2026/05/22</p>
     <p style="margin-top:8px">本页本身就用这套流程发布 · <a href="https://github.com/jiangjoannamiaomiao-spec/html-share-guide">查看源码</a></p>
   </footer>
 </div>
