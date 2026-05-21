@@ -52,6 +52,20 @@
   </div>
 
   <section>
+    <h2><span class="num" style="background: linear-gradient(135deg, #10b981, #059669);">⚡</span>选哪条路：Pages 还是妙笔？</h2>
+    <p>除了这套 Pages 流程，飞书内部还有<strong>妙笔（magic-builder skill）</strong>也能一键发 HTML。两边各有舒适区：</p>
+    <table>
+      <tr><th>场景</th><th>用哪个</th><th>为什么</th></tr>
+      <tr><td>单页报告 / 海报 / 卡片（&lt; 1MB）</td><td>🪄 妙笔</td><td>~5s 发完，比 Pages 快约 10×；妙笔空间 UI 可视化看历史版本</td></tr>
+      <tr><td>单文件 inlined deck，&lt; 1MB</td><td>🪄 妙笔</td><td>速度优势仍在</td></tr>
+      <tr><td>单文件 inlined deck，≥ 1MB</td><td>📄 Pages</td><td>妙笔接口在 ~5 分钟会 timeout 失败</td></tr>
+      <tr><td><strong>飞书"另存网页"导出的 deck（HTML + _files 文件夹）</strong></td><td>📄 <strong>Pages</strong></td><td>妙笔只接受单 HTML，结构上不兼容</td></tr>
+      <tr><td>客户提案 / 正式归档</td><td>📄 Pages</td><td>数据在你 GitHub 账号下，链接不依赖第三方产品策略</td></tr>
+    </table>
+    <p>本 Guide 全程讲 Pages 路径，因为这是 ≥1MB / 多文件 deck 的<strong>唯一可行通道</strong>。妙笔流程更短：<code>node ~/.claude/skills/publish-magic-page/publish.js &lt;file&gt; --title "标题"</code>（首次要先在飞书找妙笔机器人输入 <code>dev</code> 拿 Token 存到 <code>~/.magic-token</code>）。</p>
+  </section>
+
+  <section>
     <h2><span class="num">1</span>这套方案能做什么</h2>
     <p><strong>输入</strong>：一句话需求（"做个 XX 网页"）</p>
     <p><strong>输出</strong>：一条公开访问的链接，同事点击就能看。</p>
@@ -130,6 +144,8 @@ claude    # 或 codex</code></pre>
       <tr><td><code>--pages</code> 必须 public</td><td>private 仓库要 Pages 需 GitHub Pro</td></tr>
       <tr><td>第一次部署慢</td><td>首次 1-2 分钟，之后 20-30 秒</td></tr>
       <tr><td>改完没看到更新</td><td>浏览器强刷 Cmd+Shift+R</td></tr>
+      <tr><td><code>git push</code> 报 HTTP 400 / RPC failed</td><td>大文件（一般 ≥几 MB）会撑爆默认 1MB <code>postBuffer</code>。一次性跑 <code>git config http.postBuffer 524288000</code> 即可（500MB）</td></tr>
+      <tr><td>"另存网页"出来的 deck 推上去样式全空白</td><td>浏览器导出的是 HTML + 同级 <code>_files</code> 资源文件夹。<strong>两个必须一起 cp 到 <code>docs/</code></strong>，只传 HTML 会让 CSS/JS/图片全 404</td></tr>
       <tr><td>固定画布 deck 手机端字小到看不清</td><td>看下面第 7 节,加上 mobile patch</td></tr>
     </table>
   </section>
@@ -342,7 +358,7 @@ inner_b64  = base64.b64encode(inner_html.encode("utf-8")).decode("ascii")</code>
   </section>
 
   <footer>
-    <p>整理自团队 HTML 分享工作流实践 · 2026/05/19 · mobile patch 2026/05/21 · iframe srcdoc 补丁 2026/05/22</p>
+    <p>整理自团队 HTML 分享工作流实践 · 2026/05/19 · mobile patch 2026/05/21 · iframe srcdoc 补丁 2026/05/22 · Pages vs 妙笔决策表 + 大文件 push 修复 2026/05/21</p>
     <p style="margin-top:8px">本页本身就用这套流程发布 · <a href="https://github.com/jiangjoannamiaomiao-spec/html-share-guide">查看源码</a></p>
   </footer>
 </div>
