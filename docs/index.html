@@ -130,11 +130,157 @@ claude    # 或 codex</code></pre>
       <tr><td><code>--pages</code> 必须 public</td><td>private 仓库要 Pages 需 GitHub Pro</td></tr>
       <tr><td>第一次部署慢</td><td>首次 1-2 分钟，之后 20-30 秒</td></tr>
       <tr><td>改完没看到更新</td><td>浏览器强刷 Cmd+Shift+R</td></tr>
+      <tr><td>固定画布 deck 手机端字小到看不清</td><td>看下面第 7 节,加上 mobile patch</td></tr>
     </table>
   </section>
 
   <section>
-    <h2><span class="num">7</span>一句话学会</h2>
+    <h2><span class="num">7</span>手机端适配（固定画布 deck 必读）</h2>
+    <p>如果你做的是 <strong>1920×1080 固定画布</strong>类型的 deck（比如 <code>feishu-deck-h5</code> 框架生成的 deck,或者任何带 <code>transform: scale()</code> 缩放到 viewport 的 HTML），<strong>桌面端正常但手机端字小到无法阅读</strong>是已知坑。</p>
+
+    <h3>症状</h3>
+    <p>手机打开后每张 slide 缩到 ~393×220,1920px 设计画布 ÷ 393px viewport = <strong>0.2× 缩放</strong>。22px 正文变 4.5px,几乎看不清。用户反馈通常是「错乱」「看不清」「显示有问题」。</p>
+
+    <h3>修复思路</h3>
+    <p><strong>tap-to-enlarge + swipe nav</strong>：手机上点任意一张 slide → 切到 present 模式让它占满整屏 → 左右滑动翻页 → 点「← 返回列表」回到 scroll 模式。每张 slide 都能填满 viewport,字体回到可读大小。</p>
+
+    <h3>给 AI 的复用指令</h3>
+    <div class="box">
+      <p style="margin:0">如果你正用 Claude / Codex 做 deck,直接告诉它：</p>
+      <p style="margin:8px 0 0">"<strong>这个 deck 是 1920×1080 固定画布,手机端会缩到看不清。请在 deck 末尾的 <code>&lt;/body&gt;</code> 之前插入下方 mobile patch（CSS + JS 各一段）,保持原有内容不变。Patch 是 mobile-only（matchMedia ≤900px）,不会影响桌面体验。</strong>"</p>
+    </div>
+
+    <h3>Patch 代码（拷贝到 <code>&lt;/body&gt;</code> 之前）</h3>
+    <pre><code>&lt;style&gt;
+@media (max-width: 900px) {
+  /* 每张 slide 加「点击放大」提示 */
+  .deck[data-mode="scroll"] .slide-frame { cursor: pointer; }
+  .deck[data-mode="scroll"] .slide-frame::after {
+    content: "点击放大";
+    position: absolute; right: 10px; bottom: 10px; z-index: 50;
+    background: rgba(60,127,255,0.92); color: #fff;
+    font: 700 11px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    padding: 5px 10px; border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    pointer-events: none; letter-spacing: 0.04em;
+  }
+  /* present 模式的返回按钮 + 页码指示器 */
+  .fs-mobile-back, .fs-mobile-pageno {
+    position: fixed; z-index: 1001; display: none;
+    background: rgba(8,12,24,0.85); color: #fff;
+    font: 700 13px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    padding: 9px 14px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.20);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  .fs-mobile-back {
+    top: max(10px, env(safe-area-inset-top));
+    left: max(10px, env(safe-area-inset-left));
+    cursor: pointer; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fs-mobile-pageno {
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 50%; transform: translateX(-50%); padding: 8px 16px;
+    pointer-events: none; letter-spacing: 0.05em;
+  }
+  .deck[data-mode="present"] ~ .fs-mobile-back,
+  .deck[data-mode="present"] ~ .fs-mobile-pageno { display: block; }
+}
+&lt;/style&gt;
+&lt;script&gt;
+(function () {
+  if (!window.matchMedia('(max-width: 900px)').matches) return;
+  function wire() {
+    const deck = document.querySelector('.deck');
+    if (!deck) return;
+    const frames = Array.from(deck.querySelectorAll('.slide-frame'));
+    if (!frames.length || document.querySelector('.fs-mobile-back')) return;
+
+    const backBtn = document.createElement('div');
+    backBtn.className = 'fs-mobile-back';
+    backBtn.textContent = '← 返回列表';
+    document.body.appendChild(backBtn);
+    const pageNo = document.createElement('div');
+    pageNo.className = 'fs-mobile-pageno';
+    document.body.appendChild(pageNo);
+
+    function updatePageNo() {
+      const cur = frames.findIndex(f =&gt; f.classList.contains('is-current'));
+      pageNo.textContent = (cur &gt;= 0 ? cur + 1 : 1) + ' / ' + frames.length;
+    }
+    function setMode(mode, idx) {
+      deck.dataset.mode = mode;
+      try { localStorage.setItem('fs-deck-mode', mode); } catch (e) {}
+      if (mode === 'present' &amp;&amp; typeof idx === 'number') {
+        frames.forEach((f, i) =&gt; f.classList.toggle('is-current', i === idx));
+        window.dispatchEvent(new Event('resize'));
+      }
+      updatePageNo();
+    }
+    function go(delta) {
+      const cur = frames.findIndex(f =&gt; f.classList.contains('is-current'));
+      const next = Math.max(0, Math.min(frames.length - 1, cur + delta));
+      if (next !== cur) {
+        frames.forEach((f, i) =&gt; f.classList.toggle('is-current', i === next));
+        window.dispatchEvent(new Event('resize'));
+        updatePageNo();
+      }
+    }
+    frames.forEach((frame, i) =&gt; {
+      frame.addEventListener('click', (e) =&gt; {
+        if (deck.dataset.mode !== 'scroll') return;
+        if (e.target &amp;&amp; e.target.closest('a, button, iframe, [role="button"]')) return;
+        setMode('present', i); e.preventDefault();
+      }, true);
+    });
+    backBtn.addEventListener('click', () =&gt; {
+      setMode('scroll');
+      const cur = frames.findIndex(f =&gt; f.classList.contains('is-current'));
+      if (cur &gt;= 0) setTimeout(() =&gt; frames[cur].scrollIntoView({ block: 'center' }), 50);
+    });
+
+    let sx = null, sy = null, st = 0;
+    document.addEventListener('touchstart', (e) =&gt; {
+      if (deck.dataset.mode !== 'present') return;
+      const t0 = e.touches[0]; sx = t0.clientX; sy = t0.clientY; st = Date.now();
+    }, { passive: true });
+    document.addEventListener('touchend', (e) =&gt; {
+      if (deck.dataset.mode !== 'present' || sx === null) return;
+      const t1 = e.changedTouches[0];
+      const dx = t1.clientX - sx, dy = t1.clientY - sy, dt = Date.now() - st;
+      sx = sy = null;
+      if (dt &gt; 600) return;
+      if (Math.abs(dx) &gt; 40 &amp;&amp; Math.abs(dx) &gt; Math.abs(dy) * 1.2) {
+        if (e.target &amp;&amp; e.target.closest('iframe')) return;
+        go(dx &lt; 0 ? +1 : -1); e.preventDefault();
+      }
+    }, { passive: false });
+    updatePageNo();
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', wire, { once: true });
+  else setTimeout(wire, 50);
+})();
+&lt;/script&gt;</code></pre>
+
+    <h3>验证修好了</h3>
+    <p>Chrome DevTools 开 Device Mode（Cmd+Opt+M）切到 iPhone → 刷新 → 每张 slide 右下角应该有「点击放大」蓝色 pill,点 slide 切到 present 模式,左右滑能翻页,左上角「← 返回列表」回到 scroll。</p>
+    <p>或者命令行无头截图：</p>
+    <pre><code>"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --headless=new --window-size=393,852 \
+  --user-agent='Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Safari' \
+  --screenshot=/tmp/deck-mobile.png --virtual-time-budget=4000 \
+  "file:///path/to/your/deck.html"</code></pre>
+
+    <div class="box success">
+      <p style="margin:0">参考实现可看：<a href="https://jiangjoannamiaomiao-spec.github.io/html-share-guide/AI-%E9%A9%B1%E5%8A%A8%E5%90%8D%E5%88%9B-IP-%E8%BF%90%E8%90%A5%E6%88%98%E7%95%A5.html" style="color:#93c5fd">AI 驱动名创 IP 运营战略</a>（已 patch,手机端可正常翻页）。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">8</span>一句话学会</h2>
     <div class="box success">
       <p style="margin:0"><strong><code>newproject 项目名 --pages</code></strong> 建项目 → <code>cd</code> 进去开 AI → 自然语言告诉 AI 要什么 → AI 自己 push → 1-2 分钟拿链接发同事。</p>
     </div>
@@ -142,7 +288,7 @@ claude    # 或 codex</code></pre>
   </section>
 
   <footer>
-    <p>整理自团队 HTML 分享工作流实践 · 2026/05/19</p>
+    <p>整理自团队 HTML 分享工作流实践 · 2026/05/19 · 加入 mobile patch 2026/05/21</p>
     <p style="margin-top:8px">本页本身就用这套流程发布 · <a href="https://github.com/jiangjoannamiaomiao-spec/html-share-guide">查看源码</a></p>
   </footer>
 </div>
