@@ -10844,5 +10844,166 @@ window.openProbeLib = function () {
   w.document.close();
 };
 </script>
+
+<!-- ============================================================
+     Mobile UX patch — 2026-05-21
+     Problem: mobile (≤900px) auto-switches to scroll mode where
+     each slide is scaled to ~393×220 (0.2× of 1920×1080 design).
+     Body text becomes ~4.5px — unreadable. User reported "错乱".
+
+     Fix: tap-to-enlarge → present mode + touch swipe nav.
+     ============================================================ -->
+<style>
+@media (max-width: 900px) {
+  /* Tappable hint on each frame in scroll mode */
+  .deck[data-mode="scroll"] .slide-frame { cursor: pointer; }
+  .deck[data-mode="scroll"] .slide-frame::after {
+    content: "点击放大";
+    position: absolute; right: 10px; bottom: 10px;
+    z-index: 50;
+    background: rgba(60,127,255,0.92); color: #fff;
+    font: 700 11px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    padding: 5px 10px; border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    pointer-events: none;
+    letter-spacing: 0.04em;
+  }
+  /* Mobile present-mode back button + page indicator */
+  .fs-mobile-back {
+    position: fixed; top: max(10px, env(safe-area-inset-top));
+    left: max(10px, env(safe-area-inset-left));
+    z-index: 1001;
+    background: rgba(8,12,24,0.85); color: #fff;
+    font: 700 13px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    padding: 9px 14px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.20);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    display: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fs-mobile-pageno {
+    position: fixed; bottom: max(14px, env(safe-area-inset-bottom));
+    left: 50%; transform: translateX(-50%);
+    z-index: 1001;
+    background: rgba(8,12,24,0.85); color: #fff;
+    font: 700 13px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    padding: 8px 16px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.20);
+    backdrop-filter: blur(8px);
+    display: none;
+    pointer-events: none;
+    letter-spacing: 0.05em;
+  }
+  .deck[data-mode="present"] ~ .fs-mobile-back,
+  .deck[data-mode="present"] ~ .fs-mobile-pageno { display: block; }
+}
+</style>
+<script>
+(function () {
+  if (!window.matchMedia('(max-width: 900px)').matches) return;  // mobile-only patch
+
+  function wire() {
+    const deck = document.querySelector('.deck');
+    if (!deck) return;
+    const frames = Array.from(deck.querySelectorAll('.slide-frame'));
+    if (!frames.length) return;
+
+    // ---- Mobile UI: back button + page indicator ----
+    const backBtn = document.createElement('div');
+    backBtn.className = 'fs-mobile-back';
+    backBtn.textContent = '← 返回列表';
+    backBtn.setAttribute('role', 'button');
+    backBtn.setAttribute('aria-label', '返回 slide 列表');
+    document.body.appendChild(backBtn);
+
+    const pageNo = document.createElement('div');
+    pageNo.className = 'fs-mobile-pageno';
+    document.body.appendChild(pageNo);
+
+    function updatePageNo() {
+      const cur = frames.findIndex(f => f.classList.contains('is-current'));
+      pageNo.textContent = (cur >= 0 ? cur + 1 : 1) + ' / ' + frames.length;
+    }
+
+    function setMode(mode, frameIdx) {
+      deck.dataset.mode = mode;
+      try { localStorage.setItem('fs-deck-mode', mode); } catch (e) {}
+      if (mode === 'present' && typeof frameIdx === 'number') {
+        frames.forEach((f, i) => f.classList.toggle('is-current', i === frameIdx));
+        // Force re-scale by triggering resize observer
+        window.dispatchEvent(new Event('resize'));
+      }
+      updatePageNo();
+    }
+
+    function go(delta) {
+      const cur = frames.findIndex(f => f.classList.contains('is-current'));
+      const next = Math.max(0, Math.min(frames.length - 1, cur + delta));
+      if (next !== cur) {
+        frames.forEach((f, i) => f.classList.toggle('is-current', i === next));
+        window.dispatchEvent(new Event('resize'));
+        updatePageNo();
+      }
+    }
+
+    // ---- Tap-to-enlarge in scroll mode ----
+    frames.forEach((frame, i) => {
+      frame.addEventListener('click', (e) => {
+        if (deck.dataset.mode !== 'scroll') return;
+        // Ignore clicks on interactive children (probe-tab, links, buttons)
+        const t = e.target;
+        if (t && (t.closest('a, button, .probe-tab, iframe, [role="button"]'))) return;
+        setMode('present', i);
+        e.preventDefault();
+      }, true);  // capture phase to catch before built-in handlers
+    });
+
+    // ---- Back-to-scroll button ----
+    backBtn.addEventListener('click', () => {
+      setMode('scroll');
+      // Scroll back to whichever frame was current
+      const cur = frames.findIndex(f => f.classList.contains('is-current'));
+      if (cur >= 0) setTimeout(() => frames[cur].scrollIntoView({ block: 'center' }), 50);
+    });
+
+    // ---- Touch swipe navigation (present mode only) ----
+    let sx = null, sy = null, st = 0;
+    const SWIPE_X_MIN = 40;     // px
+    const SWIPE_T_MAX = 600;    // ms
+    document.addEventListener('touchstart', (e) => {
+      if (deck.dataset.mode !== 'present') return;
+      const t0 = e.touches[0];
+      sx = t0.clientX; sy = t0.clientY; st = Date.now();
+    }, { passive: true });
+    document.addEventListener('touchend', (e) => {
+      if (deck.dataset.mode !== 'present' || sx === null) return;
+      const t1 = e.changedTouches[0];
+      const dx = t1.clientX - sx, dy = t1.clientY - sy, dt = Date.now() - st;
+      sx = sy = null;
+      if (dt > SWIPE_T_MAX) return;
+      // Horizontal swipe = nav
+      if (Math.abs(dx) > SWIPE_X_MIN && Math.abs(dx) > Math.abs(dy) * 1.2) {
+        // Don't intercept if the swipe started on an iframe (let probe library scroll)
+        if (e.target && e.target.closest('iframe')) return;
+        go(dx < 0 ? +1 : -1);
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    updatePageNo();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wire);
+  } else {
+    // framework script already ran — wire on next tick to make sure init() finished
+    setTimeout(wire, 50);
+  }
+})();
+</script>
+
 </body>
 </html>
