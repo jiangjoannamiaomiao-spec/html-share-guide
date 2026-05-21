@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<!-- saved from url=(0012)about:srcdoc -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL · IP 提前布局监测 — 狐妖小红娘 第二季</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d11;--bg2:#111419;--bg3:#161b22;
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.13);
+  --t:#e8e6e0;--t2:#8a8680;--t3:#555250;
+  --blue:#4fa3e8;--teal:#3fcba0;--amber:#f0a040;
+  --red:#e05555;--purple:#a070e8;--rose:#FF6B8B;
+  --col:280px;--hh:54px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--t);font-family:'Space Grotesk',sans-serif;font-size:14px;height:100%;overflow:hidden}
+.shell{display:grid;grid-template-rows:var(--hh) 1fr;grid-template-columns:var(--col) 1fr var(--col);height:100vh;min-height:600px}
+
+/* HEADER */
+header{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 22px;border-bottom:1px solid var(--bd);background:var(--bg);z-index:10}
+.h-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);flex-shrink:0}
+.h-mono{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase}
+.h-title{font-size:14px;font-weight:600}
+.h-sep{width:1px;height:18px;background:var(--bd2)}
+.h-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);font-weight:500}
+.h-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+
+/* LEFT */
+.pl{border-right:1px solid var(--bd);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
+.sec-hd{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);padding:12px 18px 7px;border-bottom:1px solid var(--bd)}
+.tl-item{display:flex;gap:10px;padding:12px 18px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s;position:relative}
+.tl-item:hover{background:var(--bg2)}
+.tl-item.active{background:var(--bg3)}
+.tl-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--blue)}
+.tl-item.t-day.active::before{background:var(--amber)}
+.tl-n{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);min-width:18px;padding-top:2px}
+.tl-n.t-day-n{color:var(--amber);font-weight:500}
+.tl-bd{flex:1;min-width:0}
+.tl-ttl{font-size:12px;font-weight:500;line-height:1.3}
+.tl-sub{font-size:11px;color:var(--t2);margin-top:2px}
+.tl-bdg{font-family:'DM Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;white-space:nowrap;align-self:flex-start;flex-shrink:0;border:1px solid}
+.bdg-done{color:var(--teal);border-color:rgba(63,203,160,.25);background:rgba(63,203,160,.08)}
+.bdg-now{color:var(--amber);border-color:rgba(240,160,64,.25);background:rgba(240,160,64,.08)}
+.bdg-wait{color:var(--t3);border-color:var(--bd2);background:rgba(255,255,255,.03)}
+.tl-teams{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.tl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:opacity .2s}
+
+.state-box{margin:14px;padding:11px 13px;background:var(--bg3);border:1px solid var(--bd2);border-radius:5px}
+.state-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.state-txt{font-size:12px;color:var(--t2);line-height:1.65}
+.state-win{display:flex;align-items:center;gap:6px;margin-top:8px}
+.pulse-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);box-shadow:0 0 5px var(--amber);animation:pulse 2s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.state-win-txt{font-family:'DM Mono',monospace;font-size:10px;color:var(--amber)}
+.cta-box{margin:0 14px 14px;padding:12px 13px;background:rgba(240,160,64,.04);border:1px solid rgba(240,160,64,.14);border-radius:5px}
+.cta-big{font-size:19px;font-weight:700;color:var(--amber);letter-spacing:-.3px;line-height:1.2}
+
+/* CENTER */
+.pc{display:flex;flex-direction:column;overflow:hidden}
+.chart-hd{padding:14px 22px 11px;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-shrink:0}
+.ch-eye{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.ch-ttl{font-size:19px;font-weight:600;line-height:1.2}
+.ch-sub{font-size:12px;color:var(--t2);margin-top:4px;max-width:480px;line-height:1.5}
+.legend{display:flex;flex-direction:column;gap:6px;flex-shrink:0;padding-top:2px}
+.leg-row{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--t2);font-family:'DM Mono',monospace;white-space:nowrap}
+.leg-line{width:22px;height:2px;border-radius:1px;flex-shrink:0}
+.leg-dash{width:22px;height:0;border-top:2px dashed var(--amber);flex-shrink:0}
+.chart-area{flex:1;position:relative;overflow:hidden;padding:6px 0 0}
+#signalChart{width:100%;height:100%;display:block}
+.status-bar{padding:9px 22px;border-top:1px solid var(--bd);display:flex;align-items:center;gap:14px;flex-shrink:0;flex-wrap:nowrap}
+.st-item{display:flex;align-items:center;gap:5px;font-size:10px;white-space:nowrap}
+.st-lbl{font-family:'DM Mono',monospace;color:var(--t3);letter-spacing:.07em;text-transform:uppercase}
+.st-val{color:var(--t2)}
+.st-val.hi{color:var(--amber);font-weight:500}
+.st-val.lead{color:var(--rose);font-weight:600}
+.st-sep{width:1px;height:12px;background:var(--bd);flex-shrink:0}
+.win-badge{margin-left:auto;display:flex;align-items:center;gap:7px;background:rgba(240,160,64,.07);border:1px solid rgba(240,160,64,.18);border-radius:4px;padding:4px 11px;font-size:10px;color:var(--amber);font-weight:500;white-space:nowrap;flex-shrink:0}
+
+/* RIGHT */
+.pr{border-left:1px solid var(--bd);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent;display:flex;flex-direction:column}
+.rp-ctx{padding:12px 18px;border-bottom:1px solid var(--bd);background:var(--bg3);flex-shrink:0}
+.rp-ctx-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.rp-ctx-name{font-size:13px;font-weight:600;line-height:1.3}
+.rp-ctx-timing{font-size:11px;color:var(--t2);margin-top:3px}
+
+/* Team cards */
+.team-section{border-bottom:1px solid var(--bd)}
+.team-hd{display:flex;align-items:center;gap:9px;padding:11px 16px;cursor:pointer;transition:background .12s;user-select:none}
+.team-hd:hover{background:var(--bg2)}
+.team-bar{width:3px;border-radius:1px;flex-shrink:0;align-self:stretch;min-height:16px}
+.team-name{font-size:12px;font-weight:600;flex:1}
+.team-status{font-family:'DM Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid;white-space:nowrap}
+.ts-urgent{color:var(--amber);border-color:rgba(240,160,64,.28);background:rgba(240,160,64,.08)}
+.ts-active{color:var(--blue);border-color:rgba(79,163,232,.25);background:rgba(79,163,232,.08)}
+.ts-pending{color:var(--t3);border-color:var(--bd);background:transparent}
+.ts-locked{color:var(--t3);border-color:var(--bd);background:transparent;opacity:.45}
+.team-chevron{font-size:10px;color:var(--t3);transition:transform .2s;flex-shrink:0;line-height:1}
+.team-chevron.open{transform:rotate(180deg)}
+.team-body{padding:0 16px 12px;display:none}
+.team-body.open{display:block}
+.task-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.task-row:last-child{border-bottom:none}
+.task-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.task-txt{font-size:11px;color:var(--t2);line-height:1.5;flex:1}
+.task-txt.dim{color:var(--t3)}
+.team-win{margin-top:8px;padding:6px 10px;border-radius:3px;border:1px solid;border-left-width:2px;font-size:10px;font-family:'DM Mono',monospace;line-height:1.5}
+.tw-purple{border-color:rgba(160,112,232,.2);border-left-color:var(--purple);color:var(--purple);background:rgba(160,112,232,.04)}
+.tw-blue{border-color:rgba(79,163,232,.2);border-left-color:var(--blue);color:var(--blue);background:rgba(79,163,232,.04)}
+.tw-teal{border-color:rgba(63,203,160,.18);border-left-color:var(--teal);color:var(--teal);background:rgba(63,203,160,.04)}
+.tw-amber{border-color:rgba(240,160,64,.2);border-left-color:var(--amber);color:var(--amber);background:rgba(240,160,64,.04)}
+.tw-rose{border-color:rgba(255,107,139,.22);border-left-color:var(--rose);color:var(--rose);background:rgba(255,107,139,.05)}
+.tw-gray{border-color:var(--bd);border-left-color:var(--t3);color:var(--t3);background:rgba(255,255,255,.02)}
+.footnote{margin-top:auto;padding:12px 18px;font-size:10px;color:var(--t3);line-height:1.65;border-top:1px solid var(--bd)}
+
+/* tooltip */
+#tt{position:fixed;pointer-events:none;background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:8px 12px;font-size:11px;z-index:100;display:none;min-width:170px}
+.tt-stage{font-weight:600;font-size:12px;margin-bottom:5px}
+.tt-row{display:flex;justify-content:space-between;gap:14px;margin-top:3px}
+.tt-lbl{font-family:'DM Mono',monospace;font-size:9px}
+.tt-val{font-family:'DM Mono',monospace;font-size:10px;font-weight:500}
+.tt-divider{border-top:1px solid rgba(255,255,255,.07);margin:5px 0 3px}
+.tt-teams{font-family:'DM Mono',monospace;font-size:9px;color:var(--t2)}
+.tt-lead{font-family:'DM Mono',monospace;font-size:10px;color:var(--rose);font-weight:600;margin-top:4px}
+
+.pl::-webkit-scrollbar,.pr::-webkit-scrollbar{width:3px}
+.pl::-webkit-scrollbar-thumb,.pr::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+</style>
+
+<style>
+/* 新增 · 四 Demo 融合版布局优化 */
+:root{--col:332px}
+.shell{grid-template-columns:320px minmax(760px,1fr) 560px !important;height:100vh}
+.chart-area{height:460px !important;flex:0 0 auto !important;padding:8px 0 0 !important}
+.legend{display:flex;flex-direction:column;gap:12px !important;padding:12px 0 !important}
+.leg-row{font-size:11px !important;line-height:1.6 !important}
+.leg-line,.leg-dash{width:30px !important}
+.rp-ctx{padding:16px 18px !important}
+.team-section{margin-bottom:4px}
+.task-txt{line-height:1.8 !important}
+.team-win{padding:8px 12px !important}
+#signalChart{width:100% !important;height:100% !important}
+.status-bar{
+  padding:16px 22px 18px !important;
+  display:grid !important;
+  grid-template-columns:1.5fr .74fr .74fr 1.55fr !important;
+  gap:12px !important;
+  align-items:stretch !important;
+  border-top:1px solid var(--bd) !important;
+  background:rgba(255,255,255,.018) !important;
+}
+.status-bar .st-sep,.status-bar .win-badge{display:none !important}
+.status-bar .st-item{
+  min-width:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  gap:7px !important;
+  padding:13px 14px !important;
+  border:1px solid rgba(255,255,255,.075) !important;
+  border-radius:6px !important;
+  background:rgba(255,255,255,.035) !important;
+  white-space:normal !important;
+}
+.status-bar .st-lbl{
+  font-size:10px !important;
+  line-height:1 !important;
+  color:var(--t3) !important;
+}
+.status-bar .st-val{
+  max-width:none !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  white-space:normal !important;
+  color:var(--t) !important;
+  font-size:18px !important;
+  line-height:1.28 !important;
+  font-weight:650 !important;
+  letter-spacing:0 !important;
+}
+#stDemand,#stSupply{
+  font-family:'DM Mono',monospace !important;
+  font-size:32px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+}
+#stDemand{color:var(--blue) !important}
+#stSupply{color:var(--teal) !important}
+#stTeams{
+  font-size:17px !important;
+  line-height:1.38 !important;
+  color:var(--amber) !important;
+}
+
+@media (max-width:1200px){
+  .shell{min-width:1280px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- HEADER -->
+<header>
+  <div class="h-dot"></div>
+  <div class="h-mono">Signal · IP 提前布局监测</div>
+  <div class="h-sep"></div>
+  <div class="h-title">《狐妖小红娘》真人剧 · 第二季</div>
+  <div class="h-right">
+    <div class="h-mono">仙侠网剧 · 商品中心 Demo</div>
+    <div class="h-sep"></div>
+    <div class="h-date">2026 · 05</div>
+    <div class="h-sep"></div>
+    <div class="h-mono">定档预告已发 · 粉丝社群热</div>
+  </div>
+</header>
+
+<!-- LEFT -->
+<aside class="pl">
+  <div class="sec-hd">Signal · 信号时间轴</div>
+  <div class="tl-item" id="tli-0" onclick="setStage(0)">
+    <div class="tl-n">01</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">第一季完结后粉丝期待积累</div>
+      <div class="tl-sub">T-8 月 · 粉丝社群发酵</div>
+      <div class="tl-teams" id="tlt-0"><div class="tl-dot" style="background:#a070e8;opacity:0.35" title="授权团队·pending"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·active"></div><div class="tl-dot" style="background:#3fcba0;opacity:0.35" title="创意设计·pending"></div><div class="tl-dot" style="background:#f0a040;opacity:0.35" title="供应链 / 社群·pending"></div></div>
+    </div>
+    <div class="tl-bdg bdg-done">已完成</div>
+  </div>
+  <div class="tl-item" id="tli-1" onclick="setStage(1)">
+    <div class="tl-n">02</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">官方确认第二季筹备，主演返回</div>
+      <div class="tl-sub">T-6 月 · 主演阵容确认</div>
+      <div class="tl-teams" id="tlt-1"><div class="tl-dot" style="background:#a070e8;opacity:1" title="授权团队·active"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·active"></div><div class="tl-dot" style="background:#3fcba0;opacity:1" title="创意设计·active"></div><div class="tl-dot" style="background:#f0a040;opacity:0.35" title="供应链 / 社群·pending"></div></div>
+    </div>
+    <div class="tl-bdg bdg-done">已完成</div>
+  </div>
+  <div class="tl-item active" id="tli-2" onclick="setStage(2)">
+    <div class="tl-n">03</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">定档预告与主演物料首发</div>
+      <div class="tl-sub">T-4 月 · 当前阶段 · 粉丝热搜未爆</div>
+      <div class="tl-teams" id="tlt-2"><div class="tl-dot" style="background:#a070e8;opacity:1" title="授权团队·active"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·urgent"></div><div class="tl-dot" style="background:#3fcba0;opacity:1" title="创意设计·urgent"></div><div class="tl-dot" style="background:#f0a040;opacity:0.35" title="供应链 / 社群·pending"></div></div>
+    </div>
+    <div class="tl-bdg bdg-now">进行中</div>
+  </div>
+  <div class="tl-item" id="tli-3" onclick="setStage(3)">
+    <div class="tl-n">04</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">物料密集投放期与小红书种草</div>
+      <div class="tl-sub">T-2 月 · 粉丝种草主力期</div>
+      <div class="tl-teams" id="tlt-3"><div class="tl-dot" style="background:#a070e8;opacity:1" title="授权团队·urgent"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·active"></div><div class="tl-dot" style="background:#3fcba0;opacity:1" title="创意设计·urgent"></div><div class="tl-dot" style="background:#f0a040;opacity:1" title="供应链 / 社群·urgent"></div></div>
+    </div>
+    <div class="tl-bdg bdg-wait">待触发</div>
+  </div>
+  <div class="tl-item" id="tli-4" onclick="setStage(4)">
+    <div class="tl-n">05</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">首播前一周全媒体冲刺</div>
+      <div class="tl-sub">T-1 周 · 热搜追上</div>
+      <div class="tl-teams" id="tlt-4"><div class="tl-dot" style="background:#a070e8;opacity:0.35" title="授权团队·pending"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·urgent"></div><div class="tl-dot" style="background:#3fcba0;opacity:0.35" title="创意设计·pending"></div><div class="tl-dot" style="background:#f0a040;opacity:1" title="供应链 / 社群·urgent"></div></div>
+    </div>
+    <div class="tl-bdg bdg-wait">待触发</div>
+  </div>
+  <div class="tl-item t-day" id="tli-5" onclick="setStage(5)">
+    <div class="tl-n t-day-n">T日</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">第二季首播</div>
+      <div class="tl-sub">粉丝与路人热搜双爆发</div>
+      <div class="tl-teams" id="tlt-5"><div class="tl-dot" style="background:#a070e8;opacity:0.35" title="授权团队·pending"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·urgent"></div><div class="tl-dot" style="background:#3fcba0;opacity:0.35" title="创意设计·pending"></div><div class="tl-dot" style="background:#f0a040;opacity:1" title="供应链 / 社群·urgent"></div></div>
+    </div>
+    <div class="tl-bdg bdg-wait">待触发</div>
+  </div>
+
+  <div class="state-box">
+    <div class="state-lbl">当前状态评估</div>
+    <div class="state-txt" id="stateText">定档预告发布 · 粉丝社群（B 站/小红书/微博）讨论已升温，但<span style="color:var(--rose);font-weight:500">大众热搜尚未爆发</span>。此时推出限定商品可提前捕获核心粉丝</div>
+    <div class="state-win">
+      <div class="pulse-dot"></div>
+      <div class="state-win-txt" id="stateWindow">粉丝热 · 热搜未爆 · 提前种草窗口</div>
+    </div>
+  </div>
+  <div class="cta-box">
+    <div class="state-lbl">此刻提示</div>
+    <div class="cta-big" id="ctaText">粉丝社群<br>种草期</div>
+  </div>
+</aside>
+
+<!-- CENTER -->
+<main class="pc">
+  <div class="chart-hd">
+    <div>
+      <div class="ch-eye">Signal Delta · 粉丝社群 vs 大众热搜 时差曲线</div>
+      <div class="ch-ttl" id="chartTitle">定档预告释放 · 粉丝社群已热 · 热搜未爆</div>
+      <div class="ch-sub" id="chartSub">定档预告与主演造型首发，粉丝社群在 B 站 / 小红书密集讨论，但大众热搜尚未爆发</div>
+    </div>
+    <div class="legend">
+      <div class="leg-row"><div class="leg-line" style="background:var(--blue)"></div>需求侧 · 粉丝社群讨论</div>
+      <div class="leg-row"><div class="leg-line" style="background:var(--teal)"></div>大众侧 · 全网热搜热度</div>
+      <div class="leg-row"><div class="leg-dash"></div>行动窗口 · 商品中心可介入</div>
+    </div>
+  </div>
+  <div class="chart-area"><canvas id="signalChart" height="904" style="display: block; box-sizing: border-box; height: 452px; width: 760px;" width="1520"></canvas></div>
+  <div class="status-bar">
+    <div class="st-item"><span class="st-lbl">阶段</span><span class="st-val hi" id="stStage">定档预告与主演物料首发</span></div>
+    <div class="st-sep"></div>
+    <div class="st-item"><span class="st-lbl">粉丝社群</span><span class="st-val" id="stDemand">76%</span></div>
+    <div class="st-sep"></div>
+    <div class="st-item"><span class="st-lbl">大众热搜</span><span class="st-val" id="stSupply">32%</span></div>
+    <div class="st-sep"></div>
+    <div class="st-item"><span class="st-lbl">领先</span><span class="st-val lead" id="stLead">~120 天</span></div>
+    <div class="st-sep"></div>
+    <div class="st-item"><span class="st-lbl">活跃团队</span><span class="st-val" id="stTeams" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">授权团队 · 商品企划 · 创意设计</span></div>
+    <div class="win-badge"><div class="pulse-dot"></div><span id="stWindow">粉丝热 · 热搜未爆 · 提前种草窗口</span></div>
+  </div>
+</main>
+
+<!-- RIGHT -->
+<aside class="pr">
+  <div class="rp-ctx">
+    <div class="rp-ctx-num">商品中心 · 团队分工 ← 当前阶段联动</div>
+    <div class="rp-ctx-name" id="rpName">定档预告与主演物料首发</div>
+    <div class="rp-ctx-timing" id="rpTiming">T-4 月 · 当前阶段</div>
+  </div>
+  <div id="teamCards"><div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(0)">
+        <div class="team-bar" style="background:#a070e8"></div>
+        <div class="team-name">授权团队</div>
+        <div class="team-status ts-active">进行中</div>
+        <div class="team-chevron open" id="chev-0">▾</div>
+      </div>
+      <div class="team-body open" id="tb-0">
+        
+          <div class="task-row">
+            <div class="task-dot" style="background:#a070e8"></div>
+            <div class="task-txt ">推进授权谈判，锁定合作协议框架</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#a070e8"></div>
+            <div class="task-txt ">确认主演肖像与名字使用合规</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#a070e8"></div>
+            <div class="task-txt ">制定首播期间商品上线时间表</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#a070e8"></div>
+            <div class="task-txt ">输出授权清单给商品企划</div>
+          </div>
+        <div class="team-win tw-purple">⟶ 定档预告 · 谈判进入关键期</div>
+      </div>
+    </div><div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(1)">
+        <div class="team-bar" style="background:#4fa3e8"></div>
+        <div class="team-name">商品企划</div>
+        <div class="team-status ts-urgent">立即启动</div>
+        <div class="team-chevron open" id="chev-1">▾</div>
+      </div>
+      <div class="team-body open" id="tb-1">
+        
+          <div class="task-row">
+            <div class="task-dot" style="background:#4fa3e8"></div>
+            <div class="task-txt ">核心品类锁定：毛绒挂件(高优·粉丝晒单) · 立牌(高优·角色展示) · 帆布袋(小红书种草最常见)</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#4fa3e8"></div>
+            <div class="task-txt ">两个库存方案：粉丝社群高端款 + 大众消费快销款</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#4fa3e8"></div>
+            <div class="task-txt ">参考第一季「毛绒+立牌+帆布袋」三品类库存比例</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#4fa3e8"></div>
+            <div class="task-txt ">规划小红书种草 × B 站讨论的配合方案</div>
+          </div>
+        <div class="team-win tw-blue">⟶ 定档预告 · 粉丝热但热搜未爆 · 立即启动</div>
+      </div>
+    </div><div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(2)">
+        <div class="team-bar" style="background:#3fcba0"></div>
+        <div class="team-name">创意设计</div>
+        <div class="team-status ts-urgent">立即启动</div>
+        <div class="team-chevron open" id="chev-2">▾</div>
+      </div>
+      <div class="team-body open" id="tb-2">
+        
+          <div class="task-row">
+            <div class="task-dot" style="background:#3fcba0"></div>
+            <div class="task-txt ">研究主演造型 / 妆容 / 发型，提取标志性元素</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#3fcba0"></div>
+            <div class="task-txt ">启动 4-5 个设计方向：立牌 / 毛绒 / 帆布袋 主视觉</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#3fcba0"></div>
+            <div class="task-txt ">建立设计参考库（角色 · 配饰 · 色彩 · 场景）</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#3fcba0"></div>
+            <div class="task-txt ">女粉向 IP 高辨识度颜值呈现是关键</div>
+          </div>
+        <div class="team-win tw-teal">⟶ 定档预告 · 主演物料发布 · 立即落地</div>
+      </div>
+    </div><div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(3)">
+        <div class="team-bar" style="background:#f0a040"></div>
+        <div class="team-name">供应链 / 社群</div>
+        <div class="team-status ts-pending">本阶段待命</div>
+        <div class="team-chevron " id="chev-3">▾</div>
+      </div>
+      <div class="team-body " id="tb-3">
+        
+          <div class="task-row">
+            <div class="task-dot" style="background:#f0a040"></div>
+            <div class="task-txt ">研究女性向网剧粉丝社群特点</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#f0a040"></div>
+            <div class="task-txt ">初步接触代工厂，了解立牌 / 毛绒打样周期</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#f0a040"></div>
+            <div class="task-txt ">建立与粉丝社群的沟通渠道（超话 · 小红书 · B 站社区）</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#f0a040"></div>
+            <div class="task-txt ">预判首播日期，为供应链预留充足打样时间</div>
+          </div>
+        <div class="team-win tw-gray">⟶ 本阶段待命 · 准备接收打样计划</div>
+      </div>
+    </div></div>
+  <div class="footnote">所有数据与时间节点均参考第一季公开数据与粉丝社群讨论热度，仅用于示意。实际播出时间、物料投放节奏会因平台与制作方安排而异。</div>
+</aside>
+
+</div>
+<div id="tt"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ═══════════════════════════════════════════
+// DATA: 6 stages (狐妖小红娘 真人剧 · S2)
+// ═══════════════════════════════════════════
+const STAGES = [
+  {
+    label:'第一季完结后粉丝期待积累', timing:'T-8 月 · 粉丝社群发酵期',
+    chartTitle:'第一季余温 · 粉丝社群持续讨论',
+    chartSub:'第一季完结，粉丝在 B 站 / 小红书 / 微博讨论持续不散，大众热搜已散去',
+    stateText:'资产积累期 · 粉丝社群<span style="color:var(--blue);font-weight:500">长尾活跃</span>，大众热搜散去。商品中心建立元素资产库，沉淀第一季销售数据',
+    window:'窗口未开 · 监测阶段', cta:'粉丝社群<br>沉淀期',
+    lead:240
+  },
+  {
+    label:'官方确认第二季筹备，主演返回', timing:'T-6 月 · 主演阵容确认',
+    chartTitle:'官方筹备宣布 · 社群讨论升温',
+    chartSub:'制作方与平台确认第二季筹备，主演阵容公开，粉丝社群讨论升温，大众热搜小幅波动',
+    stateText:'官方筹备宣布 · 主演阵容确认 · 粉丝社群<span style="color:var(--amber);font-weight:500">讨论升温</span>，授权窗口正式打开',
+    window:'窗口开启 · 授权团队即刻行动', cta:'授权窗口<br>正式开启',
+    lead:180
+  },
+  {
+    label:'定档预告与主演物料首发', timing:'T-4 月 · 当前阶段',
+    chartTitle:'定档预告释放 · 粉丝社群已热 · 热搜未爆',
+    chartSub:'定档预告与主演造型首发，粉丝社群在 B 站 / 小红书密集讨论，但大众热搜尚未爆发',
+    stateText:'定档预告发布 · 粉丝社群（B 站/小红书/微博）讨论已升温，但<span style="color:var(--rose);font-weight:500">大众热搜尚未爆发</span>。此时推出限定商品可提前捕获核心粉丝',
+    window:'粉丝热 · 热搜未爆 · 提前种草窗口', cta:'粉丝社群<br>种草期',
+    lead:120
+  },
+  {
+    label:'物料密集投放期与小红书种草', timing:'T-2 月 · 粉丝二创高峰',
+    chartTitle:'物料密集投放 · 小红书种草自发传播',
+    chartSub:'多轮物料 + 达人探班 + 粉丝二创，小红书种草自发扩散，大众热搜开始追上',
+    stateText:'物料密集期 · <span style="color:var(--amber);font-weight:500">小红书种草自发传播</span>，供应链立即接管打样排期与首发库存',
+    window:'窗口收紧 · 打样排期立即锁定', cta:'打样排期<br>立即锁定',
+    lead:60
+  },
+  {
+    label:'首播前一周全媒体冲刺', timing:'T-1 周 · 热搜追上 · 门店冲刺',
+    chartTitle:'首播倒计时 · 大众热搜追上',
+    chartSub:'媒体评测密集放出，大众热搜热度快速拉升，门店陈列与社媒联动最后冲刺',
+    stateText:'首播前 1 周 · 媒体评测放出，<span style="color:var(--amber);font-weight:500">热搜追上</span>，门店陈列与库存最终确认',
+    window:'窗口即将关闭 · 门店冲刺', cta:'门店上线<br>最后窗口',
+    lead:7
+  },
+  {
+    label:'T 日 · 第二季首播', timing:'T 日 · 粉丝与路人双爆发',
+    chartTitle:'T 日 · 供需交汇 · 全渠道上线',
+    chartSub:'首播当日粉丝与路人热搜双峰爆发，所有团队进入执行收尾，时差闭合',
+    stateText:'T 日 · 首播日 · 粉丝与路人热搜<span style="color:var(--amber);font-weight:500">双峰爆发</span>。验证前 5 个阶段的准备：粉丝款 / 大众款 / 社媒矩阵是否同步就位',
+    window:'窗口 · 全员执行冲刺', cta:'全员执行<br>T 日冲刺',
+    lead:0
+  },
+];
+
+// ═══════════════════════════════════════════
+// TEAMS × STAGES data
+// ═══════════════════════════════════════════
+const TEAMS = [
+  { id:'auth',   name:'授权团队',         color:'#a070e8' },
+  { id:'merch',  name:'商品企划',         color:'#4fa3e8' },
+  { id:'design', name:'创意设计',         color:'#3fcba0' },
+  { id:'ops',    name:'供应链 / 社群',    color:'#f0a040' },
+];
+
+const TEAM_DATA = {
+  auth: [
+    // 0
+    { status:'pending', winCls:'tw-gray', win:'监测期 · 平台与制作方关系梳理',
+      tasks:['梳理腾讯视频网剧周边授权惯例','建立与制作方接洽渠道','研究第一季授权协议结构'] },
+    // 1
+    { status:'active', winCls:'tw-purple', win:'筹备宣布 · 启动授权评估',
+      tasks:['正式启动腾讯视频与制作方授权评估','明确周边商品授权范围与角色肖像使用边界','参考第一季授权案例确认排他性条款'] },
+    // 2
+    { status:'active', winCls:'tw-purple', win:'定档预告 · 谈判进入关键期',
+      tasks:['推进授权谈判，锁定合作协议框架','确认主演肖像与名字使用合规','制定首播期间商品上线时间表','输出授权清单给商品企划'] },
+    // 3
+    { status:'urgent', winCls:'tw-purple', win:'物料密集期 · 授权协议须签署',
+      tasks:['授权协议最终签署','向打样团队输出授权使用规范','协调粉丝二创与官方授权边界'] },
+    // 4
+    { status:'pending', winCls:'tw-gray', win:'执行监督 · 授权已到位',
+      tasks:['授权合规监督','处理临时授权问题','确认上线商品授权覆盖'] },
+    // 5
+    { status:'pending', winCls:'tw-gray', win:'持续监督现场执行',
+      tasks:['T 日上线授权合规复查','处理现场授权反馈','记录异常用于后续迭代'] },
+  ],
+  merch: [
+    // 0
+    { status:'active', winCls:'tw-blue', win:'提前盘点第一季销售数据',
+      tasks:['调取第一季毛绒/立牌/帆布袋销售速度与库存周转','建立女性向网剧粉丝品类偏好图谱','识别名创优势品类与第一季空白机会'] },
+    // 1
+    { status:'active', winCls:'tw-blue', win:'筹备宣布 · 品类规划初稿',
+      tasks:['制定品类企划初稿（参考第一季结构）','定义核心品类矩阵：毛绒挂件 · 立牌 · 文具 · 帆布袋 · 钥匙扣 · 香氛','与授权团队确认授权范围对接'] },
+    // 2
+    { status:'urgent', winCls:'tw-blue', win:'定档预告 · 粉丝热但热搜未爆 · 立即启动',
+      tasks:['核心品类锁定：毛绒挂件(高优·粉丝晒单) · 立牌(高优·角色展示) · 帆布袋(小红书种草最常见)','两个库存方案：粉丝社群高端款 + 大众消费快销款','参考第一季「毛绒+立牌+帆布袋」三品类库存比例','规划小红书种草 × B 站讨论的配合方案'] },
+    // 3
+    { status:'active', winCls:'tw-blue', win:'物料密集期 · 持续优化',
+      tasks:['跟进打样进度与设计还原度','协调供应链与授权合规对齐','根据物料波动微调上线节奏'] },
+    // 4
+    { status:'urgent', winCls:'tw-blue', win:'首播冲刺 · 库存最终确认',
+      tasks:['确认到货计划与门店备货量','协调补货机制与预警库存线','核对上线 SKU 清单'] },
+    // 5
+    { status:'urgent', winCls:'tw-amber', win:'T 日 · 实时数据监控',
+      tasks:['监控各 SKU 实时销售数据','触发热销品紧急补货','记录爆款与滞销 SKU 供复盘'] },
+  ],
+  design: [
+    // 0
+    { status:'pending', winCls:'tw-gray', win:'前期 · 第一季元素整理',
+      tasks:['整理第一季角色 · 配饰 · 仙侠美学元素','建立女性向仙侠剧视觉风格参考库'] },
+    // 1
+    { status:'active', winCls:'tw-teal', win:'筹备宣布 · 启动创意研究',
+      tasks:['解析第一季视觉调性与续作可能新增元素','制定 2-3 个设计风格提案','等待主演物料以确认造型方向'] },
+    // 2
+    { status:'urgent', winCls:'tw-teal', win:'定档预告 · 主演物料发布 · 立即落地',
+      tasks:['研究主演造型 / 妆容 / 发型，提取标志性元素','启动 4-5 个设计方向：立牌 / 毛绒 / 帆布袋 主视觉','建立设计参考库（角色 · 配饰 · 色彩 · 场景）','女粉向 IP 高辨识度颜值呈现是关键'] },
+    // 3
+    { status:'urgent', winCls:'tw-teal', win:'设计定稿 · 配合打样',
+      tasks:['完成设计定稿，输出生产文件','跟进打样色差与工艺还原','提供修改意见，完成设计确认'] },
+    // 4
+    { status:'pending', winCls:'tw-gray', win:'设计已完成 · 转入执行配合',
+      tasks:['支持门店陈列视觉物料','制作首播宣传素材（H5 / 海报 / 包材）'] },
+    // 5
+    { status:'pending', winCls:'tw-gray', win:'现场执行配合',
+      tasks:['T 日视觉物料最终确认','记录产品实物呈现效果'] },
+  ],
+  ops: [
+    // 0
+    { status:'pending', winCls:'tw-gray', win:'监测期 · 社群特点研究',
+      tasks:['研究女性向网剧粉丝社群特点（B 站 · 小红书 · 微博 · 超话）','初步规划重点城市布局'] },
+    // 1
+    { status:'pending', winCls:'tw-gray', win:'筹备宣布 · 供应链预研',
+      tasks:['接触潜在供应商，了解立牌 / 毛绒打样经验','初步评估各品类生产可行性与交期'] },
+    // 2
+    { status:'pending', winCls:'tw-gray', win:'本阶段待命 · 准备接收打样计划',
+      tasks:['研究女性向网剧粉丝社群特点','初步接触代工厂，了解立牌 / 毛绒打样周期','建立与粉丝社群的沟通渠道（超话 · 小红书 · B 站社区）','预判首播日期，为供应链预留充足打样时间'] },
+    // 3
+    { status:'urgent', winCls:'tw-rose', win:'物料密集期 · 打样立即启动 + 达人种草',
+      tasks:['筛选代工厂，特别关注立牌质量与毛绒打样经验','锁定打样排期（从定档日往前 6 周启动）','两波上线：限定款首发 + 常规款跟进','小红书种草 × B 站评测 达人合作计划','门店打卡陈列与社媒联动（LAND · 微博互动）'] },
+    // 4
+    { status:'urgent', winCls:'tw-amber', win:'首播冲刺 · 门店上线最后窗口',
+      tasks:['门店陈列方案最终确认','MINISO LAND 角色展示区落地','到货验收与门店分发','启动小红书 / B 站 / 微博 达人种草矩阵'] },
+    // 5
+    { status:'urgent', winCls:'tw-amber', win:'T 日 · 全力执行',
+      tasks:['全渠道商品同步上线','实时监控库存与补货需求','MINISO LAND 粉丝打卡互动启动','收集首播日销售数据供复盘'] },
+  ],
+};
+
+// chart data — 粉丝社群 vs 大众热搜 的时差是核心
+const demandData = [45,62,76,85,92,96];      // 粉丝社群讨论
+const supplyData = [18,25,32,38,62,88];      // 大众热搜
+const windowData = [null,null,30,55,78,90];
+const xLabels    = ['01·完结','02·筹备','03·定档','04·投放','05·前1周','T日'];
+
+let activeStage = 2;
+let chartInst;
+
+// ── Build timeline team dots ──
+function buildTimelineDots() {
+  for (let si = 0; si < 6; si++) {
+    const el = document.getElementById('tlt-' + si);
+    let html = '';
+    TEAMS.forEach(team => {
+      const st = TEAM_DATA[team.id][si].status;
+      const opacity = st === 'locked' ? 0.2 : st === 'pending' ? 0.35 : 1;
+      html += `<div class="tl-dot" style="background:${team.color};opacity:${opacity}" title="${team.name}·${st}"></div>`;
+    });
+    el.innerHTML = html;
+  }
+}
+
+// ── Render right panel team cards ──
+function renderTeamCards(si) {
+  const statusLabel = { urgent:'立即启动', active:'进行中', pending:'本阶段待命', locked:'未开始' };
+  const statusCls   = { urgent:'ts-urgent', active:'ts-active', pending:'ts-pending', locked:'ts-locked' };
+  let html = '';
+  TEAMS.forEach((team, ti) => {
+    const d = TEAM_DATA[team.id][si];
+    const lbl = statusLabel[d.status];
+    const cls = statusCls[d.status];
+    const isOpen = d.status === 'urgent' || d.status === 'active';
+    html += `<div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(${ti})">
+        <div class="team-bar" style="background:${team.color}"></div>
+        <div class="team-name">${team.name}</div>
+        <div class="team-status ${cls}">${lbl}</div>
+        <div class="team-chevron ${isOpen?'open':''}" id="chev-${ti}">▾</div>
+      </div>
+      <div class="team-body ${isOpen?'open':''}" id="tb-${ti}">
+        ${d.tasks.map(t => `
+          <div class="task-row">
+            <div class="task-dot" style="background:${team.color}"></div>
+            <div class="task-txt ${d.status==='locked'?'dim':''}">${t}</div>
+          </div>`).join('')}
+        ${d.win ? `<div class="team-win ${d.winCls}">⟶ ${d.win}</div>` : ''}
+      </div>
+    </div>`;
+  });
+  document.getElementById('teamCards').innerHTML = html;
+}
+
+function toggleTeam(ti) {
+  const body = document.getElementById('tb-' + ti);
+  const chev = document.getElementById('chev-' + ti);
+  const open = body.classList.toggle('open');
+  chev.classList.toggle('open', open);
+}
+
+// ── Chart plugins ──
+const stageLinePlugin = {
+  id: 'stageLine',
+  afterDraw(chart) {
+    const { ctx, chartArea: ca, scales } = chart;
+    const x = scales.x.getPixelForValue(activeStage);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(240,160,64,0.45)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(x, ca.top); ctx.lineTo(x, ca.bottom); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#f0a040';
+    ctx.beginPath(); ctx.arc(x, ca.bottom + 5, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+};
+
+const windowFillPlugin = {
+  id: 'windowFill',
+  beforeDatasetsDraw(chart) {
+    const { ctx, chartArea: ca, scales } = chart;
+    const x2 = scales.x.getPixelForValue(2);
+    const x5 = scales.x.getPixelForValue(5);
+    ctx.save();
+    ctx.fillStyle = 'rgba(240,160,64,0.03)';
+    ctx.fillRect(x2, ca.top, x5 - x2, ca.bottom - ca.top);
+    ctx.strokeStyle = 'rgba(240,160,64,0.14)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x2, ca.top); ctx.lineTo(x2, ca.bottom); ctx.stroke();
+    ctx.restore();
+  }
+};
+
+// Gap fill — 粉丝社群 vs 大众热搜 之间的填充（rose 色 · 视觉化"时差"）
+const gapFillPlugin = {
+  id: 'gapFill',
+  beforeDatasetsDraw(chart) {
+    const { ctx, scales: { x, y } } = chart;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,107,139,0.06)';
+    ctx.beginPath();
+    for (let i = 0; i < demandData.length; i++) {
+      const px = x.getPixelForValue(i);
+      const py = y.getPixelForValue(demandData[i]);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    for (let i = supplyData.length - 1; i >= 0; i--) {
+      const px = x.getPixelForValue(i);
+      const py = y.getPixelForValue(supplyData[i]);
+      ctx.lineTo(px, py);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+};
+
+
+// 新增 · 当前阶段标记插件
+const currentStagePlugin = {
+  id: 'currentStage',
+  afterDraw(chart) {
+    const { ctx, chartArea: ca, scales } = chart;
+    if (typeof activeStage === 'undefined' || !scales.x) return;
+    const x = scales.x.getPixelForValue(activeStage);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(240, 160, 64, 0.2)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x, ca.top);
+    ctx.lineTo(x, ca.bottom);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(240, 160, 64, 0.3)';
+    ctx.beginPath();
+    ctx.arc(x, ca.bottom + 10, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f0a040';
+    ctx.beginPath();
+    ctx.arc(x, ca.bottom + 10, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = 'bold 11px DM Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('当前', x, ca.bottom + 28);
+    ctx.restore();
+  }
+};
+
+// ── Build chart ──
+function buildChart() {
+  chartInst = new Chart(document.getElementById('signalChart'), {
+    type: 'line',
+    plugins: [gapFillPlugin, stageLinePlugin, windowFillPlugin],
+    data: {
+      labels: xLabels,
+      datasets: [
+        { label:'粉丝社群', data:demandData, borderColor:'#4fa3e8', backgroundColor:'rgba(79,163,232,0.05)', borderWidth:2.5, tension:0.42, fill:false, pointRadius:5, pointHoverRadius:7, pointBackgroundColor:'#4fa3e8', pointBorderColor:'#0b0d11', pointBorderWidth:2 },
+        { label:'大众热搜', data:supplyData, borderColor:'#3fcba0', backgroundColor:'rgba(63,203,160,0.04)', borderWidth:2.5, tension:0.42, fill:false, pointRadius:5, pointHoverRadius:7, pointBackgroundColor:'#3fcba0', pointBorderColor:'#0b0d11', pointBorderWidth:2 },
+        { label:'行动窗口', data:windowData, borderColor:'#f0a040', backgroundColor:'transparent', borderWidth:2, borderDash:[6,4], tension:0.42, fill:false, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:'#f0a040', pointBorderColor:'#0b0d11', pointBorderWidth:2 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { display:false },
+        tooltip: { enabled:false, external:customTooltip }
+      },
+      scales: {
+        x: { grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#555250', font:{ family:"'DM Mono',monospace", size:10 } }, border:{ color:'rgba(255,255,255,0.07)' } },
+        y: { min:0, max:100, grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#555250', font:{ family:"'DM Mono',monospace", size:10 }, callback:v=>v+'%', stepSize:20 }, border:{ color:'rgba(255,255,255,0.07)' } }
+      },
+      animation: { duration:500, easing:'easeInOutQuart' },
+      onClick(e) {
+        const pts = chartInst.getElementsAtEventForMode(e, 'nearest', { intersect:false }, false);
+        if (pts.length) setStage(pts[0].index);
+      }
+    }
+  });
+}
+
+function customTooltip(ctx) {
+  const tt = document.getElementById('tt');
+  if (ctx.tooltip.opacity === 0) { tt.style.display = 'none'; return; }
+  const i = ctx.tooltip.dataPoints[0].dataIndex;
+  const w = windowData[i];
+  const lead = STAGES[i].lead;
+  const gap = demandData[i] - supplyData[i];
+  const activeTeams = TEAMS.filter(t => {
+    const s = TEAM_DATA[t.id][i].status;
+    return s === 'urgent' || s === 'active';
+  }).map(t => t.name).join(' · ');
+  const leadTxt = lead === 0
+    ? '时差闭合 · 粉丝与热搜同步爆发'
+    : `粉丝社群领先大众热搜 · ~${lead} 天`;
+  tt.innerHTML = `
+    <div class="tt-stage">${STAGES[i].label}</div>
+    <div class="tt-row"><span class="tt-lbl" style="color:#4fa3e8">粉丝社群</span><span class="tt-val" style="color:#4fa3e8">${demandData[i]}%</span></div>
+    <div class="tt-row"><span class="tt-lbl" style="color:#3fcba0">大众热搜</span><span class="tt-val" style="color:#3fcba0">${supplyData[i]}%</span></div>
+    <div class="tt-row"><span class="tt-lbl" style="color:#FF6B8B">时差</span><span class="tt-val" style="color:#FF6B8B">+${gap}pp</span></div>
+    ${w !== null ? `<div class="tt-row"><span class="tt-lbl" style="color:#f0a040">行动窗口</span><span class="tt-val" style="color:#f0a040">${w}%</span></div>` : ''}
+    <div class="tt-lead">${leadTxt}</div>
+    ${activeTeams ? `<div class="tt-divider"></div><div class="tt-teams">活跃 · ${activeTeams}</div>` : ''}
+  `;
+  const rect = ctx.chart.canvas.getBoundingClientRect();
+  let left = rect.left + ctx.tooltip.x + 16;
+  let top  = rect.top  + ctx.tooltip.y - 10;
+  if (left + 200 > window.innerWidth) left = rect.left + ctx.tooltip.x - 205;
+  tt.style.left = left + 'px';
+  tt.style.top  = top  + 'px';
+  tt.style.display = 'block';
+}
+
+// ── MAIN: set stage (all panels sync) ──
+function setStage(idx) {
+  activeStage = idx;
+  const s = STAGES[idx];
+
+  // LEFT
+  for (let i = 0; i < 6; i++) {
+    document.getElementById('tli-' + i).classList.toggle('active', i === idx);
+  }
+  document.getElementById('stateText').innerHTML  = s.stateText;
+  document.getElementById('stateWindow').textContent = s.window;
+  document.getElementById('ctaText').innerHTML    = s.cta;
+
+  // CENTER
+  document.getElementById('chartTitle').textContent = s.chartTitle;
+  document.getElementById('chartSub').textContent   = s.chartSub;
+  document.getElementById('stStage').textContent    = s.label;
+  document.getElementById('stDemand').textContent   = demandData[idx] + '%';
+  document.getElementById('stSupply').textContent   = supplyData[idx] + '%';
+  document.getElementById('stLead').textContent     = s.lead === 0 ? '0 天' : `~${s.lead} 天`;
+  document.getElementById('stWindow').textContent   = s.window;
+
+  const activeTeamNames = TEAMS
+    .filter(t => { const st = TEAM_DATA[t.id][idx].status; return st === 'urgent' || st === 'active'; })
+    .map(t => t.name);
+  document.getElementById('stTeams').textContent = activeTeamNames.length ? activeTeamNames.join(' · ') : '—';
+
+  // RIGHT
+  document.getElementById('rpName').textContent   = s.label;
+  document.getElementById('rpTiming').textContent = s.timing;
+  renderTeamCards(idx);
+
+  if (chartInst) chartInst.update();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildTimelineDots();
+  buildChart();
+  setStage(2);
+});
+</script>
+
+<script>
+// 新增 · iframe 外层页签恢复状态时调用
+window.__activeStage = typeof activeStage === 'undefined' ? 2 : activeStage;
+window.__resizeMinisoChart = function() {
+  if (typeof chartInst !== 'undefined' && chartInst) chartInst.resize();
+};
+if (typeof setStage === 'function') {
+  const __minisoOriginalSetStage = setStage;
+  setStage = function(idx) {
+    window.__activeStage = idx;
+    __minisoOriginalSetStage(idx);
+    window.parent && window.parent.postMessage({ type: 'MINISO_STAGE_CHANGED', pageTitle: document.title, stage: idx }, '*');
+  };
+}
+window.addEventListener('message', (event) => {
+  if (!event.data || event.data.type !== 'MINISO_SET_STAGE') return;
+  if (typeof setStage === 'function') setStage(event.data.stage || 0);
+  window.__resizeMinisoChart();
+});
+</script>
+
+</body></html>

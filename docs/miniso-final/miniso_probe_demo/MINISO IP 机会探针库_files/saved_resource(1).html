@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<!-- saved from url=(0012)about:srcdoc -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL · IP 提前布局监测 — 长安三万里续作</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d11;--bg2:#111419;--bg3:#161b22;
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.13);
+  --t:#e8e6e0;--t2:#8a8680;--t3:#555250;
+  --blue:#4fa3e8;--teal:#3fcba0;--amber:#f0a040;
+  --red:#e05555;--purple:#a070e8;
+  --col:280px;--hh:54px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--t);font-family:'Space Grotesk',sans-serif;font-size:14px;height:100%;overflow:hidden}
+.shell{display:grid;grid-template-rows:var(--hh) 1fr;grid-template-columns:var(--col) 1fr var(--col);height:100vh;min-height:600px}
+
+/* HEADER */
+header{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 22px;border-bottom:1px solid var(--bd);background:var(--bg);z-index:10}
+.h-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);flex-shrink:0}
+.h-mono{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase}
+.h-title{font-size:14px;font-weight:600}
+.h-sep{width:1px;height:18px;background:var(--bd2)}
+.h-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--amber);font-weight:500}
+.h-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+
+/* LEFT */
+.pl{border-right:1px solid var(--bd);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
+.sec-hd{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);padding:12px 18px 7px;border-bottom:1px solid var(--bd)}
+.tl-item{display:flex;gap:10px;padding:12px 18px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s;position:relative}
+.tl-item:hover{background:var(--bg2)}
+.tl-item.active{background:var(--bg3)}
+.tl-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--blue)}
+.tl-item.t-day.active::before{background:var(--amber)}
+.tl-n{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);min-width:18px;padding-top:2px}
+.tl-n.t-day-n{color:var(--amber);font-weight:500}
+.tl-bd{flex:1;min-width:0}
+.tl-ttl{font-size:12px;font-weight:500;line-height:1.3}
+.tl-sub{font-size:11px;color:var(--t2);margin-top:2px}
+.tl-bdg{font-family:'DM Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;white-space:nowrap;align-self:flex-start;flex-shrink:0;border:1px solid}
+.bdg-done{color:var(--teal);border-color:rgba(63,203,160,.25);background:rgba(63,203,160,.08)}
+.bdg-now{color:var(--amber);border-color:rgba(240,160,64,.25);background:rgba(240,160,64,.08)}
+.bdg-wait{color:var(--t3);border-color:var(--bd2);background:rgba(255,255,255,.03)}
+.tl-teams{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.tl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:opacity .2s}
+
+.state-box{margin:14px;padding:11px 13px;background:var(--bg3);border:1px solid var(--bd2);border-radius:5px}
+.state-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.state-txt{font-size:12px;color:var(--t2);line-height:1.65}
+.state-win{display:flex;align-items:center;gap:6px;margin-top:8px}
+.pulse-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);box-shadow:0 0 5px var(--amber);animation:pulse 2s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.state-win-txt{font-family:'DM Mono',monospace;font-size:10px;color:var(--amber)}
+.cta-box{margin:0 14px 14px;padding:12px 13px;background:rgba(240,160,64,.04);border:1px solid rgba(240,160,64,.14);border-radius:5px}
+.cta-big{font-size:19px;font-weight:700;color:var(--amber);letter-spacing:-.3px;line-height:1.2}
+
+/* CENTER */
+.pc{display:flex;flex-direction:column;overflow:hidden}
+.chart-hd{padding:14px 22px 11px;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-shrink:0}
+.ch-eye{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.ch-ttl{font-size:19px;font-weight:600;line-height:1.2}
+.ch-sub{font-size:12px;color:var(--t2);margin-top:4px;max-width:480px;line-height:1.5}
+.legend{display:flex;flex-direction:column;gap:6px;flex-shrink:0;padding-top:2px}
+.leg-row{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--t2);font-family:'DM Mono',monospace;white-space:nowrap}
+.leg-line{width:22px;height:2px;border-radius:1px;flex-shrink:0}
+.leg-dash{width:22px;height:0;border-top:2px dashed var(--amber);flex-shrink:0}
+.chart-area{flex:1;position:relative;overflow:hidden;padding:6px 0 0}
+#signalChart{width:100%;height:100%;display:block}
+.status-bar{padding:9px 22px;border-top:1px solid var(--bd);display:flex;align-items:center;gap:14px;flex-shrink:0;flex-wrap:nowrap}
+.st-item{display:flex;align-items:center;gap:5px;font-size:10px;white-space:nowrap}
+.st-lbl{font-family:'DM Mono',monospace;color:var(--t3);letter-spacing:.07em;text-transform:uppercase}
+.st-val{color:var(--t2)}
+.st-val.hi{color:var(--amber);font-weight:500}
+.st-sep{width:1px;height:12px;background:var(--bd);flex-shrink:0}
+.win-badge{margin-left:auto;display:flex;align-items:center;gap:7px;background:rgba(240,160,64,.07);border:1px solid rgba(240,160,64,.18);border-radius:4px;padding:4px 11px;font-size:10px;color:var(--amber);font-weight:500;white-space:nowrap;flex-shrink:0}
+
+/* RIGHT */
+.pr{border-left:1px solid var(--bd);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent;display:flex;flex-direction:column}
+.rp-ctx{padding:12px 18px;border-bottom:1px solid var(--bd);background:var(--bg3);flex-shrink:0}
+.rp-ctx-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.rp-ctx-name{font-size:13px;font-weight:600;line-height:1.3}
+.rp-ctx-timing{font-size:11px;color:var(--t2);margin-top:3px}
+
+/* Team cards */
+.team-section{border-bottom:1px solid var(--bd)}
+.team-hd{display:flex;align-items:center;gap:9px;padding:11px 16px;cursor:pointer;transition:background .12s;user-select:none}
+.team-hd:hover{background:var(--bg2)}
+.team-bar{width:3px;border-radius:1px;flex-shrink:0;align-self:stretch;min-height:16px}
+.team-name{font-size:12px;font-weight:600;flex:1}
+.team-status{font-family:'DM Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid;white-space:nowrap}
+.ts-urgent{color:var(--amber);border-color:rgba(240,160,64,.28);background:rgba(240,160,64,.08)}
+.ts-active{color:var(--blue);border-color:rgba(79,163,232,.25);background:rgba(79,163,232,.08)}
+.ts-pending{color:var(--t3);border-color:var(--bd);background:transparent}
+.ts-locked{color:var(--t3);border-color:var(--bd);background:transparent;opacity:.45}
+.team-chevron{font-size:10px;color:var(--t3);transition:transform .2s;flex-shrink:0;line-height:1}
+.team-chevron.open{transform:rotate(180deg)}
+.team-body{padding:0 16px 12px;display:none}
+.team-body.open{display:block}
+.task-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.task-row:last-child{border-bottom:none}
+.task-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.task-txt{font-size:11px;color:var(--t2);line-height:1.5;flex:1}
+.task-txt.dim{color:var(--t3)}
+.team-win{margin-top:8px;padding:6px 10px;border-radius:3px;border:1px solid;border-left-width:2px;font-size:10px;font-family:'DM Mono',monospace;line-height:1.5}
+.tw-purple{border-color:rgba(160,112,232,.2);border-left-color:var(--purple);color:var(--purple);background:rgba(160,112,232,.04)}
+.tw-blue{border-color:rgba(79,163,232,.2);border-left-color:var(--blue);color:var(--blue);background:rgba(79,163,232,.04)}
+.tw-teal{border-color:rgba(63,203,160,.18);border-left-color:var(--teal);color:var(--teal);background:rgba(63,203,160,.04)}
+.tw-amber{border-color:rgba(240,160,64,.2);border-left-color:var(--amber);color:var(--amber);background:rgba(240,160,64,.04)}
+.tw-gray{border-color:var(--bd);border-left-color:var(--t3);color:var(--t3);background:rgba(255,255,255,.02)}
+.footnote{margin-top:auto;padding:12px 18px;font-size:10px;color:var(--t3);line-height:1.65;border-top:1px solid var(--bd)}
+
+/* tooltip */
+#tt{position:fixed;pointer-events:none;background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:8px 12px;font-size:11px;z-index:100;display:none;min-width:160px}
+.tt-stage{font-weight:600;font-size:12px;margin-bottom:5px}
+.tt-row{display:flex;justify-content:space-between;gap:14px;margin-top:3px}
+.tt-lbl{font-family:'DM Mono',monospace;font-size:9px}
+.tt-val{font-family:'DM Mono',monospace;font-size:10px;font-weight:500}
+.tt-divider{border-top:1px solid rgba(255,255,255,.07);margin:5px 0 3px}
+.tt-teams{font-family:'DM Mono',monospace;font-size:9px;color:var(--t2)}
+
+.pl::-webkit-scrollbar,.pr::-webkit-scrollbar{width:3px}
+.pl::-webkit-scrollbar-thumb,.pr::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+</style>
+
+<style>
+/* 新增 · 四 Demo 融合版布局优化 */
+:root{--col:332px}
+.shell{grid-template-columns:320px minmax(760px,1fr) 560px !important;height:100vh}
+.chart-area{height:460px !important;flex:0 0 auto !important;padding:8px 0 0 !important}
+.legend{display:flex;flex-direction:column;gap:12px !important;padding:12px 0 !important}
+.leg-row{font-size:11px !important;line-height:1.6 !important}
+.leg-line,.leg-dash{width:30px !important}
+.rp-ctx{padding:16px 18px !important}
+.team-section{margin-bottom:4px}
+.task-txt{line-height:1.8 !important}
+.team-win{padding:8px 12px !important}
+#signalChart{width:100% !important;height:100% !important}
+.status-bar{
+  padding:16px 22px 18px !important;
+  display:grid !important;
+  grid-template-columns:1.5fr .74fr .74fr 1.55fr !important;
+  gap:12px !important;
+  align-items:stretch !important;
+  border-top:1px solid var(--bd) !important;
+  background:rgba(255,255,255,.018) !important;
+}
+.status-bar .st-sep,.status-bar .win-badge{display:none !important}
+.status-bar .st-item{
+  min-width:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  gap:7px !important;
+  padding:13px 14px !important;
+  border:1px solid rgba(255,255,255,.075) !important;
+  border-radius:6px !important;
+  background:rgba(255,255,255,.035) !important;
+  white-space:normal !important;
+}
+.status-bar .st-lbl{
+  font-size:10px !important;
+  line-height:1 !important;
+  color:var(--t3) !important;
+}
+.status-bar .st-val{
+  max-width:none !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  white-space:normal !important;
+  color:var(--t) !important;
+  font-size:18px !important;
+  line-height:1.28 !important;
+  font-weight:650 !important;
+  letter-spacing:0 !important;
+}
+#stDemand,#stSupply{
+  font-family:'DM Mono',monospace !important;
+  font-size:32px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+}
+#stDemand{color:var(--blue) !important}
+#stSupply{color:var(--teal) !important}
+#stTeams{
+  font-size:17px !important;
+  line-height:1.38 !important;
+  color:var(--amber) !important;
+}
+
+@media (max-width:1200px){
+  .shell{min-width:1280px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- HEADER -->
+<header>
+  <div class="h-dot"></div>
+  <div class="h-mono">Signal · IP 提前布局监测</div>
+  <div class="h-sep"></div>
+  <div class="h-title">《长安三万里》系列续作</div>
+  <div class="h-right">
+    <div class="h-mono">国产动画续作 · 商品中心 Demo</div>
+    <div class="h-sep"></div>
+    <div class="h-date">2026 · 05</div>
+    <div class="h-sep"></div>
+    <div class="h-mono">定档预告已发 · 近期上映</div>
+  </div>
+</header>
+
+<!-- LEFT -->
+<aside class="pl">
+  <div class="sec-hd">Signal · 信号时间轴</div>
+  <div class="tl-item active" id="tli-0" onclick="setStage(0)">
+    <div class="tl-n">01</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">前作完结后粉丝期待积累</div>
+      <div class="tl-sub">T-12 月 · 第一部余温</div>
+      <div class="tl-teams" id="tlt-0"><div class="tl-dot" style="background:#a070e8;opacity:0.35" title="授权团队·pending"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·active"></div><div class="tl-dot" style="background:#3fcba0;opacity:0.35" title="创意设计·pending"></div><div class="tl-dot" style="background:#f0a040;opacity:0.35" title="供应链 / 运营·pending"></div></div>
+    </div>
+    <div class="tl-bdg bdg-done">已完成</div>
+  </div>
+  <div class="tl-item" id="tli-1" onclick="setStage(1)">
+    <div class="tl-n">02</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">官方确认续作企划，概念美术首发</div>
+      <div class="tl-sub">T-9 月 · 制作启动</div>
+      <div class="tl-teams" id="tlt-1"><div class="tl-dot" style="background:#a070e8;opacity:1" title="授权团队·urgent"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·active"></div><div class="tl-dot" style="background:#3fcba0;opacity:1" title="创意设计·active"></div><div class="tl-dot" style="background:#f0a040;opacity:0.35" title="供应链 / 运营·pending"></div></div>
+    </div>
+    <div class="tl-bdg bdg-done">已完成</div>
+  </div>
+  <div class="tl-item" id="tli-2" onclick="setStage(2)">
+    <div class="tl-n">03</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">定档预告与首支宣传物料发布</div>
+      <div class="tl-sub">T-6 月 · 当前阶段</div>
+      <div class="tl-teams" id="tlt-2"><div class="tl-dot" style="background:#a070e8;opacity:1" title="授权团队·active"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·urgent"></div><div class="tl-dot" style="background:#3fcba0;opacity:1" title="创意设计·active"></div><div class="tl-dot" style="background:#f0a040;opacity:0.35" title="供应链 / 运营·pending"></div></div>
+    </div>
+    <div class="tl-bdg bdg-now">进行中</div>
+  </div>
+  <div class="tl-item" id="tli-3" onclick="setStage(3)">
+    <div class="tl-n">04</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">主创发布会与物料投放加速</div>
+      <div class="tl-sub">T-3 月 · 全媒体物料密集</div>
+      <div class="tl-teams" id="tlt-3"><div class="tl-dot" style="background:#a070e8;opacity:1" title="授权团队·urgent"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·active"></div><div class="tl-dot" style="background:#3fcba0;opacity:1" title="创意设计·urgent"></div><div class="tl-dot" style="background:#f0a040;opacity:1" title="供应链 / 运营·urgent"></div></div>
+    </div>
+    <div class="tl-bdg bdg-wait">待触发</div>
+  </div>
+  <div class="tl-item" id="tli-4" onclick="setStage(4)">
+    <div class="tl-n">05</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">上映前一个月全媒体冲刺</div>
+      <div class="tl-sub">T-1 月 · 门店冲刺</div>
+      <div class="tl-teams" id="tlt-4"><div class="tl-dot" style="background:#a070e8;opacity:0.35" title="授权团队·pending"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·urgent"></div><div class="tl-dot" style="background:#3fcba0;opacity:0.35" title="创意设计·pending"></div><div class="tl-dot" style="background:#f0a040;opacity:1" title="供应链 / 运营·urgent"></div></div>
+    </div>
+    <div class="tl-bdg bdg-wait">待触发</div>
+  </div>
+  <div class="tl-item t-day" id="tli-5" onclick="setStage(5)">
+    <div class="tl-n t-day-n">T日</div>
+    <div class="tl-bd">
+      <div class="tl-ttl">电影上映</div>
+      <div class="tl-sub">供需交汇 · 冲刺峰值</div>
+      <div class="tl-teams" id="tlt-5"><div class="tl-dot" style="background:#a070e8;opacity:0.35" title="授权团队·pending"></div><div class="tl-dot" style="background:#4fa3e8;opacity:1" title="商品企划·urgent"></div><div class="tl-dot" style="background:#3fcba0;opacity:0.35" title="创意设计·pending"></div><div class="tl-dot" style="background:#f0a040;opacity:1" title="供应链 / 运营·urgent"></div></div>
+    </div>
+    <div class="tl-bdg bdg-wait">待触发</div>
+  </div>
+
+  <div class="state-box">
+    <div class="state-lbl">当前状态评估</div>
+    <div class="state-txt" id="stateText">资产积累期 · 第一部已是<span style="color:var(--blue);font-weight:500">高热度国产动画</span>，销售数据沉淀完整，可建立元素资产库</div>
+    <div class="state-win">
+      <div class="pulse-dot"></div>
+      <div class="state-win-txt" id="stateWindow">窗口未开 · 监测阶段</div>
+    </div>
+  </div>
+  <div class="cta-box">
+    <div class="state-lbl">此刻提示</div>
+    <div class="cta-big" id="ctaText">历史数据<br>沉淀期</div>
+  </div>
+</aside>
+
+<!-- CENTER -->
+<main class="pc">
+  <div class="chart-hd">
+    <div>
+      <div class="ch-eye">Signal Strength · 信号强度曲线</div>
+      <div class="ch-ttl" id="chartTitle">第一部余温 · 粉丝期待续作</div>
+      <div class="ch-sub" id="chartSub">第一部完结后粉丝社群讨论持续不散，IP 元素已沉淀，供给侧尚未释放</div>
+    </div>
+    <div class="legend">
+      <div class="leg-row"><div class="leg-line" style="background:var(--blue)"></div>需求侧 · 粉丝期待与讨论</div>
+      <div class="leg-row"><div class="leg-line" style="background:var(--teal)"></div>供给侧 · 官方宣传与物料</div>
+      <div class="leg-row"><div class="leg-dash"></div>行动窗口 · 商品中心可介入</div>
+    </div>
+  </div>
+  <div class="chart-area"><canvas id="signalChart" height="904" style="display: block; box-sizing: border-box; height: 452px; width: 760px;" width="1520"></canvas></div>
+  <div class="status-bar">
+    <div class="st-item"><span class="st-lbl">阶段</span><span class="st-val hi" id="stStage">前作完结后粉丝期待积累</span></div>
+    <div class="st-sep"></div>
+    <div class="st-item"><span class="st-lbl">粉丝期待</span><span class="st-val" id="stDemand">38%</span></div>
+    <div class="st-sep"></div>
+    <div class="st-item"><span class="st-lbl">官方宣传</span><span class="st-val" id="stSupply">8%</span></div>
+    <div class="st-sep"></div>
+    <div class="st-item"><span class="st-lbl">活跃团队</span><span class="st-val" id="stTeams" style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">商品企划</span></div>
+    <div class="win-badge"><div class="pulse-dot"></div><span id="stWindow">窗口未开 · 监测阶段</span></div>
+  </div>
+</main>
+
+<!-- RIGHT -->
+<aside class="pr">
+  <div class="rp-ctx">
+    <div class="rp-ctx-num">商品中心 · 团队分工 ← 当前阶段联动</div>
+    <div class="rp-ctx-name" id="rpName">前作完结后粉丝期待积累</div>
+    <div class="rp-ctx-timing" id="rpTiming">T-12 月 · 第一部余温期</div>
+  </div>
+  <div id="teamCards"><div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(0)">
+        <div class="team-bar" style="background:#a070e8"></div>
+        <div class="team-name">授权团队</div>
+        <div class="team-status ts-pending">本阶段待命</div>
+        <div class="team-chevron " id="chev-0">▾</div>
+      </div>
+      <div class="team-body " id="tb-0">
+        
+          <div class="task-row">
+            <div class="task-dot" style="background:#a070e8"></div>
+            <div class="task-txt ">整理第一部漫画/动画授权架构经验</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#a070e8"></div>
+            <div class="task-txt ">建立制作方与平台方接洽渠道</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#a070e8"></div>
+            <div class="task-txt ">研究国产动画 IP 周边授权惯例</div>
+          </div>
+        <div class="team-win tw-gray">⟶ 监测期 · 历史授权数据沉淀</div>
+      </div>
+    </div><div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(1)">
+        <div class="team-bar" style="background:#4fa3e8"></div>
+        <div class="team-name">商品企划</div>
+        <div class="team-status ts-active">进行中</div>
+        <div class="team-chevron open" id="chev-1">▾</div>
+      </div>
+      <div class="team-body open" id="tb-1">
+        
+          <div class="task-row">
+            <div class="task-dot" style="background:#4fa3e8"></div>
+            <div class="task-txt ">调取第一部各品类销售速度与库存周转</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#4fa3e8"></div>
+            <div class="task-txt ">建立国产动画粉丝品类偏好图谱</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#4fa3e8"></div>
+            <div class="task-txt ">识别名创优势品类与第一部空白机会</div>
+          </div>
+        <div class="team-win tw-blue">⟶ 提前盘点第一部销售数据</div>
+      </div>
+    </div><div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(2)">
+        <div class="team-bar" style="background:#3fcba0"></div>
+        <div class="team-name">创意设计</div>
+        <div class="team-status ts-pending">本阶段待命</div>
+        <div class="team-chevron " id="chev-2">▾</div>
+      </div>
+      <div class="team-body " id="tb-2">
+        
+          <div class="task-row">
+            <div class="task-dot" style="background:#3fcba0"></div>
+            <div class="task-txt ">整理第一部角色 · 配饰 · 色彩 · 场景元素</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#3fcba0"></div>
+            <div class="task-txt ">建立国产动画视觉风格参考库</div>
+          </div>
+        <div class="team-win tw-gray">⟶ 前期 · 第一部元素整理</div>
+      </div>
+    </div><div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(3)">
+        <div class="team-bar" style="background:#f0a040"></div>
+        <div class="team-name">供应链 / 运营</div>
+        <div class="team-status ts-pending">本阶段待命</div>
+        <div class="team-chevron " id="chev-3">▾</div>
+      </div>
+      <div class="team-body " id="tb-3">
+        
+          <div class="task-row">
+            <div class="task-dot" style="background:#f0a040"></div>
+            <div class="task-txt ">研究国产动画粉丝聚集城市与门店分布</div>
+          </div>
+          <div class="task-row">
+            <div class="task-dot" style="background:#f0a040"></div>
+            <div class="task-txt ">初步规划重点城市布局优先级</div>
+          </div>
+        <div class="team-win tw-gray">⟶ 监测期 · 早期调研</div>
+      </div>
+    </div></div>
+  <div class="footnote">所有数据与时间节点均参考第一部公开数据与制作周期，仅用于示意。实际档期、物料投放节奏会因制片方安排而异。</div>
+</aside>
+
+</div>
+<div id="tt" style="left: 840.688px; top: 224.431px; display: block;">
+    <div class="tt-stage">上映前一个月全媒体冲刺</div>
+    <div class="tt-row"><span class="tt-lbl" style="color:#4fa3e8">粉丝期待</span><span class="tt-val" style="color:#4fa3e8">88%</span></div>
+    <div class="tt-row"><span class="tt-lbl" style="color:#3fcba0">官方宣传</span><span class="tt-val" style="color:#3fcba0">82%</span></div>
+    <div class="tt-row"><span class="tt-lbl" style="color:#f0a040">行动窗口</span><span class="tt-val" style="color:#f0a040">75%</span></div>
+    <div class="tt-divider"></div><div class="tt-teams">活跃 · 商品企划 · 供应链 / 运营</div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ═══════════════════════════════════════════
+// DATA: 6 stages (长安三万里 续作)
+// ═══════════════════════════════════════════
+const STAGES = [
+  {
+    label:'前作完结后粉丝期待积累', timing:'T-12 月 · 第一部余温期',
+    chartTitle:'第一部余温 · 粉丝期待续作',
+    chartSub:'第一部完结后粉丝社群讨论持续不散，IP 元素已沉淀，供给侧尚未释放',
+    stateText:'资产积累期 · 第一部已是<span style="color:var(--blue);font-weight:500">高热度国产动画</span>，销售数据沉淀完整，可建立元素资产库',
+    window:'窗口未开 · 监测阶段', cta:'历史数据<br>沉淀期'
+  },
+  {
+    label:'官方确认续作企划，概念美术首发', timing:'T-9 月 · 制作启动 · 授权信号触发',
+    chartTitle:'官宣信号触发 · 授权窗口开启',
+    chartSub:'制作方发布概念美术与主创访谈，授权窗口正式打开，供给侧首次释放专属物料',
+    stateText:'官宣启动 · 授权窗口正式打开，<span style="color:var(--amber);font-weight:500">越早接洽越有谈判空间</span>，第一部授权案例可直接参考',
+    window:'窗口开启 · 授权团队即刻行动', cta:'授权窗口<br>正式开启'
+  },
+  {
+    label:'定档预告与首支宣传物料发布', timing:'T-6 月 · 当前阶段',
+    chartTitle:'定档预告释放 · 品类企划主力期',
+    chartSub:'定档预告与首支宣传物料发布，粉丝热议升温，品类企划与设计研发进入最佳启动窗口',
+    stateText:'定档预告发布 · 品类企划与设计研发进入<span style="color:var(--teal);font-weight:500">最佳启动窗口</span>。有第一部销售数据作参考，可更精准规划核心品类',
+    window:'窗口进行中 · 企划+设计 双线启动', cta:'品类企划<br>启动窗口'
+  },
+  {
+    label:'主创发布会与物料投放加速', timing:'T-3 月 · 密集投放期 · 打样锁定',
+    chartTitle:'物料投放密集期 · 设计打样并行',
+    chartSub:'主创发布会与多轮物料投放，粉丝期待大幅拉升，设计须定稿、供应链必须立即接管打样排期',
+    stateText:'物料密集投放期 · <span style="color:var(--amber);font-weight:500">设计定稿与打样并行</span>，供应链立即接管，与授权方建立每周物料审批机制',
+    window:'窗口收紧 · 打样排期立即锁定', cta:'设计打样<br>并行期'
+  },
+  {
+    label:'上映前一个月全媒体冲刺', timing:'T-1 月 · 门店冲刺期',
+    chartTitle:'全网爆发期 · 门店上线最后窗口',
+    chartSub:'预告片密集投放，粉丝期待达峰，门店陈列与库存必须在此阶段全部到位',
+    stateText:'门店冲刺期 · 上映前 1 个月 · <span style="color:var(--amber);font-weight:500">门店陈列与库存确认</span>最后窗口，错过则无法赶上上映流量',
+    window:'窗口即将关闭 · 门店冲刺', cta:'门店上线<br>最后窗口'
+  },
+  {
+    label:'T 日 · 电影上映', timing:'T 日 · 供需交汇冲刺峰值',
+    chartTitle:'T 日 · 供需交汇 · 全渠道上线',
+    chartSub:'上映当日粉丝与新观众双爆发，所有团队进入执行收尾，商品全面上线，实时数据监测补货',
+    stateText:'T 日 · 上映日 · 所有商品全渠道上线，<span style="color:var(--amber);font-weight:500">数据监测</span>实时响应热销品补货',
+    window:'窗口 · 全员执行冲刺', cta:'全员执行<br>T 日冲刺'
+  },
+];
+
+// ═══════════════════════════════════════════
+// TEAMS × STAGES data
+// ═══════════════════════════════════════════
+const TEAMS = [
+  { id:'auth',   name:'授权团队',       color:'#a070e8' },
+  { id:'merch',  name:'商品企划',       color:'#4fa3e8' },
+  { id:'design', name:'创意设计',       color:'#3fcba0' },
+  { id:'ops',    name:'供应链 / 运营',  color:'#f0a040' },
+];
+
+const TEAM_DATA = {
+  auth: [
+    // stage 0
+    { status:'pending', winCls:'tw-gray', win:'监测期 · 历史授权数据沉淀',
+      tasks:['整理第一部漫画/动画授权架构经验','建立制作方与平台方接洽渠道','研究国产动画 IP 周边授权惯例'] },
+    // stage 1
+    { status:'urgent', winCls:'tw-purple', win:'官宣后立即启动 · 越早越好',
+      tasks:['正式启动制作方授权评估','明确周边商品授权范围与排他性条款','参考第一部授权案例锁定谈判节奏','提交授权可行性报告'] },
+    // stage 2
+    { status:'active', winCls:'tw-purple', win:'定档预告意味授权谈判进入关键期',
+      tasks:['推进授权谈判，锁定合作协议框架','明确授权范围：品类 · 渠道 · 地区','与第一部授权方协调版权衔接','输出授权清单给商品企划团队'] },
+    // stage 3
+    { status:'urgent', winCls:'tw-purple', win:'物料密集期 · 授权协议须签署',
+      tasks:['授权协议最终签署','向打样团队输出授权使用规范','协调主创物料对齐授权许可'] },
+    // stage 4
+    { status:'pending', winCls:'tw-gray', win:'执行监督 · 授权已到位',
+      tasks:['授权合规监督','处理临时授权问题','确认上线商品授权覆盖'] },
+    // stage 5
+    { status:'pending', winCls:'tw-gray', win:'持续监督现场执行',
+      tasks:['T 日上线授权合规复查','处理现场授权反馈','记录异常用于后续迭代'] },
+  ],
+  merch: [
+    // stage 0
+    { status:'active', winCls:'tw-blue', win:'提前盘点第一部销售数据',
+      tasks:['调取第一部各品类销售速度与库存周转','建立国产动画粉丝品类偏好图谱','识别名创优势品类与第一部空白机会'] },
+    // stage 1
+    { status:'active', winCls:'tw-blue', win:'官宣后启动品类规划初稿',
+      tasks:['制定品类企划初稿（参考第一部结构）','定义核心品类矩阵：毛绒 · 文具 · 帆布袋 · 香氛 · 挂件 · 立牌','与授权团队确认授权范围对接'] },
+    // stage 2
+    { status:'urgent', winCls:'tw-blue', win:'定档预告 · 立即锁定品类与库存',
+      tasks:['核心品类锁定：毛绒(80%) · 文具(50%) · 帆布袋(60%) · 香氛(40%) · 挂件(50%)','参考第一部销售数据精准规划库存比例','三波上线：上映前 1 月 · 前 1 周 · 当日','LAND / 大店 / 常规店 差异化铺货方案'] },
+    // stage 3
+    { status:'active', winCls:'tw-blue', win:'物料密集期 · 持续优化',
+      tasks:['跟进打样进度与设计还原度','协调供应链与授权合规对齐','根据新物料微调上线节奏'] },
+    // stage 4
+    { status:'urgent', winCls:'tw-blue', win:'门店冲刺 · 库存最终确认',
+      tasks:['确认到货计划与门店备货量','协调补货机制与预警库存线','核对上线 SKU 清单'] },
+    // stage 5
+    { status:'urgent', winCls:'tw-amber', win:'T 日 · 实时数据监控',
+      tasks:['监控各 SKU 实时销售数据','触发热销品紧急补货','记录爆款与滞销 SKU 供复盘'] },
+  ],
+  design: [
+    // stage 0
+    { status:'pending', winCls:'tw-gray', win:'前期 · 第一部元素整理',
+      tasks:['整理第一部角色 · 配饰 · 色彩 · 场景元素','建立国产动画视觉风格参考库'] },
+    // stage 1
+    { status:'active', winCls:'tw-teal', win:'官宣概念美术 · 启动研究',
+      tasks:['解析官方概念美术方向与续作 IP 调性','识别续作新增视觉元素','制定 2-3 个设计风格提案'] },
+    // stage 2
+    { status:'active', winCls:'tw-teal', win:'当前 · 设计方向落地',
+      tasks:['启动 3-4 个设计方向提案，快速迭代','建立设计参考库（角色 · 配饰 · 色彩 · 场景）','输出主图案：水墨 · 古风元素 · 续作新角色','等待打样设计文件输出'] },
+    // stage 3
+    { status:'urgent', winCls:'tw-teal', win:'设计定稿 · 配合打样',
+      tasks:['完成设计定稿，输出生产文件','跟进打样色差与工艺还原','提供修改意见，完成设计确认'] },
+    // stage 4
+    { status:'pending', winCls:'tw-gray', win:'设计已完成 · 转入执行配合',
+      tasks:['支持门店陈列视觉物料','制作上映宣传素材（H5 / 海报 / 包材）'] },
+    // stage 5
+    { status:'pending', winCls:'tw-gray', win:'现场执行配合',
+      tasks:['T 日视觉物料最终确认','记录产品实物呈现效果'] },
+  ],
+  ops: [
+    // stage 0
+    { status:'pending', winCls:'tw-gray', win:'监测期 · 早期调研',
+      tasks:['研究国产动画粉丝聚集城市与门店分布','初步规划重点城市布局优先级'] },
+    // stage 1
+    { status:'pending', winCls:'tw-gray', win:'官宣后启动供应链预研',
+      tasks:['接触潜在供应商，了解国产动画授权生产经验','初步评估各品类生产可行性与交期'] },
+    // stage 2
+    { status:'pending', winCls:'tw-gray', win:'本阶段待命 · 准备接收打样计划',
+      tasks:['调取第一部供应链数据，评估打样周期与产能','初步接触代工厂，说明预期品类与数量','预判上线节奏，为供应链预留充足打样时间'] },
+    // stage 3
+    { status:'urgent', winCls:'tw-amber', win:'物料密集期 · 打样立即启动',
+      tasks:['正式筛选代工厂，确保打样经验与产能','锁定打样排期（从上映日往前 6-8 周）','与授权方建立每周物料审批机制','规划全渠道陈列：LAND 沉浸主题区 · 大店重点 · 常规店联动'] },
+    // stage 4
+    { status:'urgent', winCls:'tw-amber', win:'门店冲刺 · 上线最后窗口',
+      tasks:['上海首发门店陈列方案确认','MINISO LAND 与大店制作沉浸陈列','到货验收与门店分发','联动小红书 / B 站达人种草与门店打卡方案'] },
+    // stage 5
+    { status:'urgent', winCls:'tw-amber', win:'T 日 · 全力执行',
+      tasks:['全渠道商品同步上线','实时监控库存与补货需求','MINISO LAND 打卡陈列落地执行','收集上映日销售数据供复盘'] },
+  ],
+};
+
+// chart data
+const demandData = [38,52,68,78,88,96];
+const supplyData = [8, 22,42,65,82,94];
+const windowData = [null,null,30,55,75,90];
+const xLabels    = ['01·余温','02·官宣','03·定档','04·主创','05·冲刺','T日'];
+
+let activeStage = 2;
+let chartInst;
+
+// ── Build timeline team dots ──
+function buildTimelineDots() {
+  for (let si = 0; si < 6; si++) {
+    const el = document.getElementById('tlt-' + si);
+    let html = '';
+    TEAMS.forEach(team => {
+      const st = TEAM_DATA[team.id][si].status;
+      const opacity = st === 'locked' ? 0.2 : st === 'pending' ? 0.35 : 1;
+      html += `<div class="tl-dot" style="background:${team.color};opacity:${opacity}" title="${team.name}·${st}"></div>`;
+    });
+    el.innerHTML = html;
+  }
+}
+
+// ── Render right panel team cards ──
+function renderTeamCards(si) {
+  const statusLabel = { urgent:'立即启动', active:'进行中', pending:'本阶段待命', locked:'未开始' };
+  const statusCls   = { urgent:'ts-urgent', active:'ts-active', pending:'ts-pending', locked:'ts-locked' };
+  let html = '';
+  TEAMS.forEach((team, ti) => {
+    const d = TEAM_DATA[team.id][si];
+    const lbl = statusLabel[d.status];
+    const cls = statusCls[d.status];
+    const isOpen = d.status === 'urgent' || d.status === 'active';
+    html += `<div class="team-section">
+      <div class="team-hd" onclick="toggleTeam(${ti})">
+        <div class="team-bar" style="background:${team.color}"></div>
+        <div class="team-name">${team.name}</div>
+        <div class="team-status ${cls}">${lbl}</div>
+        <div class="team-chevron ${isOpen?'open':''}" id="chev-${ti}">▾</div>
+      </div>
+      <div class="team-body ${isOpen?'open':''}" id="tb-${ti}">
+        ${d.tasks.map(t => `
+          <div class="task-row">
+            <div class="task-dot" style="background:${team.color}"></div>
+            <div class="task-txt ${d.status==='locked'?'dim':''}">${t}</div>
+          </div>`).join('')}
+        ${d.win ? `<div class="team-win ${d.winCls}">⟶ ${d.win}</div>` : ''}
+      </div>
+    </div>`;
+  });
+  document.getElementById('teamCards').innerHTML = html;
+}
+
+function toggleTeam(ti) {
+  const body = document.getElementById('tb-' + ti);
+  const chev = document.getElementById('chev-' + ti);
+  const open = body.classList.toggle('open');
+  chev.classList.toggle('open', open);
+}
+
+// ── Chart plugins ──
+const stageLinePlugin = {
+  id: 'stageLine',
+  afterDraw(chart) {
+    const { ctx, chartArea: ca, scales } = chart;
+    const x = scales.x.getPixelForValue(activeStage);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(240,160,64,0.45)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(x, ca.top); ctx.lineTo(x, ca.bottom); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#f0a040';
+    ctx.beginPath(); ctx.arc(x, ca.bottom + 5, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+};
+
+const windowFillPlugin = {
+  id: 'windowFill',
+  beforeDatasetsDraw(chart) {
+    const { ctx, chartArea: ca, scales } = chart;
+    const x2 = scales.x.getPixelForValue(2);
+    const x5 = scales.x.getPixelForValue(5);
+    ctx.save();
+    ctx.fillStyle = 'rgba(240,160,64,0.03)';
+    ctx.fillRect(x2, ca.top, x5 - x2, ca.bottom - ca.top);
+    ctx.strokeStyle = 'rgba(240,160,64,0.14)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x2, ca.top); ctx.lineTo(x2, ca.bottom); ctx.stroke();
+    ctx.restore();
+  }
+};
+
+
+// 新增 · 当前阶段标记插件
+const currentStagePlugin = {
+  id: 'currentStage',
+  afterDraw(chart) {
+    const { ctx, chartArea: ca, scales } = chart;
+    if (typeof activeStage === 'undefined' || !scales.x) return;
+    const x = scales.x.getPixelForValue(activeStage);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(240, 160, 64, 0.2)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x, ca.top);
+    ctx.lineTo(x, ca.bottom);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(240, 160, 64, 0.3)';
+    ctx.beginPath();
+    ctx.arc(x, ca.bottom + 10, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f0a040';
+    ctx.beginPath();
+    ctx.arc(x, ca.bottom + 10, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = 'bold 11px DM Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('当前', x, ca.bottom + 28);
+    ctx.restore();
+  }
+};
+
+// ── Build chart ──
+function buildChart() {
+  chartInst = new Chart(document.getElementById('signalChart'), {
+    type: 'line',
+    plugins: [stageLinePlugin, windowFillPlugin, currentStagePlugin],
+    data: {
+      labels: xLabels,
+      datasets: [
+        { label:'需求侧', data:demandData, borderColor:'#4fa3e8', backgroundColor:'rgba(79,163,232,0.05)', borderWidth:2.5, tension:0.42, fill:true, pointRadius:5, pointHoverRadius:7, pointBackgroundColor:'#4fa3e8', pointBorderColor:'#0b0d11', pointBorderWidth:2 },
+        { label:'供给侧', data:supplyData, borderColor:'#3fcba0', backgroundColor:'rgba(63,203,160,0.04)', borderWidth:2.5, tension:0.42, fill:true, pointRadius:5, pointHoverRadius:7, pointBackgroundColor:'#3fcba0', pointBorderColor:'#0b0d11', pointBorderWidth:2 },
+        { label:'行动窗口', data:windowData, borderColor:'#f0a040', backgroundColor:'transparent', borderWidth:2, borderDash:[6,4], tension:0.42, fill:false, pointRadius:4, pointHoverRadius:6, pointBackgroundColor:'#f0a040', pointBorderColor:'#0b0d11', pointBorderWidth:2 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      plugins: {
+        legend: { display:false },
+        tooltip: { enabled:false, external:customTooltip }
+      },
+      scales: {
+        x: { grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#555250', font:{ family:"'DM Mono',monospace", size:10 } }, border:{ color:'rgba(255,255,255,0.07)' } },
+        y: { min:0, max:100, grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#555250', font:{ family:"'DM Mono',monospace", size:10 }, callback:v=>v+'%', stepSize:20 }, border:{ color:'rgba(255,255,255,0.07)' } }
+      },
+      animation: { duration:500, easing:'easeInOutQuart' },
+      onClick(e) {
+        const pts = chartInst.getElementsAtEventForMode(e, 'nearest', { intersect:false }, false);
+        if (pts.length) setStage(pts[0].index);
+      }
+    }
+  });
+}
+
+function customTooltip(ctx) {
+  const tt = document.getElementById('tt');
+  if (ctx.tooltip.opacity === 0) { tt.style.display = 'none'; return; }
+  const i = ctx.tooltip.dataPoints[0].dataIndex;
+  const w = windowData[i];
+  const activeTeams = TEAMS.filter(t => {
+    const s = TEAM_DATA[t.id][i].status;
+    return s === 'urgent' || s === 'active';
+  }).map(t => t.name).join(' · ');
+  tt.innerHTML = `
+    <div class="tt-stage">${STAGES[i].label}</div>
+    <div class="tt-row"><span class="tt-lbl" style="color:#4fa3e8">粉丝期待</span><span class="tt-val" style="color:#4fa3e8">${demandData[i]}%</span></div>
+    <div class="tt-row"><span class="tt-lbl" style="color:#3fcba0">官方宣传</span><span class="tt-val" style="color:#3fcba0">${supplyData[i]}%</span></div>
+    ${w !== null ? `<div class="tt-row"><span class="tt-lbl" style="color:#f0a040">行动窗口</span><span class="tt-val" style="color:#f0a040">${w}%</span></div>` : ''}
+    ${activeTeams ? `<div class="tt-divider"></div><div class="tt-teams">活跃 · ${activeTeams}</div>` : ''}
+  `;
+  const rect = ctx.chart.canvas.getBoundingClientRect();
+  let left = rect.left + ctx.tooltip.x + 16;
+  let top  = rect.top  + ctx.tooltip.y - 10;
+  if (left + 180 > window.innerWidth) left = rect.left + ctx.tooltip.x - 185;
+  tt.style.left = left + 'px';
+  tt.style.top  = top  + 'px';
+  tt.style.display = 'block';
+}
+
+// ── MAIN: set stage (all panels sync) ──
+function setStage(idx) {
+  activeStage = idx;
+  const s = STAGES[idx];
+
+  // LEFT: timeline highlight
+  for (let i = 0; i < 6; i++) {
+    document.getElementById('tli-' + i).classList.toggle('active', i === idx);
+  }
+  document.getElementById('stateText').innerHTML  = s.stateText;
+  document.getElementById('stateWindow').textContent = s.window;
+  document.getElementById('ctaText').innerHTML    = s.cta;
+
+  // CENTER: header & status bar
+  document.getElementById('chartTitle').textContent = s.chartTitle;
+  document.getElementById('chartSub').textContent   = s.chartSub;
+  document.getElementById('stStage').textContent    = s.label;
+  document.getElementById('stDemand').textContent   = demandData[idx] + '%';
+  document.getElementById('stSupply').textContent   = supplyData[idx] + '%';
+  document.getElementById('stWindow').textContent   = s.window;
+
+  const activeTeamNames = TEAMS
+    .filter(t => { const st = TEAM_DATA[t.id][idx].status; return st === 'urgent' || st === 'active'; })
+    .map(t => t.name);
+  document.getElementById('stTeams').textContent = activeTeamNames.length ? activeTeamNames.join(' · ') : '—';
+
+  // RIGHT: team cards
+  document.getElementById('rpName').textContent   = s.label;
+  document.getElementById('rpTiming').textContent = s.timing;
+  renderTeamCards(idx);
+
+  // redraw chart line
+  if (chartInst) chartInst.update();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildTimelineDots();
+  buildChart();
+  setStage(2);
+});
+</script>
+
+<script>
+// 新增 · iframe 外层页签恢复状态时调用
+window.__activeStage = typeof activeStage === 'undefined' ? 2 : activeStage;
+window.__resizeMinisoChart = function() {
+  if (typeof chartInst !== 'undefined' && chartInst) chartInst.resize();
+};
+if (typeof setStage === 'function') {
+  const __minisoOriginalSetStage = setStage;
+  setStage = function(idx) {
+    window.__activeStage = idx;
+    __minisoOriginalSetStage(idx);
+    window.parent && window.parent.postMessage({ type: 'MINISO_STAGE_CHANGED', pageTitle: document.title, stage: idx }, '*');
+  };
+}
+window.addEventListener('message', (event) => {
+  if (!event.data || event.data.type !== 'MINISO_SET_STAGE') return;
+  if (typeof setStage === 'function') setStage(event.data.stage || 0);
+  window.__resizeMinisoChart();
+});
+</script>
+
+</body></html>

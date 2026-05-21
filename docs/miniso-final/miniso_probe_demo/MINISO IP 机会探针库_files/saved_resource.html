@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<!-- saved from url=(0012)about:srcdoc -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IP 机会探针库 · MINISO Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   FEISHU DARK · 1920×1080 · SCALE TO FIT
+   ============================================================ */
+:root{
+  --bg:#0b0d11;
+  --panel:rgba(15,20,34,0.45);
+  --line:rgba(255,255,255,0.07);
+  --line-hi:rgba(255,255,255,0.12);
+  --line-active:rgba(255,255,255,0.15);
+  --text-1:rgba(255,255,255,0.96);
+  --text-2:rgba(255,255,255,0.66);
+  --text-3:rgba(255,255,255,0.42);
+  --text-4:rgba(255,255,255,0.28);
+
+  --amber:#f0a040;
+  --blue:#4fa3e8;
+  --teal:#3fcba0;
+  --violet:#9F6FF1;
+  --rose:#FF6B8B;
+  --cyan:#00B4D8;
+  --red:#FF3D5A;
+
+  --font-mono:"DM Mono","SF Mono","JetBrains Mono",Menlo,Consolas,"PingFang SC",monospace;
+  --font-body:"Space Grotesk","Inter","SF Pro Display",-apple-system,system-ui,"PingFang SC","HarmonyOS Sans SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+
+  /* elastic bouncy curve for premium feel */
+  --ease-bounce:cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#000;color:var(--text-1);font-family:var(--font-body);overflow:hidden;height:100%}
+button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+
+#viewport{
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:#05060a;
+}
+#stage{
+  width:1920px;height:1080px;
+  position:relative;transform-origin:center center;
+  background:
+    radial-gradient(ellipse 1400px 900px at 18% 14%, rgba(79,163,232,0.05), transparent 60%),
+    radial-gradient(ellipse 1100px 800px at 88% 86%, rgba(240,160,64,0.04), transparent 60%),
+    radial-gradient(ellipse 900px 700px at 55% 50%, rgba(63,203,160,0.03), transparent 65%),
+    #0b0d11;
+  overflow:hidden;
+}
+#stage::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(1px 1px at 25% 30%, rgba(255,255,255,0.03) 50%, transparent 51%),
+    radial-gradient(1px 1px at 75% 60%, rgba(255,255,255,0.025) 50%, transparent 51%),
+    radial-gradient(1px 1px at 50% 85%, rgba(255,255,255,0.03) 50%, transparent 51%);
+  background-size:160px 160px,200px 200px,240px 240px;
+  opacity:.4;
+}
+
+/* ============================================================
+   HEADER · 54px · top 20px · L/R 40px
+   ============================================================ */
+.header{
+  position:absolute;left:40px;right:40px;top:20px;height:54px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  z-index:10;
+}
+.header .l{
+  display:inline-flex;align-items:center;gap:12px;
+  font-family:var(--font-mono);
+  font-size:13px;color:var(--text-2);
+  letter-spacing:.22em;font-weight:700;
+  text-transform:uppercase;
+}
+.header .l .dot{
+  width:9px;height:9px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 0 4px rgba(255,61,90,0.18),0 0 10px rgba(255,61,90,0.6);
+  animation:pulse 2.4s infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(255,61,90,0.18),0 0 8px rgba(255,61,90,0.5)}
+  50%{box-shadow:0 0 0 8px rgba(255,61,90,0.06),0 0 18px rgba(255,61,90,0.9)}
+}
+.header .r{
+  display:inline-flex;align-items:center;gap:24px;
+  font-family:var(--font-mono);
+  font-size:12px;color:var(--text-3);
+  letter-spacing:.12em;
+}
+.header .r .brand{color:var(--text-1);font-weight:700;letter-spacing:.18em}
+.header .r .sep{width:1px;height:14px;background:var(--text-4);opacity:.7}
+.header .r b{color:var(--text-2);font-weight:600}
+
+/* ============================================================
+   GRID · 2 rows × 3 cols · ~600×220 cards · centered vertically
+   columns use 1fr so cards adapt to track and never overflow
+   ============================================================ */
+.grid-wrap{
+  position:absolute;left:48px;right:48px;
+  top:94px;                                  /* 20 + 54 + 20 */
+  bottom:100px;                              /* 60 footer + 20 gap + 20 bottom */
+  display:grid;place-items:center;
+}
+.grid{
+  width:100%;
+  max-width:1824px;                          /* 1920 - 48*2 */
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  grid-template-rows:repeat(2, 220px);
+  gap:20px;
+}
+
+/* ============================================================
+   CARD · 600×220 · 28px padding · 12 radius
+   ============================================================ */
+.card{
+  position:relative;
+  height:220px;
+  padding:28px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:12px;
+  cursor:pointer;
+  overflow:hidden;
+
+  transition:
+    background .12s ease,
+    border-color .12s ease,
+    box-shadow .12s ease,
+    transform .12s var(--ease-bounce);
+
+  /* enter animation */
+  opacity:0;
+  transform:translateY(20px) scale(.98);
+  animation:cardIn .3s var(--ease-bounce) forwards;
+}
+@keyframes cardIn{
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+/* stagger: row1 = 0/130/260; row2 = 130/260/390 */
+.card:nth-child(1){animation-delay:0ms}
+.card:nth-child(2){animation-delay:130ms}
+.card:nth-child(3){animation-delay:260ms}
+.card:nth-child(4){animation-delay:130ms}
+.card:nth-child(5){animation-delay:260ms}
+.card:nth-child(6){animation-delay:390ms}
+
+/* left accent bar (hidden by default) */
+.card::before{
+  content:"";
+  position:absolute;left:0;top:0;bottom:0;
+  width:0;
+  background:var(--accent);
+  border-radius:12px 0 0 12px;
+  transition:width .18s var(--ease-bounce);
+}
+
+/* hover */
+.card:hover{
+  background:rgba(255,255,255,0.06);
+  border-color:var(--line-hi);
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  transform:scale(1.02);
+}
+.card:hover::before{ width:3px; }
+
+/* click / active */
+.card.is-tap{
+  background:rgba(255,255,255,0.08);
+  border-color:var(--line-active);
+  box-shadow:0 12px 32px rgba(0,0,0,0.6);
+  transform:scale(1.03);
+  transition:
+    background .08s ease,
+    border-color .08s ease,
+    box-shadow .08s ease,
+    transform .08s var(--ease-bounce);
+}
+.card.is-tap::before{ width:3px; }
+
+/* ── card internal ── */
+.card .tag{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--text-3);
+  letter-spacing:.14em;
+  font-weight:700;
+  text-transform:uppercase;
+  line-height:1.2;
+}
+.card .tag::before{
+  content:"";
+  display:inline-block;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent);
+  margin-right:10px;vertical-align:1px;
+  box-shadow:0 0 6px var(--accent);
+  opacity:.9;
+}
+.card .name{
+  margin:6px 0 0;
+  font-family:var(--font-body);
+  font-size:28px;
+  font-weight:600;
+  color:var(--text-1);
+  line-height:1.2;
+  letter-spacing:-0.005em;
+}
+.card .desc{
+  margin:10px 0 0;
+  font-family:var(--font-body);
+  font-size:13px;
+  color:var(--text-2);
+  line-height:1.5;
+  max-width:380px;     /* keep desc clear of the big number block */
+}
+
+/* stock pinned bottom-right */
+.card .stock{
+  position:absolute;
+  right:28px;bottom:28px;
+  text-align:right;
+}
+.card .stock .num{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:44px;
+  font-weight:700;
+  color:var(--accent);
+  line-height:1;
+  letter-spacing:-0.01em;
+}
+.card .stock .unit{
+  display:block;
+  margin-top:4px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--text-3);
+  letter-spacing:.14em;
+  font-weight:600;
+}
+
+/* hover arrow — slips in above the big number on hover */
+.card .arrow{
+  position:absolute;
+  right:32px;top:50%;
+  transform:translateY(-50%) translateX(-4px);
+  font-family:var(--font-body);
+  font-size:24px;font-weight:500;
+  color:var(--accent);
+  opacity:0;
+  transition:opacity .1s ease, transform .18s var(--ease-bounce);
+  pointer-events:none;
+}
+.card:hover .arrow{
+  opacity:1;
+  transform:translateY(-50%) translateX(0);
+}
+
+/* per-card accent */
+.card[data-cat="1"]{--accent:var(--blue)}
+.card[data-cat="2"]{--accent:var(--violet)}
+.card[data-cat="3"]{--accent:var(--teal)}
+.card[data-cat="4"]{--accent:var(--amber)}
+.card[data-cat="5"]{--accent:var(--rose)}
+.card[data-cat="6"]{--accent:var(--cyan)}
+
+/* ============================================================
+   FOOTER · 60px · bottom 20px · L/R 40px
+   ============================================================ */
+.footer{
+  position:absolute;left:0;right:0;bottom:20px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 40px 0;
+  border-top:1px solid var(--line);
+}
+.footer .note{
+  font-family:var(--font-body);
+  font-size:13px;
+  color:var(--text-3);
+  line-height:1.5;
+  transition:color .2s ease;
+}
+.footer .note.is-loading{ color:var(--accent,var(--amber)); }
+.footer .note .acc{ color:var(--text-1);font-weight:600; }
+
+.footer .btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:6px;
+  font-family:var(--font-body);
+  font-size:12px;font-weight:500;
+  color:var(--text-2);
+  background:transparent;
+  transition:.15s ease;
+}
+.footer .btn:hover{
+  background:rgba(255,255,255,0.06);
+  color:var(--amber);
+  border-color:rgba(240,160,64,0.4);
+}
+.footer .btn .arr{font-size:14px}
+
+</style>
+
+<style>
+/* 新增 · 融合版 iframe 适配 */
+html,body{width:100%;height:100%;overflow:hidden}
+#viewport{position:fixed;inset:0}
+</style>
+</head>
+<body>
+
+<div id="viewport">
+<div id="stage" style="transform: scale(0.683333);">
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="l">
+      <span class="dot"></span>
+      <span>SIGNAL · IP 提前布局监测</span>
+    </div>
+    <div class="r">
+      <span class="brand">MINISO COMMAND CENTER</span>
+      <span class="sep"></span>
+      <span>当前库存：<b>200+</b></span>
+      <span class="sep"></span>
+      <span>更新于：<b>2026-05</b></span>
+    </div>
+  </header>
+
+  <!-- ============ GRID ============ -->
+  <div class="grid-wrap">
+    <main class="grid">
+
+      <!-- 1 · 影视作品 / 蓝 -->
+      <article class="card" data-cat="1" data-name="影视作品">
+        <span class="tag">01 · CINEMA</span>
+        <h2 class="name">影视作品</h2>
+        <p class="desc">电影定档 · 剧集新季 · 演员定角</p>
+        <div class="stock"><span class="num">42</span><span class="unit">个机会</span></div>
+        <span class="arrow">→</span>
+      </article>
+
+      <!-- 2 · 动漫 / 游戏 / 紫 -->
+      <article class="card" data-cat="2" data-name="动漫 / 游戏">
+        <span class="tag">02 · ANIMATION</span>
+        <h2 class="name">动漫 / 游戏</h2>
+        <p class="desc">新季首播 · 发售档期 · IP 周年</p>
+        <div class="stock"><span class="num">28</span><span class="unit">个机会</span></div>
+        <span class="arrow">→</span>
+      </article>
+
+      <!-- 3 · 实体线下 / 绿 -->
+      <article class="card" data-cat="3" data-name="实体线下">
+        <span class="tag">03 · EXPERIENCE</span>
+        <h2 class="name">实体线下</h2>
+        <p class="desc">园区建设 · 展览巡展 · 文化节</p>
+        <div class="stock"><span class="num">19</span><span class="unit">个机会</span></div>
+        <span class="arrow">→</span>
+      </article>
+
+      <!-- 4 · 周年纪念 / 金 -->
+      <article class="card" data-cat="4" data-name="周年纪念">
+        <span class="tag">04 · MILESTONE</span>
+        <h2 class="name">周年纪念</h2>
+        <p class="desc">角色周年 · IP 成立纪念 · 节点时刻</p>
+        <div class="stock"><span class="num">11</span><span class="unit">个机会</span></div>
+        <span class="arrow">→</span>
+      </article>
+
+      <!-- 5 · 文化 / 艺术 / 玫瑰 -->
+      <article class="card" data-cat="5" data-name="文化 / 艺术">
+        <span class="tag">05 · CULTURE</span>
+        <h2 class="name">文化 / 艺术</h2>
+        <p class="desc">美术展 · 设计展 · 音乐节</p>
+        <div class="stock"><span class="num">15</span><span class="unit">个机会</span></div>
+        <span class="arrow">→</span>
+      </article>
+
+      <!-- 6 · 热点 / 话题 / 青绿 -->
+      <article class="card" data-cat="6" data-name="热点 / 话题">
+        <span class="tag">06 · TRENDING</span>
+        <h2 class="name">热点 / 话题</h2>
+        <p class="desc">社媒热议 · 明星动向 · 舆情风向</p>
+        <div class="stock"><span class="num">8</span><span class="unit">个机会</span></div>
+        <span class="arrow">→</span>
+      </article>
+
+    </main>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="note" id="footNote" style="--accent: #9F6FF1;">选择分类，查看当前阶段的信号强度与商品化窗口</div>
+    <button class="btn" id="todoBtn">
+      我的行动清单 <span class="arr">→</span>
+    </button>
+  </footer>
+
+</div>
+</div>
+
+<script>
+/* ============================================================
+   SCALE-TO-FIT 1920×1080
+   ============================================================ */
+(function(){
+  const stage = document.getElementById('stage');
+  function fit(){
+    const w = window.innerWidth, h = window.innerHeight;
+    stage.style.transform = `scale(${Math.min(w/1920, h/1080)})`;
+  }
+  window.addEventListener('resize', fit, {passive:true});
+  fit();
+})();
+
+/* ============================================================
+   CARD CLICK · scale up + shadow deepen + 200ms hold
+   ============================================================ */
+const ACCENTS = {
+  1:"#4fa3e8", 2:"#9F6FF1", 3:"#3fcba0",
+  4:"#f0a040", 5:"#FF6B8B", 6:"#00B4D8"
+};
+const note = document.getElementById('footNote');
+const defaultNote = note.textContent;
+let resetTimer = null;
+
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    // clear any prior tap state on other cards
+    document.querySelectorAll('.card.is-tap').forEach(c=>{
+      if (c !== card) c.classList.remove('is-tap');
+    });
+    card.classList.add('is-tap');
+
+    const cat = card.dataset.cat;
+    const name = card.dataset.name;
+    const color = ACCENTS[cat];
+
+    // footer note swap
+    note.style.setProperty('--accent', color);
+    note.classList.add('is-loading');
+    note.innerHTML = `加载中 · <span class="acc" style="color:${color}">${name}</span>`;
+
+    // hold the press feel for 200ms, then ease back to hover state
+    clearTimeout(resetTimer);
+    setTimeout(()=>{
+      card.classList.remove('is-tap');
+    }, 200);
+
+    // restore note after a moment
+    resetTimer = setTimeout(()=>{
+      note.classList.remove('is-loading');
+      note.textContent = defaultNote;
+    }, 1000);
+  });
+});
+
+/* footer button */
+document.getElementById('todoBtn').addEventListener('click', ()=>{
+  clearTimeout(resetTimer);
+  note.classList.add('is-loading');
+  note.style.setProperty('--accent', '#f0a040');
+  note.innerHTML = `加载中 · <span class="acc" style="color:#f0a040">我的行动清单</span>`;
+  resetTimer = setTimeout(()=>{
+    note.classList.remove('is-loading');
+    note.textContent = defaultNote;
+  }, 1000);
+});
+</script>
+
+
+</body></html>
