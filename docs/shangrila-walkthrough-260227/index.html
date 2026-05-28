@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>香格里拉走进-260227-update</title>
+  <style>
+    :root { color-scheme: dark; --chrome: rgba(12,18,32,.72); --chrome-hover: rgba(255,255,255,.18); }
+    * { box-sizing: border-box; }
+    html, body { width:100%; height:100%; margin:0; overflow:hidden; background:#10131a; font-family:Arial,"PingFang SC","Microsoft YaHei",sans-serif; }
+    body { display:grid; place-items:center; }
+    #deck { position:relative; width:min(100vw, calc(100vh * 16 / 9)); height:min(100vh, calc(100vw * 9 / 16)); background:#000; box-shadow:0 22px 80px rgba(0,0,0,.5); }
+    .slide { position:absolute; inset:0; display:none; margin:0; width:100%; height:100%; background:#fff; }
+    .slide.active { display:block; }
+    .slide-bg { display:block; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; image-rendering:auto; }
+    .media-overlay { position:absolute; display:block; object-fit:fill; z-index:2; }
+    video.media-overlay { background:#000; }
+    .background-video { inset:0; z-index:1; filter:brightness(.82) saturate(1.04) contrast(1.02); }
+    .slide:has(.background-video) .poster-fallback { position:absolute; inset:0; z-index:3; pointer-events:none; }
+    .slide:has(.background-video)::after { content:""; position:absolute; inset:0; z-index:2; pointer-events:none; background:radial-gradient(circle at 50% 48%, rgba(116,134,196,.08), rgba(23,30,50,.16) 48%, rgba(7,11,23,.34) 100%), linear-gradient(180deg, rgba(8,12,24,.24), rgba(16,22,42,.1) 42%, rgba(4,7,16,.3)); }
+    #controls { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:5; display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:999px; background:var(--chrome); color:#fff; opacity:0; backdrop-filter:blur(12px); transition:opacity 160ms ease; }
+    #controls.revealed, #controls:hover, #controls:focus-within { opacity:1; }
+    button { display:grid; place-items:center; width:34px; height:34px; padding:0; border:0; border-radius:50%; color:#fff; background:rgba(255,255,255,.12); cursor:pointer; font-size:20px; line-height:1; }
+    button:hover { background:var(--chrome-hover); }
+    #counter { min-width:78px; text-align:center; font-size:13px; font-variant-numeric:tabular-nums; }
+    @media print { html, body { display:block; height:auto; overflow:visible; background:#fff; } #deck { width:auto; height:auto; box-shadow:none; } .slide, .slide.active { position:relative; display:block; page-break-after:always; width:100vw; height:56.25vw; } #controls { display:none; } }
+  </style>
+</head>
+<body>
+  <main id="deck" aria-label="HTML presentation">
+    <figure class="slide active" data-slide="1" aria-label="第 1 页">
+      <img class="slide-bg" src="assets/slides/slide-001.png" alt="第 1 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="2" aria-label="第 2 页">
+      <img class="slide-bg" src="assets/slides/slide-002.png" alt="第 2 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="3" aria-label="第 3 页">
+      <img class="slide-bg" src="assets/slides/slide-003.png" alt="第 3 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:67.468799%;top:40.792228%;width:28.573942%;height:38.098600%;" src="assets/media/media-001.mp4" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="4" aria-label="第 4 页">
+      <img class="slide-bg" src="assets/slides/slide-004.png" alt="第 4 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="5" aria-label="第 5 页">
+      <img class="slide-bg" src="assets/slides/slide-005.png" alt="第 5 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="6" aria-label="第 6 页">
+      <img class="slide-bg" src="assets/slides/slide-006.png" alt="第 6 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="7" aria-label="第 7 页">
+      <img class="slide-bg" src="assets/slides/slide-007.png" alt="第 7 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="8" aria-label="第 8 页">
+      <img class="slide-bg" src="assets/slides/slide-008.png" alt="第 8 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="9" aria-label="第 9 页">
+      <img class="slide-bg" src="assets/slides/slide-009.png" alt="第 9 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="10" aria-label="第 10 页">
+      <img class="slide-bg" src="assets/slides/slide-010.png" alt="第 10 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="11" aria-label="第 11 页">
+      <img class="slide-bg" src="assets/slides/slide-011.png" alt="第 11 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="12" aria-label="第 12 页">
+      <img class="slide-bg" src="assets/slides/slide-012.png" alt="第 12 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="13" aria-label="第 13 页">
+      <img class="slide-bg" src="assets/slides/slide-013.png" alt="第 13 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:3.529528%;top:32.404870%;width:19.358210%;height:58.647346%;" src="assets/media/media-002.mp4" autoplay muted controls preload="metadata" playsinline></video>
+      <video class="media-overlay" style="left:25.198048%;top:34.216696%;width:19.640748%;height:58.647346%;" src="assets/media/media-003.mp4" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="14" aria-label="第 14 页">
+      <img class="slide-bg" src="assets/slides/slide-014.png" alt="第 14 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="15" aria-label="第 15 页">
+      <img class="slide-bg" src="assets/slides/slide-015.png" alt="第 15 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="16" aria-label="第 16 页">
+      <img class="slide-bg" src="assets/slides/slide-016.png" alt="第 16 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="17" aria-label="第 17 页">
+      <img class="slide-bg" src="assets/slides/slide-017.png" alt="第 17 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="18" aria-label="第 18 页">
+      <img class="slide-bg" src="assets/slides/slide-018.png" alt="第 18 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="19" aria-label="第 19 页">
+      <img class="slide-bg" src="assets/slides/slide-019.png" alt="第 19 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="20" aria-label="第 20 页">
+      <img class="slide-bg" src="assets/slides/slide-020.png" alt="第 20 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="21" aria-label="第 21 页">
+      <img class="slide-bg" src="assets/slides/slide-021.png" alt="第 21 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="22" aria-label="第 22 页">
+      <img class="slide-bg" src="assets/slides/slide-022.png" alt="第 22 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="23" aria-label="第 23 页">
+      <img class="slide-bg" src="assets/slides/slide-023.png" alt="第 23 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:61.921727%;top:19.447638%;width:34.707915%;height:34.759347%;" src="assets/media/media-004.mp4" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="24" aria-label="第 24 页">
+      <img class="slide-bg" src="assets/slides/slide-024.png" alt="第 24 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:6.129076%;top:62.510470%;width:33.701296%;height:33.701298%;" src="assets/media/media-005.mov" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="25" aria-label="第 25 页">
+      <img class="slide-bg" src="assets/slides/slide-025.png" alt="第 25 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="26" aria-label="第 26 页">
+      <img class="slide-bg" src="assets/slides/slide-026.png" alt="第 26 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="27" aria-label="第 27 页">
+      <img class="slide-bg" src="assets/slides/slide-027.png" alt="第 27 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:2.833801%;top:23.651560%;width:43.228986%;height:72.552143%;" src="assets/media/media-006.mp4" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="28" aria-label="第 28 页">
+      <img class="slide-bg" src="assets/slides/slide-028.png" alt="第 28 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:51.656693%;top:25.590157%;width:32.365043%;height:54.797959%;" src="assets/media/media-007.mp4" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="29" aria-label="第 29 页">
+      <img class="slide-bg" src="assets/slides/slide-029.png" alt="第 29 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="30" aria-label="第 30 页">
+      <img class="slide-bg" src="assets/slides/slide-030.png" alt="第 30 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="31" aria-label="第 31 页">
+      <img class="slide-bg" src="assets/slides/slide-031.png" alt="第 31 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="32" aria-label="第 32 页">
+      <img class="slide-bg" src="assets/slides/slide-032.png" alt="第 32 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="33" aria-label="第 33 页">
+      <img class="slide-bg" src="assets/slides/slide-033.png" alt="第 33 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="34" aria-label="第 34 页">
+      <img class="slide-bg" src="assets/slides/slide-034.png" alt="第 34 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="35" aria-label="第 35 页">
+      <img class="slide-bg" src="assets/slides/slide-035.png" alt="第 35 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="36" aria-label="第 36 页">
+      <img class="slide-bg" src="assets/slides/slide-036.png" alt="第 36 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="37" aria-label="第 37 页">
+      <img class="slide-bg" src="assets/slides/slide-037.png" alt="第 37 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:47.477157%;top:49.173272%;width:47.110425%;height:47.110426%;" src="assets/media/media-008.mp4" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="38" aria-label="第 38 页">
+      <img class="slide-bg" src="assets/slides/slide-038.png" alt="第 38 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:3.913862%;top:57.235710%;width:43.612221%;height:43.612219%;" src="assets/media/media-009.mp4" autoplay muted controls preload="metadata" playsinline></video>
+      <img class="media-overlay" style="left:52.473934%;top:57.377778%;width:43.963000%;height:43.954418%;" src="assets/media/media-010.gif" alt="" draggable="false">
+      <img class="media-overlay" style="left:3.913862%;top:25.618023%;width:65.075935%;height:22.294532%;" src="assets/media/media-011.gif" alt="" draggable="false">
+    </figure>
+    <figure class="slide" data-slide="39" aria-label="第 39 页">
+      <img class="slide-bg" src="assets/slides/slide-039.png" alt="第 39 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="40" aria-label="第 40 页">
+      <img class="slide-bg" src="assets/slides/slide-040.png" alt="第 40 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="41" aria-label="第 41 页">
+      <img class="slide-bg" src="assets/slides/slide-041.png" alt="第 41 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="42" aria-label="第 42 页">
+      <img class="slide-bg" src="assets/slides/slide-042.png" alt="第 42 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="43" aria-label="第 43 页">
+      <img class="slide-bg" src="assets/slides/slide-043.png" alt="第 43 页幻灯片" draggable="false">
+      <img class="media-overlay" style="left:35.799984%;top:37.198950%;width:26.444382%;height:28.726422%;" src="assets/media/media-012.gif" alt="" draggable="false">
+    </figure>
+    <figure class="slide" data-slide="44" aria-label="第 44 页">
+      <img class="slide-bg" src="assets/slides/slide-044.png" alt="第 44 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="45" aria-label="第 45 页">
+      <img class="slide-bg poster-fallback" src="assets/slides/slide-045.png" alt="第 45 页幻灯片" draggable="false">
+      <video class="media-overlay background-video" style="left:0.000000%;top:0.347230%;width:100.000000%;height:99.282400%;" src="assets/media/media-013.mp4" autoplay muted loop preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="46" aria-label="第 46 页">
+      <img class="slide-bg" src="assets/slides/slide-046.png" alt="第 46 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:22.885720%;top:47.482138%;width:13.346219%;height:42.180607%;" src="assets/media/media-014.mp4" autoplay muted controls preload="metadata" playsinline></video>
+      <video class="media-overlay" style="left:41.004560%;top:47.482138%;width:13.346219%;height:42.181175%;" src="assets/media/media-015.mp4" autoplay muted controls preload="metadata" playsinline></video>
+      <video class="media-overlay" style="left:55.589190%;top:47.482138%;width:13.346219%;height:42.180621%;" src="assets/media/media-016.mp4" autoplay muted controls preload="metadata" playsinline></video>
+      <video class="media-overlay" style="left:83.138533%;top:47.482138%;width:13.346219%;height:42.184791%;" src="assets/media/media-017.mp4" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="47" aria-label="第 47 页">
+      <img class="slide-bg" src="assets/slides/slide-047.png" alt="第 47 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="48" aria-label="第 48 页">
+      <img class="slide-bg" src="assets/slides/slide-048.png" alt="第 48 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="49" aria-label="第 49 页">
+      <img class="slide-bg" src="assets/slides/slide-049.png" alt="第 49 页幻灯片" draggable="false">
+      <video class="media-overlay" style="left:51.922285%;top:47.745801%;width:42.176337%;height:42.176334%;" src="assets/media/media-018.mov" autoplay muted controls preload="metadata" playsinline></video>
+    </figure>
+    <figure class="slide" data-slide="50" aria-label="第 50 页">
+      <img class="slide-bg" src="assets/slides/slide-050.png" alt="第 50 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="51" aria-label="第 51 页">
+      <img class="slide-bg" src="assets/slides/slide-051.png" alt="第 51 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="52" aria-label="第 52 页">
+      <img class="slide-bg" src="assets/slides/slide-052.png" alt="第 52 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="53" aria-label="第 53 页">
+      <img class="slide-bg" src="assets/slides/slide-053.png" alt="第 53 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="54" aria-label="第 54 页">
+      <img class="slide-bg" src="assets/slides/slide-054.png" alt="第 54 页幻灯片" draggable="false">
+      <img class="media-overlay" style="left:65.023729%;top:19.616025%;width:31.540846%;height:48.712453%;" src="assets/media/media-019.gif" alt="" draggable="false">
+      <img class="media-overlay" style="left:3.786770%;top:19.647915%;width:27.020833%;height:48.962963%;" src="assets/media/media-020.gif" alt="" draggable="false">
+    </figure>
+    <figure class="slide" data-slide="55" aria-label="第 55 页">
+      <img class="slide-bg" src="assets/slides/slide-055.png" alt="第 55 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="56" aria-label="第 56 页">
+      <img class="slide-bg" src="assets/slides/slide-056.png" alt="第 56 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="57" aria-label="第 57 页">
+      <img class="slide-bg" src="assets/slides/slide-057.png" alt="第 57 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="58" aria-label="第 58 页">
+      <img class="slide-bg" src="assets/slides/slide-058.png" alt="第 58 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="59" aria-label="第 59 页">
+      <img class="slide-bg" src="assets/slides/slide-059.png" alt="第 59 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="60" aria-label="第 60 页">
+      <img class="slide-bg" src="assets/slides/slide-060.png" alt="第 60 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="61" aria-label="第 61 页">
+      <img class="slide-bg" src="assets/slides/slide-061.png" alt="第 61 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="62" aria-label="第 62 页">
+      <img class="slide-bg" src="assets/slides/slide-062.png" alt="第 62 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="63" aria-label="第 63 页">
+      <img class="slide-bg" src="assets/slides/slide-063.png" alt="第 63 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="64" aria-label="第 64 页">
+      <img class="slide-bg" src="assets/slides/slide-064.png" alt="第 64 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="65" aria-label="第 65 页">
+      <img class="slide-bg" src="assets/slides/slide-065.png" alt="第 65 页幻灯片" draggable="false">
+
+    </figure>
+    <figure class="slide" data-slide="66" aria-label="第 66 页">
+      <img class="slide-bg" src="assets/slides/slide-066.png" alt="第 66 页幻灯片" draggable="false">
+
+    </figure>
+  </main>
+  <nav id="controls" aria-label="幻灯片控制">
+    <button type="button" id="prev" aria-label="上一页">‹</button>
+    <span id="counter">1 / 66</span>
+    <button type="button" id="next" aria-label="下一页">›</button>
+  </nav>
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const counter = document.querySelector("#counter");
+      const controls = document.querySelector("#controls");
+      let current = 0;
+      let lastPointer = null;
+      function revealControlsAt(x, y) {
+        const rect = controls.getBoundingClientRect();
+        const pad = 22;
+        const inside = x >= rect.left - pad && x <= rect.right + pad && y >= rect.top - pad && y <= rect.bottom + pad;
+        controls.classList.toggle("revealed", inside);
+      }
+      function show(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, slideIndex) => {
+          const active = slideIndex === current;
+          slide.classList.toggle("active", active);
+          slide.setAttribute("aria-hidden", active ? "false" : "true");
+          slide.querySelectorAll("video").forEach((video) => {
+            if (active) { video.currentTime = 0; video.play().catch(() => {}); }
+            else { video.pause(); }
+          });
+        });
+        counter.textContent = (current + 1) + " / " + slides.length;
+        history.replaceState(null, "", "#" + (current + 1));
+        if (lastPointer) revealControlsAt(lastPointer.x, lastPointer.y);
+        else controls.classList.remove("revealed");
+      }
+      function goNext() { show(current + 1); }
+      function goPrev() { show(current - 1); }
+      document.addEventListener("pointermove", (event) => { lastPointer = { x:event.clientX, y:event.clientY }; revealControlsAt(event.clientX, event.clientY); });
+      document.addEventListener("mousemove", (event) => { lastPointer = { x:event.clientX, y:event.clientY }; revealControlsAt(event.clientX, event.clientY); });
+      document.addEventListener("pointerleave", () => { lastPointer = null; controls.classList.remove("revealed"); });
+      document.addEventListener("mouseleave", () => { lastPointer = null; controls.classList.remove("revealed"); });
+      document.querySelector("#prev").addEventListener("click", goPrev);
+      document.querySelector("#next").addEventListener("click", goNext);
+      document.querySelector("#deck").addEventListener("click", (event) => { if (!event.target.closest("button, video")) goNext(); });
+      document.addEventListener("keydown", (event) => {
+        if (["ArrowRight", "PageDown", " "].includes(event.key)) { event.preventDefault(); goNext(); }
+        else if (["ArrowLeft", "PageUp"].includes(event.key)) { event.preventDefault(); goPrev(); }
+        else if (event.key === "Home") show(0);
+        else if (event.key === "End") show(slides.length - 1);
+      });
+      window.addEventListener("hashchange", () => {
+        const target = Number.parseInt(location.hash.slice(1), 10);
+        if (Number.isFinite(target)) show(target - 1);
+      });
+      const initial = Number.parseInt(location.hash.slice(1), 10);
+      show(Number.isFinite(initial) ? initial - 1 : 0);
+    })();
+  </script>
+</body>
+</html>

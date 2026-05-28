@@ -1,0 +1,558 @@
+{
+  "name": "香格里拉走进-260227-update",
+  "source_pptx": "香格里拉走进-260227-update.pptx",
+  "entry": "index.html",
+  "single_file_role": "deliverable/archive",
+  "project_role": "editable source for future HTML iterations",
+  "slides": [
+    {
+      "slide": 1,
+      "image": "assets/slides/slide-001.png",
+      "overlays": []
+    },
+    {
+      "slide": 2,
+      "image": "assets/slides/slide-002.png",
+      "overlays": []
+    },
+    {
+      "slide": 3,
+      "image": "assets/slides/slide-003.png",
+      "overlays": [
+        {
+          "slide": 3,
+          "kind": "video",
+          "left": 67.46879921259843,
+          "top": 40.79222805482648,
+          "width": 28.573941929133856,
+          "height": 38.098600174978124,
+          "background": false,
+          "src": "assets/media/media-001.mp4"
+        }
+      ]
+    },
+    {
+      "slide": 4,
+      "image": "assets/slides/slide-004.png",
+      "overlays": []
+    },
+    {
+      "slide": 5,
+      "image": "assets/slides/slide-005.png",
+      "overlays": []
+    },
+    {
+      "slide": 6,
+      "image": "assets/slides/slide-006.png",
+      "overlays": []
+    },
+    {
+      "slide": 7,
+      "image": "assets/slides/slide-007.png",
+      "overlays": []
+    },
+    {
+      "slide": 8,
+      "image": "assets/slides/slide-008.png",
+      "overlays": []
+    },
+    {
+      "slide": 9,
+      "image": "assets/slides/slide-009.png",
+      "overlays": []
+    },
+    {
+      "slide": 10,
+      "image": "assets/slides/slide-010.png",
+      "overlays": []
+    },
+    {
+      "slide": 11,
+      "image": "assets/slides/slide-011.png",
+      "overlays": []
+    },
+    {
+      "slide": 12,
+      "image": "assets/slides/slide-012.png",
+      "overlays": []
+    },
+    {
+      "slide": 13,
+      "image": "assets/slides/slide-013.png",
+      "overlays": [
+        {
+          "slide": 13,
+          "kind": "video",
+          "left": 3.5295275590551176,
+          "top": 32.40487022455527,
+          "width": 19.35821030183727,
+          "height": 58.6473461650627,
+          "background": false,
+          "src": "assets/media/media-002.mp4"
+        },
+        {
+          "slide": 13,
+          "kind": "video",
+          "left": 25.198047900262466,
+          "top": 34.21669582968796,
+          "width": 19.640748031496063,
+          "height": 58.6473461650627,
+          "background": false,
+          "src": "assets/media/media-003.mp4"
+        }
+      ]
+    },
+    {
+      "slide": 14,
+      "image": "assets/slides/slide-014.png",
+      "overlays": []
+    },
+    {
+      "slide": 15,
+      "image": "assets/slides/slide-015.png",
+      "overlays": []
+    },
+    {
+      "slide": 16,
+      "image": "assets/slides/slide-016.png",
+      "overlays": []
+    },
+    {
+      "slide": 17,
+      "image": "assets/slides/slide-017.png",
+      "overlays": []
+    },
+    {
+      "slide": 18,
+      "image": "assets/slides/slide-018.png",
+      "overlays": []
+    },
+    {
+      "slide": 19,
+      "image": "assets/slides/slide-019.png",
+      "overlays": []
+    },
+    {
+      "slide": 20,
+      "image": "assets/slides/slide-020.png",
+      "overlays": []
+    },
+    {
+      "slide": 21,
+      "image": "assets/slides/slide-021.png",
+      "overlays": []
+    },
+    {
+      "slide": 22,
+      "image": "assets/slides/slide-022.png",
+      "overlays": []
+    },
+    {
+      "slide": 23,
+      "image": "assets/slides/slide-023.png",
+      "overlays": [
+        {
+          "slide": 23,
+          "kind": "video",
+          "left": 61.92172736220473,
+          "top": 19.44763779527559,
+          "width": 34.707915026246724,
+          "height": 34.759346748323125,
+          "background": false,
+          "src": "assets/media/media-004.mp4"
+        }
+      ]
+    },
+    {
+      "slide": 24,
+      "image": "assets/slides/slide-024.png",
+      "overlays": [
+        {
+          "slide": 24,
+          "kind": "video",
+          "left": 6.129076443569554,
+          "top": 62.51046952464275,
+          "width": 33.70129593175853,
+          "height": 33.70129775444736,
+          "background": false,
+          "src": "assets/media/media-005.mov"
+        }
+      ]
+    },
+    {
+      "slide": 25,
+      "image": "assets/slides/slide-025.png",
+      "overlays": []
+    },
+    {
+      "slide": 26,
+      "image": "assets/slides/slide-026.png",
+      "overlays": []
+    },
+    {
+      "slide": 27,
+      "image": "assets/slides/slide-027.png",
+      "overlays": [
+        {
+          "slide": 27,
+          "kind": "video",
+          "left": 2.833800853018373,
+          "top": 23.651560221638963,
+          "width": 43.22898622047244,
+          "height": 72.55214348206475,
+          "background": false,
+          "src": "assets/media/media-006.mp4"
+        }
+      ]
+    },
+    {
+      "slide": 28,
+      "image": "assets/slides/slide-028.png",
+      "overlays": [
+        {
+          "slide": 28,
+          "kind": "video",
+          "left": 51.656692913385825,
+          "top": 25.59015748031496,
+          "width": 32.36504265091863,
+          "height": 54.797958588509765,
+          "background": false,
+          "src": "assets/media/media-007.mp4"
+        }
+      ]
+    },
+    {
+      "slide": 29,
+      "image": "assets/slides/slide-029.png",
+      "overlays": []
+    },
+    {
+      "slide": 30,
+      "image": "assets/slides/slide-030.png",
+      "overlays": []
+    },
+    {
+      "slide": 31,
+      "image": "assets/slides/slide-031.png",
+      "overlays": []
+    },
+    {
+      "slide": 32,
+      "image": "assets/slides/slide-032.png",
+      "overlays": []
+    },
+    {
+      "slide": 33,
+      "image": "assets/slides/slide-033.png",
+      "overlays": []
+    },
+    {
+      "slide": 34,
+      "image": "assets/slides/slide-034.png",
+      "overlays": []
+    },
+    {
+      "slide": 35,
+      "image": "assets/slides/slide-035.png",
+      "overlays": []
+    },
+    {
+      "slide": 36,
+      "image": "assets/slides/slide-036.png",
+      "overlays": []
+    },
+    {
+      "slide": 37,
+      "image": "assets/slides/slide-037.png",
+      "overlays": [
+        {
+          "slide": 37,
+          "kind": "video",
+          "left": 47.47715715223097,
+          "top": 49.17327209098863,
+          "width": 47.1104248687664,
+          "height": 47.11042578011082,
+          "background": false,
+          "src": "assets/media/media-008.mp4"
+        }
+      ]
+    },
+    {
+      "slide": 38,
+      "image": "assets/slides/slide-038.png",
+      "overlays": [
+        {
+          "slide": 38,
+          "kind": "video",
+          "left": 3.9138615485564308,
+          "top": 57.23571011956838,
+          "width": 43.61222112860892,
+          "height": 43.61221930592009,
+          "background": false,
+          "src": "assets/media/media-009.mp4"
+        },
+        {
+          "slide": 38,
+          "kind": "gif",
+          "left": 52.473933727034115,
+          "top": 57.37777777777778,
+          "width": 43.96300032808399,
+          "height": 43.95441819772529,
+          "background": false,
+          "src": "assets/media/media-010.gif"
+        },
+        {
+          "slide": 38,
+          "kind": "gif",
+          "left": 3.9138615485564308,
+          "top": 25.618022747156605,
+          "width": 65.07593503937008,
+          "height": 22.29453193350831,
+          "background": false,
+          "src": "assets/media/media-011.gif"
+        }
+      ]
+    },
+    {
+      "slide": 39,
+      "image": "assets/slides/slide-039.png",
+      "overlays": []
+    },
+    {
+      "slide": 40,
+      "image": "assets/slides/slide-040.png",
+      "overlays": []
+    },
+    {
+      "slide": 41,
+      "image": "assets/slides/slide-041.png",
+      "overlays": []
+    },
+    {
+      "slide": 42,
+      "image": "assets/slides/slide-042.png",
+      "overlays": []
+    },
+    {
+      "slide": 43,
+      "image": "assets/slides/slide-043.png",
+      "overlays": [
+        {
+          "slide": 43,
+          "kind": "gif",
+          "left": 35.799983595800526,
+          "top": 37.198950131233595,
+          "width": 26.44438156167979,
+          "height": 28.72642169728784,
+          "background": false,
+          "src": "assets/media/media-012.gif"
+        }
+      ]
+    },
+    {
+      "slide": 44,
+      "image": "assets/slides/slide-044.png",
+      "overlays": []
+    },
+    {
+      "slide": 45,
+      "image": "assets/slides/slide-045.png",
+      "overlays": [
+        {
+          "slide": 45,
+          "kind": "video",
+          "left": 0.0,
+          "top": 0.34722951297754445,
+          "width": 100.0,
+          "height": 99.28240011665208,
+          "background": true,
+          "src": "assets/media/media-013.mp4"
+        }
+      ]
+    },
+    {
+      "slide": 46,
+      "image": "assets/slides/slide-046.png",
+      "overlays": [
+        {
+          "slide": 46,
+          "kind": "video",
+          "left": 22.885720144356956,
+          "top": 47.48213764946048,
+          "width": 13.346218832020998,
+          "height": 42.180606590842814,
+          "background": false,
+          "src": "assets/media/media-014.mp4"
+        },
+        {
+          "slide": 46,
+          "kind": "video",
+          "left": 41.00456036745407,
+          "top": 47.48213764946048,
+          "width": 13.346218832020998,
+          "height": 42.18117526975795,
+          "background": false,
+          "src": "assets/media/media-015.mp4"
+        },
+        {
+          "slide": 46,
+          "kind": "video",
+          "left": 55.58918963254593,
+          "top": 47.48213764946048,
+          "width": 13.346218832020998,
+          "height": 42.180621172353455,
+          "background": false,
+          "src": "assets/media/media-016.mp4"
+        },
+        {
+          "slide": 46,
+          "kind": "video",
+          "left": 83.13853346456693,
+          "top": 47.48213764946048,
+          "width": 13.346218832020998,
+          "height": 42.184791484397785,
+          "background": false,
+          "src": "assets/media/media-017.mp4"
+        }
+      ]
+    },
+    {
+      "slide": 47,
+      "image": "assets/slides/slide-047.png",
+      "overlays": []
+    },
+    {
+      "slide": 48,
+      "image": "assets/slides/slide-048.png",
+      "overlays": []
+    },
+    {
+      "slide": 49,
+      "image": "assets/slides/slide-049.png",
+      "overlays": [
+        {
+          "slide": 49,
+          "kind": "video",
+          "left": 51.92228510498688,
+          "top": 47.74580052493438,
+          "width": 42.17633694225722,
+          "height": 42.17633420822397,
+          "background": false,
+          "src": "assets/media/media-018.mov"
+        }
+      ]
+    },
+    {
+      "slide": 50,
+      "image": "assets/slides/slide-050.png",
+      "overlays": []
+    },
+    {
+      "slide": 51,
+      "image": "assets/slides/slide-051.png",
+      "overlays": []
+    },
+    {
+      "slide": 52,
+      "image": "assets/slides/slide-052.png",
+      "overlays": []
+    },
+    {
+      "slide": 53,
+      "image": "assets/slides/slide-053.png",
+      "overlays": []
+    },
+    {
+      "slide": 54,
+      "image": "assets/slides/slide-054.png",
+      "overlays": [
+        {
+          "slide": 54,
+          "kind": "gif",
+          "left": 65.02372867454068,
+          "top": 19.61602508019831,
+          "width": 31.54084645669291,
+          "height": 48.71245261009041,
+          "background": false,
+          "src": "assets/media/media-019.gif"
+        },
+        {
+          "slide": 54,
+          "kind": "gif",
+          "left": 3.78677001312336,
+          "top": 19.647914843977837,
+          "width": 27.020833333333332,
+          "height": 48.96296296296296,
+          "background": false,
+          "src": "assets/media/media-020.gif"
+        }
+      ]
+    },
+    {
+      "slide": 55,
+      "image": "assets/slides/slide-055.png",
+      "overlays": []
+    },
+    {
+      "slide": 56,
+      "image": "assets/slides/slide-056.png",
+      "overlays": []
+    },
+    {
+      "slide": 57,
+      "image": "assets/slides/slide-057.png",
+      "overlays": []
+    },
+    {
+      "slide": 58,
+      "image": "assets/slides/slide-058.png",
+      "overlays": []
+    },
+    {
+      "slide": 59,
+      "image": "assets/slides/slide-059.png",
+      "overlays": []
+    },
+    {
+      "slide": 60,
+      "image": "assets/slides/slide-060.png",
+      "overlays": []
+    },
+    {
+      "slide": 61,
+      "image": "assets/slides/slide-061.png",
+      "overlays": []
+    },
+    {
+      "slide": 62,
+      "image": "assets/slides/slide-062.png",
+      "overlays": []
+    },
+    {
+      "slide": 63,
+      "image": "assets/slides/slide-063.png",
+      "overlays": []
+    },
+    {
+      "slide": 64,
+      "image": "assets/slides/slide-064.png",
+      "overlays": []
+    },
+    {
+      "slide": 65,
+      "image": "assets/slides/slide-065.png",
+      "overlays": []
+    },
+    {
+      "slide": 66,
+      "image": "assets/slides/slide-066.png",
+      "overlays": []
+    }
+  ],
+  "editing_notes": [
+    "Replace a slide background by overwriting assets/slides/slide-###.png.",
+    "Replace a video/GIF by overwriting the referenced file in assets/media/ or updating src in index.html and manifest.json.",
+    "Add HTML overlays by editing the matching <figure data-slide=\"N\"> in index.html.",
+    "For major layout changes, update the source PPTX and rerun this converter."
+  ]
+}
