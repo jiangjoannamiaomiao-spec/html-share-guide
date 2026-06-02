@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>演示者模式 Demo（P×3 调出 / 讲稿加密 / 放映窗全屏）</title>
+<title>演示者模式 Demo（P×3/讲稿加密/纯净投屏#proj）</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;background:#000;overflow:hidden;font-family:'PingFang SC','PingFang TC','Microsoft YaHei','Heiti TC',sans-serif}
@@ -49,6 +49,8 @@ body.edit.selact .tb:not(.box-sel) .tbin{opacity:.18;transition:opacity .12s}
 #boxtool button:hover{background:#3a86ff}
 #bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:60;display:flex;flex-wrap:nowrap;gap:8px;align-items:center;
   background:rgba(12,18,32,.82);backdrop-filter:blur(10px);padding:7px 12px;border-radius:999px;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+/* 纯净投屏模式：URL 带 #proj / #bare / #clean / #kiosk 时隐藏底部工具栏（含页码栏），投屏只剩正文 */
+body.bare #bar{display:none!important}
 #bar button{border:0;border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;background:rgba(255,255,255,.12);color:#fff;white-space:nowrap}
 #bar button:hover{background:rgba(255,255,255,.22)}#bar button.on{background:#3a86ff}
 #bar select{border:0;border-radius:999px;padding:8px 12px;font-size:14px;cursor:pointer;background:rgba(255,255,255,.12);color:#fff}#bar select option{color:#111;background:#fff}
@@ -111,6 +113,9 @@ body.pv #stage,body.pv #bar,body.pv #sidebar,body.pv #scrim{display:none!importa
  var hidden={},order=[],positions={},aligns={},manualFit={},sizes={},globalScale=1;
  function normalizeOrder(){var seen={},c=[];order.forEach(function(x){if(x>=0&&x<N&&!seen[x]){seen[x]=1;c.push(x);}});for(var k=0;k<N;k++)if(!seen[k])c.push(k);order=c;}
  var $=function(id){return document.getElementById(id);};
+ // 纯净投屏：URL hash 含 proj/bare/clean/kiosk → 隐藏底部工具栏(含页码栏)，投屏只剩正文
+ function _bare(){document.body.classList.toggle('bare',/proj|bare|clean|kiosk/i.test(location.hash||''));}
+ addEventListener('hashchange',_bare);_bare();
  function toast(s){var t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(function(){t.classList.remove('show');},2000);}
  function visOrder(){return order.filter(function(i){return !hidden[i];});}
  function loadSlideImgs(sl,full){if(!sl)return;var xl=document.body.classList.contains('xl');sl.querySelectorAll('img[data-src]').forEach(function(im){var nt=im.className.indexOf('bg-notext')>=0;if(full||(xl?nt:!nt)){im.src=im.getAttribute('data-src');im.removeAttribute('data-src');}});}
