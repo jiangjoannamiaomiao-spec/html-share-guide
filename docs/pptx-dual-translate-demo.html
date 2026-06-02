@@ -227,7 +227,11 @@ body.edit.selact .tb:not(.box-sel) .tbin{opacity:.18;transition:opacity .12s}
  var i18nLns=[].slice.call(document.querySelectorAll('.ln[data-i]'));
  i18nLns.forEach(function(l){l.setAttribute('data-o',l.innerHTML);});
  if(I18N.length&&$('langsel')){$('langsel').classList.add('has-i18n');
-   $('langsel').onchange=function(){var c=this.value;i18nLns.forEach(function(l){var r=I18N[+l.getAttribute('data-i')]||{};if(c==='o'||!r[c])l.innerHTML=l.getAttribute('data-o');else l.textContent=r[c];});if(window.__deckFit)window.__deckFit();};}
+   $('langsel').onchange=function(){var c=this.value;i18nLns.forEach(function(l){var r=I18N[+l.getAttribute('data-i')]||{};if(c==='o'||!r[c])l.innerHTML=l.getAttribute('data-o');else l.textContent=r[c];});
+     // 内置优先：选了内置语言 -> 给 deck 打 translate=no，挡掉浏览器二次翻译；切回「原版」-> 放开，
+     // 允许顶层环境(妙搭/本地)用浏览器翻译长尾小语种。妙笔沙箱 iframe 里浏览器翻译本就无效，只剩内置。
+     var dk=$('deck');if(c==='o')dk.removeAttribute('translate');else dk.setAttribute('translate','no');
+     if(window.__deckFit)window.__deckFit();};}
  check();
 })();
 </script>
