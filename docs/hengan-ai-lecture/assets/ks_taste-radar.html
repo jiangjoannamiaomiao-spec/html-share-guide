@@ -1,0 +1,2915 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>口味雷达 TasteRadar · 全网口味信号智能选品平台</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: #060826;
+    color: #E8ECFF;
+    min-width: 1180px;      /* 自适应：MBP 14" 及以上窗口都能装下，太窄再触发横向滚动 */
+    min-height: 100vh;
+    overflow-x: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  :root {
+    --bg-base: #060826;
+    --bg-panel: #0E1242;
+    --bg-panel-2: #141A55;
+    --bg-elev: rgba(255,255,255,0.03);
+    --border: rgba(120,145,220,0.12);
+    --border-strong: rgba(120,145,220,0.22);
+    --text: #E8ECFF;
+    --text-2: #9BA4C5;
+    --text-3: #5E6894;
+    --brand: #4A7FFF;
+    --brand-2: #7B9BFF;
+    --green: #10D9A3;
+    --amber: #FFB547;
+    --pink: #FF5E7E;
+    --violet: #A77BFF;
+    --cyan: #3BD5FF;
+    --gold: #FFD86E;
+  }
+  /* Dark-theme scrollbar (otherwise iframe shows a light-gray track that reads as a "white edge") */
+  html, body { scrollbar-width: thin; scrollbar-color: rgba(74,127,255,0.35) transparent; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(74,127,255,0.30); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(74,127,255,0.55); }
+  ::-webkit-scrollbar-corner { background: transparent; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(74,127,255,0.22), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, rgba(167,123,255,0.18), transparent 60%),
+      radial-gradient(1000px 700px at 50% 120%, rgba(16,217,163,0.10), transparent 60%),
+      var(--bg-base);
+  }
+  .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+
+  /* ------ Sidebar ------ */
+  .sidebar {
+    background: linear-gradient(180deg, rgba(14,18,66,0.9), rgba(6,8,38,0.9));
+    border-right: 1px solid var(--border);
+    padding: 22px 16px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; padding: 6px 6px 22px; border-bottom: 1px dashed var(--border); }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: conic-gradient(from 180deg, var(--brand), var(--green), var(--violet), var(--brand));
+    display: grid; place-items: center; position: relative;
+    box-shadow: 0 8px 24px rgba(74,127,255,0.35);
+  }
+  .logo-mark::after {
+    content: ""; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--bg-base); box-shadow: 0 0 0 2px rgba(255,255,255,0.06) inset;
+  }
+  .logo-text { line-height: 1.1; }
+  .logo-text .zh { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+  .logo-text .en { font-size: 10.5px; color: var(--text-3); letter-spacing: 2px; margin-top: 2px; }
+
+  .nav-section { margin-top: 18px; }
+  .nav-section .nav-title { font-size: 10px; color: var(--text-3); letter-spacing: 2px; padding: 0 8px 8px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 10px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; color: var(--text-2); margin-bottom: 2px; position: relative;
+    transition: background .15s ease, color .15s ease;
+  }
+  .nav-item:hover { background: var(--bg-elev); color: var(--text); }
+  .nav-item.active {
+    background: linear-gradient(90deg, rgba(74,127,255,0.22), rgba(74,127,255,0.05));
+    color: var(--text);
+  }
+  .nav-item.active::before {
+    content: ""; position: absolute; left: -16px; top: 8px; bottom: 8px;
+    width: 3px; background: var(--brand); border-radius: 0 3px 3px 0;
+  }
+  .nav-item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
+  .nav-item.active .dot { background: var(--brand); box-shadow: 0 0 10px var(--brand); }
+
+  .side-footer {
+    position: absolute; bottom: 16px; left: 16px; right: 16px;
+    padding: 12px; border-radius: 10px; background: var(--bg-elev); border: 1px solid var(--border);
+    font-size: 11px; color: var(--text-2);
+  }
+  .side-footer .row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .side-footer .live { color: var(--green); }
+  .pulse { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 6px; position: relative; }
+  .pulse::after { content:""; position:absolute; inset:-4px; border-radius:50%; border:1px solid var(--green); animation: pulse 1.6s ease-out infinite; }
+  @keyframes pulse { 0%{transform:scale(.6); opacity:.9} 100%{transform:scale(1.6); opacity:0} }
+
+  /* ------ Main ------ */
+  .main { padding: 20px 28px 40px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+  .topbar .title h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.3px; }
+  .topbar .title .sub { color: var(--text-2); font-size: 12px; margin-top: 4px; }
+  .topbar .actions { display: flex; align-items: center; gap: 12px; }
+  .chip {
+    padding: 6px 12px; border-radius: 999px; font-size: 12px; color: var(--text-2);
+    background: var(--bg-elev); border: 1px solid var(--border); display: inline-flex; align-items: center; gap: 8px;
+  }
+  .chip.primary { color: #E6EEFF; border-color: rgba(74,127,255,0.4); background: rgba(74,127,255,0.12); }
+  .chip.live { color: var(--green); border-color: rgba(16,217,163,0.35); background: rgba(16,217,163,0.08); }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #4A7FFF, #10D9A3); display: grid; place-items: center; font-size: 12px; font-weight: 600; color: #0b0f2a; }
+
+  /* ------ KPI Row ------ */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 18px; }
+  .kpi {
+    background: linear-gradient(160deg, var(--bg-panel), var(--bg-panel-2));
+    border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; position: relative; overflow: hidden;
+  }
+  .kpi::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(300px 120px at 100% 0%, rgba(74,127,255,0.18), transparent 60%);
+    pointer-events: none;
+  }
+  .kpi .label { font-size: 12px; color: var(--text-2); letter-spacing: 0.5px; }
+  .kpi .val { font-size: 30px; font-weight: 700; margin-top: 6px; letter-spacing: 0.3px; }
+  .kpi .delta { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 12px; padding: 3px 8px; border-radius: 999px; }
+  .kpi .delta.up { color: #5bf0c5; background: rgba(16,217,163,0.1); }
+  .kpi .delta.down { color: #ff9eb1; background: rgba(255,94,126,0.12); }
+  .kpi .icon {
+    position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 10px;
+    display: grid; place-items: center; font-size: 16px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  }
+  .kpi.a .icon { color: var(--brand-2); }
+  .kpi.b .icon { color: var(--green); }
+  .kpi.c .icon { color: var(--amber); }
+  .kpi.d .icon { color: var(--pink); }
+
+  /* ------ Grid sections ------ */
+  .panel {
+    background: linear-gradient(160deg, var(--bg-panel), var(--bg-panel-2));
+    border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; position: relative;
+  }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .panel-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .panel-title .tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(74,127,255,0.15); color: var(--brand-2); letter-spacing: 0.5px; }
+  .panel-sub { color: var(--text-3); font-size: 11px; margin-top: 2px; }
+  .panel-actions { display: flex; gap: 6px; }
+  .seg { display: inline-flex; padding: 3px; border-radius: 8px; background: var(--bg-elev); border: 1px solid var(--border); }
+  .seg button {
+    background: transparent; border: 0; color: var(--text-2); font-size: 11px;
+    padding: 4px 10px; border-radius: 6px; cursor: pointer; font-family: inherit;
+  }
+  .seg button.on { background: rgba(74,127,255,0.22); color: #EAF1FF; }
+
+  .row-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 18px; }
+  .row-1-1 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+  .row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 18px; }
+
+  /* ------ Chart container ------ */
+  .chart-wrap { height: 300px; position: relative; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-2); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* ------ Signal sources donut stats ------ */
+  .src-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .src { display: grid; grid-template-columns: 80px 1fr 50px; align-items: center; gap: 10px; font-size: 12px; }
+  .src .name { color: var(--text); }
+  .src .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow: hidden; }
+  .src .bar > span { display: block; height: 100%; border-radius: 3px; }
+  .src .val { color: var(--text-2); text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ------ Sankey (SVG) ------ */
+  .sankey-wrap { height: 280px; position: relative; }
+  .sankey-node { fill: var(--bg-panel-2); stroke: rgba(255,255,255,0.08); }
+  .sankey-label { font-size: 11.5px; fill: var(--text); font-family: inherit; }
+  .sankey-label .small { font-size: 10px; fill: var(--text-3); }
+
+  /* ------ Map ------ */
+  .map-wrap { height: 280px; position: relative; }
+  .map-bg { position: absolute; inset: 0; opacity: 0.9; }
+  .city-dot { position: absolute; transform: translate(-50%, -50%); }
+  .city-dot .core { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(255,255,255,0.1); }
+  .city-dot .ring { position: absolute; inset: -8px; border-radius: 50%; border: 1.5px solid; opacity: 0.6; animation: ring 2s ease-out infinite; }
+  .city-dot .ring.delay { animation-delay: 1s; }
+  @keyframes ring { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }
+  .city-label { position: absolute; left: 14px; top: -2px; font-size: 11px; color: var(--text); white-space: nowrap; }
+  .city-label .sub { color: var(--text-3); font-size: 10px; }
+
+  .map-legend { position: absolute; bottom: 4px; right: 0; display: flex; gap: 12px; font-size: 11px; color: var(--text-2); }
+
+  /* ------ DNA cards ------ */
+  .dna-card { background: linear-gradient(160deg, var(--bg-panel), var(--bg-panel-2)); border: 1px solid var(--border); border-radius: 14px; padding: 16px 16px 14px; position: relative; overflow: hidden; }
+  .dna-card .glow { position: absolute; inset: -30% -10% auto auto; width: 180px; height: 180px; background: radial-gradient(circle, rgba(74,127,255,0.22), transparent 70%); pointer-events: none; }
+  .dna-card.green .glow { background: radial-gradient(circle, rgba(16,217,163,0.22), transparent 70%); }
+  .dna-card.violet .glow { background: radial-gradient(circle, rgba(167,123,255,0.22), transparent 70%); }
+  .dna-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .dna-title { font-size: 16px; font-weight: 600; line-height: 1.2; }
+  .dna-sub { font-size: 11px; color: var(--text-2); margin-top: 3px; }
+  .tsi-badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(16,217,163,0.12); color: #5bf0c5; letter-spacing: 0.5px; }
+  .tsi-badge.mid { background: rgba(255,181,71,0.12); color: #FFC97A; }
+  .spark-wrap { position: relative; height: 40px; margin: 8px 0 12px; }
+  .spark-wrap canvas { display: block !important; width: 100% !important; height: 100% !important; }
+
+  .dna-dims { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: 11.5px; }
+  .dna-dims .d { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .dna-dims .d:last-child, .dna-dims .d:nth-last-child(2) { border-bottom: 0; }
+  .dna-dims .k { color: var(--text-3); }
+  .dna-dims .v { color: var(--text); }
+
+  .dna-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-2); }
+  .src-icons { display: flex; gap: -4px; }
+  .src-icons .sc { width: 20px; height: 20px; border-radius: 50%; background: var(--bg-panel-2); border: 1.5px solid var(--bg-panel); margin-left: -6px; display:grid; place-items:center; font-size: 10px; font-weight: 700; }
+  .src-icons .sc:first-child { margin-left: 0; }
+
+  /* ------ Decline list ------ */
+  .decline-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .decline-item {
+    display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px;
+    padding: 10px 12px; background: rgba(255,94,126,0.05); border: 1px solid rgba(255,94,126,0.15); border-radius: 10px;
+  }
+  .decline-item .nm { font-size: 13px; font-weight: 500; }
+  .decline-item .reason { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+  .decline-item .delta { font-size: 12px; color: #ff9eb1; font-variant-numeric: tabular-nums; }
+  .decline-item .action { padding: 4px 10px; border-radius: 6px; font-size: 11px; border: 1px solid rgba(255,94,126,0.35); color: #ff9eb1; background: transparent; cursor: pointer; }
+
+  /* ------ Recommendation table ------ */
+  .rec-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .rec-table thead th {
+    text-align: left; padding: 10px 12px; color: var(--text-3); font-weight: 500;
+    border-bottom: 1px solid var(--border); font-size: 11px; letter-spacing: 0.3px;
+  }
+  .rec-table tbody td {
+    padding: 14px 12px; border-bottom: 1px solid var(--border); vertical-align: middle;
+  }
+  .rec-table tbody tr:last-child td { border-bottom: 0; }
+  .rec-table tbody tr:hover td { background: rgba(74,127,255,0.04); }
+  .rank { width: 26px; height: 26px; border-radius: 8px; background: rgba(74,127,255,0.14); color: var(--brand-2); display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+  .rec-name { font-weight: 600; font-size: 13px; }
+  .rec-tags { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+  .tag-pill { font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-2); border: 1px solid var(--border); }
+  .win-bar { position: relative; width: 120px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.06); overflow: hidden; }
+  .win-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--cyan)); border-radius: 4px; }
+  .win-text { font-size: 11px; color: var(--text-2); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .evidence { display: flex; gap: 4px; }
+  .evidence .ev { padding: 3px 7px; border-radius: 4px; font-size: 10.5px; background: rgba(255,255,255,0.04); color: var(--text-2); border: 1px solid var(--border); }
+  .btn {
+    padding: 6px 12px; border-radius: 6px; font-size: 11.5px; font-family: inherit;
+    background: rgba(74,127,255,0.18); color: #D7E3FF; border: 1px solid rgba(74,127,255,0.4); cursor: pointer;
+  }
+  .btn:hover { background: rgba(74,127,255,0.3); }
+
+  /* ------ Footer ------ */
+  .foot { color: var(--text-3); font-size: 11px; text-align: center; margin-top: 22px; letter-spacing: 0.5px; }
+
+  /* ------ View switching ------ */
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .nav-item.disabled { opacity: 0.38; cursor: not-allowed; }
+  .nav-item.disabled:hover { background: transparent; color: var(--text-2); }
+
+  /* ------ DNA view ------ */
+  .dna-layout { display: grid; grid-template-columns: 260px 1fr; gap: 16px; }
+  .flavor-list { max-height: 920px; overflow-y: auto; }
+  .fl-title { font-size: 10px; color: var(--text-3); letter-spacing: 2px; margin-bottom: 10px; padding: 0 2px; }
+  .fl-item { padding: 10px 12px; border-radius: 8px; cursor: pointer; margin-bottom: 4px; border: 1px solid transparent; transition: background .15s; }
+  .fl-item:hover { background: var(--bg-elev); }
+  .fl-item.on { background: linear-gradient(90deg, rgba(74,127,255,0.22), rgba(74,127,255,0.04)); border-color: rgba(74,127,255,0.35); }
+  .fl-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .fl-meta { display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--text-3); }
+  .tsi-mini { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tsi-mini.up { color: #5bf0c5; }
+  .tsi-mini.down { color: #ff9eb1; }
+
+  .dna-hero { display: grid; grid-template-columns: 360px 1fr; gap: 24px; align-items: center; }
+  .radar-wrap { height: 300px; position: relative; }
+  .radar-caption { text-align: center; font-size: 11px; color: var(--text-3); margin-top: 4px; letter-spacing: 1px; }
+  .dna-detail-list > .dl-row { padding: 10px 0; border-bottom: 1px dashed var(--border); display: grid; grid-template-columns: 84px 1fr; gap: 12px; font-size: 12.5px; }
+  .dna-detail-list > .dl-row:last-child { border-bottom: 0; }
+  .dna-detail-list .k { color: var(--text-3); letter-spacing: 0.5px; }
+  .dna-detail-list .v { color: var(--text); line-height: 1.6; }
+
+  .family-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
+  .family-card { padding: 12px; border-radius: 10px; background: var(--bg-elev); border: 1px solid var(--border); }
+  .family-card .fm-title { font-size: 13px; font-weight: 600; }
+  .family-card .fm-score { display: inline-block; margin-top: 6px; font-size: 11px; padding: 2px 7px; border-radius: 4px; background: rgba(16,217,163,0.12); color: #5bf0c5; }
+  .family-card .fm-note { font-size: 11px; color: var(--text-3); margin-top: 6px; line-height: 1.5; }
+
+  .supply-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .supply-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--bg-elev); border: 1px solid var(--border); }
+  .supply-row .sr-name { font-size: 12.5px; font-weight: 500; }
+  .supply-row .sr-meta { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+  .supply-row .sr-tag { font-size: 10.5px; padding: 3px 8px; border-radius: 4px; background: rgba(74,127,255,0.15); color: var(--brand-2); align-self: center; }
+  .supply-row .sr-tag.warn { background: rgba(255,181,71,0.14); color: #FFC97A; }
+  .supply-row .sr-tag.ok { background: rgba(16,217,163,0.12); color: #5bf0c5; }
+
+  /* ------ Pipeline (Rec view) ------ */
+  .pipeline { display: grid; grid-template-columns: repeat(4, 1fr) 300px; gap: 14px; }
+  .pipe-col { background: linear-gradient(160deg, var(--bg-panel), var(--bg-panel-2)); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .pipe-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .pipe-head h4 { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .pipe-head h4 .swatch { width: 8px; height: 8px; border-radius: 50%; }
+  .pipe-head .pc-count { font-size: 11px; color: var(--text-3); background: var(--bg-elev); padding: 2px 8px; border-radius: 999px; }
+  .pipe-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; transition: transform .15s, border-color .15s; }
+  .pipe-card:hover { border-color: rgba(74,127,255,0.4); transform: translateY(-2px); }
+  .pipe-card .pc-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
+  .pipe-card .pc-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .pipe-card .pc-tags { display: flex; gap: 4px; flex-wrap: wrap; margin: 8px 0 6px; }
+  .pipe-card .pc-win { margin-top: 8px; }
+  .pipe-card .pc-win-text { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+  .pipe-card .pc-win-text strong { color: var(--green); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .pipe-card .pc-foot { display: flex; gap: 4px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-3); }
+
+  .summary-card { background: linear-gradient(160deg, var(--bg-panel), var(--bg-panel-2)); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+  .summary-kpi { padding: 12px 0; border-bottom: 1px dashed var(--border); }
+  .summary-kpi:last-child { border-bottom: 0; }
+  .summary-kpi .skl { font-size: 11.5px; color: var(--text-2); }
+  .summary-kpi .skv { font-size: 22px; font-weight: 700; margin-top: 4px; }
+  .summary-kpi .skd { font-size: 11px; margin-top: 2px; }
+  .summary-kpi .skd.up { color: #5bf0c5; }
+  .summary-kpi .skd.down { color: #ff9eb1; }
+
+  /* ------ Migration view ------ */
+  .migration-sankey { width: 100%; height: 440px; }
+  .rules-list { display: flex; flex-direction: column; gap: 10px; }
+  .rule-row { display: grid; grid-template-columns: 1fr 80px 90px; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: var(--bg-elev); border: 1px solid var(--border); }
+  .rule-row .rr-path { font-size: 12.5px; }
+  .rule-row .rr-path strong { color: var(--text); }
+  .rule-row .rr-path .arrow { color: var(--text-3); margin: 0 6px; }
+  .rule-row .rr-week { font-size: 12px; color: #5bf0c5; font-variant-numeric: tabular-nums; text-align: right; }
+  .rule-row .rr-conf { font-size: 11px; color: var(--text-2); text-align: right; }
+  .rule-row .rr-bar { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.05); overflow: hidden; margin-top: 6px; }
+  .rule-row .rr-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--brand), var(--green)); }
+
+  .case-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 4px; }
+  .case-card { padding: 14px; background: linear-gradient(160deg, rgba(74,127,255,0.06), rgba(16,217,163,0.04)); border: 1px solid var(--border); border-radius: 12px; }
+  .case-card .cc-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .case-card .cc-year { font-size: 11px; color: var(--text-3); letter-spacing: 1px; }
+  .case-card .cc-path { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0; }
+  .case-card .cc-chip { font-size: 10.5px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-2); }
+  .case-card .cc-chip.highlight { background: rgba(16,217,163,0.1); color: #5bf0c5; border-color: rgba(16,217,163,0.3); }
+  .case-card .cc-stats { display: flex; gap: 16px; margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--border); }
+  .case-card .cc-stat { flex: 1; font-size: 11px; color: var(--text-3); }
+  .case-card .cc-stat strong { display: block; color: var(--text); font-size: 15px; font-weight: 700; margin-top: 2px; }
+
+  .timeline-wrap { position: relative; padding: 20px 8px 12px; }
+  .tl-axis { position: relative; height: 2px; background: rgba(120,145,220,0.15); margin: 30px 0 12px; }
+  .tl-axis::before, .tl-axis::after { content: ''; position: absolute; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+  .tl-axis::before { left: 0; }
+  .tl-axis::after { right: 0; background: var(--green); }
+  .tl-point { position: absolute; top: -6px; width: 14px; height: 14px; border-radius: 50%; transform: translateX(-50%); box-shadow: 0 0 0 4px var(--bg-panel); }
+  .tl-label { position: absolute; transform: translateX(-50%); white-space: nowrap; font-size: 11px; }
+  .tl-label.top { top: -22px; color: var(--text); }
+  .tl-label.bottom { top: 20px; color: var(--text-3); }
+
+  /* ------ Stage maturity (阶段成熟度 · 六阶段链路) ------ */
+  .stage-chain {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 0;
+    position: relative; padding: 20px 6px 6px;
+  }
+  .stage-chain::before {
+    content: ''; position: absolute; left: 8.2%; right: 8.2%; top: 58px; height: 2px;
+    background: linear-gradient(90deg, rgba(16,217,163,0.55) 0%, rgba(16,217,163,0.55) 28%, rgba(74,127,255,0.7) 48%, rgba(167,123,255,0.6) 62%, rgba(255,181,71,0.5) 78%, rgba(255,94,126,0.5) 100%);
+    border-radius: 2px; z-index: 0;
+  }
+  .stage-node { position: relative; padding: 0 6px; text-align: center; z-index: 1; }
+  .stage-node .stage-idx {
+    position: relative; z-index: 2;
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--bg-panel-2); border: 2px solid var(--border-strong);
+    margin: 0 auto 12px; font-size: 13px; font-weight: 700; color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .stage-node.done .stage-idx {
+    /* 底层不透明 bg-panel-2 打底 + 顶层绿色 tint —— 轨道线不会穿透圆圈 */
+    background-color: var(--bg-panel-2);
+    background-image: linear-gradient(rgba(16,217,163,0.15), rgba(16,217,163,0.15));
+    border-color: rgba(16,217,163,0.5); color: #5bf0c5;
+  }
+  .stage-node.current .stage-idx {
+    background-color: var(--bg-panel-2);
+    background-image: linear-gradient(rgba(74,127,255,0.28), rgba(74,127,255,0.28));
+    border-color: var(--brand); color: #EAF1FF;
+    box-shadow: 0 0 0 4px rgba(74,127,255,0.18), 0 0 18px rgba(74,127,255,0.5);
+    animation: stagePulse 2s ease-out infinite;
+  }
+  @keyframes stagePulse {
+    0%,100% { box-shadow: 0 0 0 4px rgba(74,127,255,0.18), 0 0 18px rgba(74,127,255,0.45); }
+    50%     { box-shadow: 0 0 0 9px rgba(74,127,255,0.08), 0 0 28px rgba(74,127,255,0.75); }
+  }
+  .stage-node.future .stage-idx {
+    /* 不再用 opacity (会让轨道透过来)，改用虚线边框 + 淡色文字 */
+    background-color: var(--bg-panel-2);
+    border-color: rgba(120,145,220,0.25);
+    border-style: dashed;
+    color: var(--text-3);
+  }
+  .stage-node .stage-name { font-size: 12.5px; font-weight: 600; color: var(--text); letter-spacing: 0.3px; }
+  .stage-node.future .stage-name { color: var(--text-2); }
+  .stage-node .stage-sub { font-size: 10.5px; color: var(--text-3); margin-top: 3px; line-height: 1.45; min-height: 26px; }
+  .stage-node .stage-count {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 8px; padding: 3px 9px; border-radius: 999px;
+    font-size: 11px; background: var(--bg-elev); border: 1px solid var(--border); color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .stage-node.done .stage-count { color: #5bf0c5; background: rgba(16,217,163,0.08); border-color: rgba(16,217,163,0.3); }
+  .stage-node.current .stage-count { color: #EAF1FF; background: rgba(74,127,255,0.22); border-color: rgba(74,127,255,0.5); }
+  .stage-node .stage-samples { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; font-size: 10.5px; }
+  .stage-node .stage-samples span {
+    padding: 3px 6px; border-radius: 4px; background: rgba(255,255,255,0.03);
+    color: var(--text-2); border: 1px solid var(--border); white-space: nowrap;
+  }
+  .stage-node.current .stage-samples span { background: rgba(74,127,255,0.08); border-color: rgba(74,127,255,0.25); color: #D7E3FF; }
+
+  .stage-window-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; font-size: 11px;
+    background: rgba(16,217,163,0.12); border: 1px solid rgba(16,217,163,0.4); color: #5bf0c5;
+    margin-left: 8px;
+  }
+  .stage-window-tag .pulse { background: #5bf0c5; }
+  .stage-window-tag .pulse::after { border-color: #5bf0c5; }
+  .stage-insights {
+    margin-top: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .stage-insights .si {
+    padding: 11px 13px; border-radius: 10px; background: var(--bg-elev); border: 1px solid var(--border);
+    font-size: 11.5px; color: var(--text-2); line-height: 1.6;
+  }
+  .stage-insights .si strong { color: var(--text); font-weight: 600; }
+  .stage-insights .si.green { background: rgba(16,217,163,0.05); border-color: rgba(16,217,163,0.25); }
+  .stage-insights .si.amber { background: rgba(255,181,71,0.05); border-color: rgba(255,181,71,0.25); }
+  .stage-insights .si.pink  { background: rgba(255,94,126,0.05); border-color: rgba(255,94,126,0.22); }
+
+  /* ------ Flavor-level maturity bar (DNA view) ------ */
+  .maturity-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .mat-step {
+    position: relative; padding: 12px 12px 10px;
+    border-radius: 10px; background: var(--bg-elev); border: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 2px; min-height: 78px;
+  }
+  .mat-step .mat-idx { font-size: 10px; color: var(--text-3); letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+  .mat-step .mat-name { font-weight: 600; color: var(--text-2); font-size: 12.5px; }
+  .mat-step .mat-note { font-size: 10.5px; color: var(--text-3); margin-top: 2px; line-height: 1.4; }
+  .mat-step.done { background: rgba(16,217,163,0.07); border-color: rgba(16,217,163,0.3); }
+  .mat-step.done .mat-name { color: #5bf0c5; }
+  .mat-step.done .mat-idx { color: rgba(16,217,163,0.75); }
+  .mat-step.current {
+    background: linear-gradient(160deg, rgba(74,127,255,0.28), rgba(74,127,255,0.12));
+    border-color: rgba(74,127,255,0.55);
+    box-shadow: 0 0 0 1px rgba(74,127,255,0.2), 0 8px 20px rgba(74,127,255,0.18) inset;
+  }
+  .mat-step.current .mat-name { color: #EAF1FF; }
+  .mat-step.current .mat-idx { color: #D7E3FF; }
+  .mat-step.current::after {
+    content: '现在'; position: absolute; right: 10px; top: 10px;
+    font-size: 10px; letter-spacing: 1px; padding: 2px 7px; border-radius: 999px;
+    background: rgba(255,255,255,0.08); color: #EAF1FF;
+  }
+  .mat-step.current::before {
+    content: ''; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+    border-left: 7px solid transparent; border-right: 7px solid transparent;
+    border-top: 8px solid var(--brand);
+  }
+  .mat-step.future { opacity: 0.72; border-style: dashed; }
+  .mat-step.future .mat-name { color: var(--text-2); }
+
+  /* ------ Section bands (L1 / L2 / L3 layer labels) ------ */
+  .section-band { display: flex; align-items: center; gap: 12px; margin: 26px 2px 14px; }
+  .section-band:first-of-type { margin-top: 8px; }
+  .section-band .band-tag { font-size: 11px; letter-spacing: 2px; padding: 5px 10px; border-radius: 6px; background: rgba(74,127,255,0.15); color: var(--brand-2); border: 1px solid rgba(74,127,255,0.3); font-weight: 700; }
+  .section-band .band-title { font-size: 14.5px; font-weight: 600; color: var(--text); }
+  .section-band .band-sub { font-size: 11.5px; color: var(--text-3); margin-left: 2px; }
+  .section-band .band-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent); margin-left: 10px; }
+  .section-band.up .band-tag { background: rgba(16,217,163,0.12); color: #5bf0c5; border-color: rgba(16,217,163,0.3); }
+  .section-band.mid .band-tag { background: rgba(74,127,255,0.18); color: #7B9BFF; border-color: rgba(74,127,255,0.45); }
+  .section-band.down .band-tag { background: rgba(255,181,71,0.15); color: #FFC97A; border-color: rgba(255,181,71,0.3); }
+  .section-band.decision .band-tag { background: rgba(167,123,255,0.14); color: #c8aeff; border-color: rgba(167,123,255,0.3); }
+  .section-band.overview .band-tag { background: linear-gradient(90deg, rgba(74,127,255,0.22), rgba(16,217,163,0.22)); color: #EAF1FF; border-color: rgba(74,127,255,0.45); }
+
+  /* ------ Enhanced stage chain extras (daily deltas · conversion rates) ------ */
+  .stage-chain.live { padding-top: 50px; padding-bottom: 8px; }
+  .stage-chain.live::before { top: 70px; }  /* 让轨道对齐圆圈中线 (圆在 y=50~90, center 70) */
+  .stage-node .stage-delta {
+    position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; padding: 3px 8px; border-radius: 999px;
+    background: rgba(16,217,163,0.15); color: #5bf0c5; border: 1px solid rgba(16,217,163,0.4);
+    font-variant-numeric: tabular-nums; font-weight: 700; z-index: 6;
+    white-space: nowrap; letter-spacing: 0.3px;
+  }
+  .stage-node .stage-delta.hot { background: rgba(255,94,126,0.15); color: #ff9eb1; border-color: rgba(255,94,126,0.4); }
+  .stage-node .stage-delta.warn { background: rgba(255,181,71,0.15); color: #FFC97A; border-color: rgba(255,181,71,0.35); }
+  /* 连接器：坐在铁轨(rail)上、两圆圈之间的正中位置 */
+  .stage-connector {
+    position: absolute;
+    top: 10px;          /* node 内 y=10 (对应 chain y=60) → pill 中线落在 y=70, 正好铁轨上 */
+    right: 0;
+    transform: translate(50%, 0);  /* pill 水平中心落在 node 右边界 = 两圆之间 */
+    font-size: 10.5px; padding: 3px 9px; border-radius: 6px;
+    background: var(--bg-panel); border: 1px solid var(--border-strong);
+    color: var(--text-2); z-index: 5; font-variant-numeric: tabular-nums;
+    white-space: nowrap; font-weight: 600; line-height: 1.3;
+    box-shadow: 0 4px 10px rgba(6,8,38,0.5);
+  }
+  .stage-connector.hi { color: #5bf0c5; border-color: rgba(16,217,163,0.45); background: rgba(14,18,66,0.92); }
+  .stage-connector.md { color: #FFC97A; border-color: rgba(255,181,71,0.45); background: rgba(14,18,66,0.92); }
+  .stage-connector.lo { color: #ff9eb1; border-color: rgba(255,94,126,0.4); background: rgba(14,18,66,0.92); }
+
+  /* ------ Today alerts strip ------ */
+  .today-alerts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border); }
+  .alert-card { padding: 12px 14px; border-radius: 10px; background: var(--bg-elev); border: 1px solid var(--border); display: grid; grid-template-columns: 32px 1fr auto; gap: 10px; align-items: start; }
+  .alert-card .alert-icon { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; font-weight: 700; }
+  .alert-card.up .alert-icon { background: rgba(16,217,163,0.15); color: #5bf0c5; }
+  .alert-card.warn .alert-icon { background: rgba(255,181,71,0.15); color: #FFC97A; }
+  .alert-card.down .alert-icon { background: rgba(255,94,126,0.12); color: #ff9eb1; }
+  .alert-card .alert-title { font-size: 12.5px; font-weight: 600; color: var(--text); }
+  .alert-card .alert-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; line-height: 1.5; }
+  .alert-card .alert-stamp { font-size: 10px; color: var(--text-3); letter-spacing: 0.5px; padding-top: 4px; align-self: start; }
+
+  /* ------ Funnel KPI pills (4 key throughput metrics) ------ */
+  .funnel-pills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 14px; padding: 14px 8px; border-radius: 10px; background: rgba(255,255,255,0.025); border: 1px solid var(--border); }
+  .f-pill { display: flex; flex-direction: column; gap: 4px; padding: 2px 18px; border-right: 1px dashed var(--border); }
+  .f-pill:last-child { border-right: 0; }
+  .f-pill .fp-label { font-size: 11px; color: var(--text-3); letter-spacing: 0.5px; }
+  .f-pill .fp-val { font-size: 24px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .f-pill .fp-val .unit { font-size: 12px; font-weight: 500; color: var(--text-2); margin-left: 3px; }
+  .f-pill .fp-delta { font-size: 11px; font-variant-numeric: tabular-nums; }
+  .f-pill .fp-delta.up { color: #5bf0c5; }
+  .f-pill .fp-delta.down { color: #ff9eb1; }
+  .f-pill .fp-delta.amber { color: #FFC97A; }
+
+  /* ------ Upstream signal cards (①② 上游) ------ */
+  .upstream-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .up-card {
+    padding: 14px; border-radius: 12px;
+    background: linear-gradient(160deg, rgba(16,217,163,0.08), rgba(16,217,163,0.01));
+    border: 1px solid rgba(16,217,163,0.25); position: relative;
+  }
+  .up-card .up-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .up-card .up-title { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .up-card .up-title .up-icon { width: 28px; height: 28px; border-radius: 7px; background: rgba(16,217,163,0.2); color: #5bf0c5; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+  .up-card .up-badge { font-size: 10px; padding: 3px 7px; border-radius: 4px; background: rgba(16,217,163,0.15); color: #5bf0c5; letter-spacing: 0.5px; font-weight: 600; }
+  .up-card .up-desc { font-size: 10.5px; color: var(--text-3); margin: 4px 0 10px; padding-bottom: 10px; border-bottom: 1px dashed rgba(16,217,163,0.22); line-height: 1.5; }
+  .up-card .up-list { display: flex; flex-direction: column; gap: 6px; }
+  .up-card .up-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 7px 9px; border-radius: 6px; background: rgba(255,255,255,0.025); align-items: center; }
+  .up-card .up-row .u-name { font-size: 11.5px; color: var(--text); font-weight: 500; }
+  .up-card .up-row .u-meta { font-size: 10.5px; color: var(--text-3); margin-top: 2px; line-height: 1.4; }
+  .up-card .up-row .u-val { color: #5bf0c5; font-size: 11px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .up-card .up-row .u-val.warn { color: #FFC97A; }
+  .up-card .up-row .u-val.hot { color: #ff9eb1; }
+  .up-card .up-foot { margin-top: 10px; padding: 8px 10px; border-radius: 6px; background: rgba(16,217,163,0.07); border: 1px dashed rgba(16,217,163,0.3); font-size: 10.5px; color: var(--text-2); line-height: 1.5; }
+  .up-card .up-foot strong { color: #5bf0c5; }
+
+  /* Misc */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: rgba(120,145,220,0.18); border-radius: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-mark"></div>
+        <div class="logo-text">
+          <div class="zh">口味雷达</div>
+          <div class="en">TASTE · RADAR</div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">工作台</div>
+        <div class="nav-item active" data-view="dashboard"><span class="dot"></span>趋势大盘</div>
+        <div class="nav-item" data-view="dna"><span class="dot"></span>风味 DNA 拆解</div>
+        <div class="nav-item" data-view="rec"><span class="dot"></span>选品建议</div>
+        <div class="nav-item" data-view="migration"><span class="dot"></span>跨品类迁移</div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-title">配置</div>
+        <div class="nav-item disabled"><span class="dot"></span>规则引擎</div>
+        <div class="nav-item disabled"><span class="dot"></span>口味本体库</div>
+        <div class="nav-item disabled"><span class="dot"></span>渠道与数据源</div>
+        <div class="nav-item disabled"><span class="dot"></span>回流校准</div>
+      </div>
+
+      <div class="side-footer">
+        <div class="row"><span>数据状态</span><span class="live"><span class="pulse"></span>实时同步</span></div>
+        <div class="row"><span>数据源</span><span>12 路</span></div>
+        <div class="row"><span>本体标签</span><span>3,427</span></div>
+        <div class="row"><span>更新于</span><span>14:32:08</span></div>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+    <div id="view-container">
+
+    <!-- ============ VIEW 1 · 趋势大盘 ============ -->
+    <section class="view active" data-view="dashboard">
+      <!-- Top bar -->
+      <div class="topbar">
+        <div class="title">
+          <h1>趋势大盘 · 全网口味信号</h1>
+          <div class="sub">2026-04-21 · 本周 W16 · 覆盖 5 大品类 / 12 数据源 / 华语+日韩+北美</div>
+        </div>
+        <div class="actions">
+          <div class="chip">品类：咖啡茶饮 · 烘焙 · 乳品 · 零食 · 预制菜</div>
+          <div class="chip primary">时间窗：近 12 周 ▾</div>
+          <div class="chip live"><span class="pulse"></span>LIVE · 14:32</div>
+          <div class="avatar">XF</div>
+        </div>
+      </div>
+
+      <!-- ▼▼▼ L1 · 核心概览层 · 六阶段漏斗 + 今日动态 ▼▼▼ -->
+      <div class="section-band overview">
+        <span class="band-tag">L1 · 核心概览</span>
+        <span class="band-title">六阶段漏斗 · 全网口味动态</span>
+        <span class="band-sub">从原料源头到大众渗透 · 每天刷新一次 · 当前本周 W16</span>
+        <span class="band-line"></span>
+      </div>
+
+      <section class="panel" style="margin-bottom:18px;">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              阶段成熟度漏斗
+              <span class="tag" style="background:rgba(16,217,163,0.15);color:#5bf0c5;">46 个真趋势 · 六阶段链路</span>
+              <span class="stage-window-tag"><span class="pulse"></span>推荐跟进窗口：③–④</span>
+            </div>
+            <div class="panel-sub">每个节点 = 当前存量 · 今日新进 · 节点之间 = 阶段转化率。选品团队最佳介入窗口在「海外/小众先行 → 内容种草」之间，约领先大众 4–12 周进入，仍可捕获 40–55% 品类利润。</div>
+          </div>
+          <div class="panel-actions">
+            <div class="seg"><button class="on">全部</button><button>咖啡茶饮</button><button>烘焙</button><button>乳品</button><button>零食</button></div>
+          </div>
+        </div>
+
+        <div class="stage-chain live">
+          <div class="stage-node done">
+            <div class="stage-delta">今日 +12</div>
+            <div class="stage-idx">①</div>
+            <div class="stage-name">原料端</div>
+            <div class="stage-sub">大宗·进口·香精</div>
+            <div class="stage-count">312 个异动</div>
+            <div class="stage-samples"><span>巴西白可可脂</span><span>牛油果粉</span></div>
+            <div class="stage-connector hi">通过 38%</div>
+          </div>
+          <div class="stage-node done">
+            <div class="stage-delta">今日 +4</div>
+            <div class="stage-idx">②</div>
+            <div class="stage-name">研发/代工端</div>
+            <div class="stage-sub">香精报告·展会样品</div>
+            <div class="stage-count">118 个立项</div>
+            <div class="stage-samples"><span>柚子椒麻</span><span>焙茶黑糖</span></div>
+            <div class="stage-connector md">通过 22%</div>
+          </div>
+          <div class="stage-node current">
+            <div class="stage-delta hot">今日 +5</div>
+            <div class="stage-idx">③</div>
+            <div class="stage-name">海外/小众先行</div>
+            <div class="stage-sub">日韩·北美·独立品牌</div>
+            <div class="stage-count">15 个 · 已验证</div>
+            <div class="stage-samples"><span>开心果×抹茶</span><span>山茶×蜜桃</span></div>
+            <div class="stage-connector hi">起量 47%</div>
+          </div>
+          <div class="stage-node current">
+            <div class="stage-delta hot">今日 +3</div>
+            <div class="stage-idx">④</div>
+            <div class="stage-name">内容种草</div>
+            <div class="stage-sub">小红书·抖音爆点</div>
+            <div class="stage-count">7 个 · 穿越 65</div>
+            <div class="stage-samples"><span>开心果×乳</span><span>茉莉×乌龙</span></div>
+            <div class="stage-connector md">上市 28%</div>
+          </div>
+          <div class="stage-node future">
+            <div class="stage-delta warn">今日 +1</div>
+            <div class="stage-idx">⑤</div>
+            <div class="stage-name">头部上市</div>
+            <div class="stage-sub">TOP10 品牌同步推</div>
+            <div class="stage-count">3 个进入</div>
+            <div class="stage-samples"><span>咸蛋黄×酥</span></div>
+            <div class="stage-connector lo">爆款 14%</div>
+          </div>
+          <div class="stage-node future">
+            <div class="stage-delta warn">今日 +0</div>
+            <div class="stage-idx">⑥</div>
+            <div class="stage-name">大众渗透</div>
+            <div class="stage-sub">便利·商超铺货</div>
+            <div class="stage-count">0 个 · 本榜</div>
+            <div class="stage-samples"><span>（已转衰退池）</span></div>
+          </div>
+        </div>
+
+        <!-- 4 throughput KPIs (回应你提的 a/b/c/d 动态指标) -->
+        <div class="funnel-pills">
+          <div class="f-pill">
+            <span class="fp-label">(a) 原料端异动 · 今日</span>
+            <span class="fp-val">+12<span class="unit">个</span></span>
+            <span class="fp-delta up">▲ 近 7 日 +78 · 创新高</span>
+          </div>
+          <div class="f-pill">
+            <span class="fp-label">(b) 获批进入研发 · 本周</span>
+            <span class="fp-val">+32<span class="unit">个</span></span>
+            <span class="fp-delta up">▲ 转化率 38% · 高于均值 +4pp</span>
+          </div>
+          <div class="f-pill">
+            <span class="fp-label">(c) 头部上市新品 · 本周</span>
+            <span class="fp-val">+7<span class="unit">款</span></span>
+            <span class="fp-delta amber">● 其中 3 款命中选品推荐</span>
+          </div>
+          <div class="f-pill">
+            <span class="fp-label">(d) 大众渗透爆款 · 本周</span>
+            <span class="fp-val">+2<span class="unit">款</span></span>
+            <span class="fp-delta down">▼ 爆款率 14% · 低于目标 (20%)</span>
+          </div>
+        </div>
+
+        <!-- 今日动态 3 条告警 -->
+        <div class="today-alerts">
+          <div class="alert-card up">
+            <div class="alert-icon">↑</div>
+            <div>
+              <div class="alert-title">3 个口味今日跨越 ③→④ 阈值</div>
+              <div class="alert-sub">开心果×抹茶 / 山茶×蜜桃 / 焙茶黑糖 · TSI 首次穿越 65，进入内容种草加速期。</div>
+            </div>
+            <div class="alert-stamp">14:32</div>
+          </div>
+          <div class="alert-card warn">
+            <div class="alert-icon">★</div>
+            <div>
+              <div class="alert-title">1 个口味跃升 ④→⑤ · 头部品牌首发</div>
+              <div class="alert-sub">咸蛋黄×酥皮 · 喜茶 + 乐乐茶今日同步上新 · 推测下周 TOP30 品牌将跟进。</div>
+            </div>
+            <div class="alert-stamp">11:08</div>
+          </div>
+          <div class="alert-card down">
+            <div class="alert-icon">↓</div>
+            <div>
+              <div class="alert-title">2 个 SKU 触发 ⑥ 衰退预警</div>
+              <div class="alert-sub">葡萄柚×玫瑰 / 杨梅×荔枝 · 连续 5 周 TSI 下滑 + 社交疲劳度↑ · 建议 2 周内启动清库。</div>
+            </div>
+            <div class="alert-stamp">09:41</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ▼▼▼ L2 · 上游段 · 看什么 (NEW) ▼▼▼ -->
+      <div class="section-band up">
+        <span class="band-tag">L2 · 上游</span>
+        <span class="band-title">上游哨兵 · 看什么</span>
+        <span class="band-sub">对应①②阶段 · 比社媒爆点提前 8–12 周捕捉信号</span>
+        <span class="band-line"></span>
+      </div>
+
+      <section class="panel" style="margin-bottom:18px;">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              上游四路信号
+              <span class="tag" style="background:rgba(16,217,163,0.12);color:#5bf0c5;">EARLY · 比大众早 8–12 周</span>
+            </div>
+            <div class="panel-sub">海关进口 · 香精公司报告 · 食品展会样品 · 专利商标申报 —— 四路独立信号源做"远程哨兵"，误报率高，但覆盖时间窗前置，交叉两路以上即纳入研发观察池。</div>
+          </div>
+          <div class="panel-actions">
+            <button class="btn">查看完整上游池 (312) ↗</button>
+          </div>
+        </div>
+
+        <div class="upstream-grid">
+          <!-- ① 海关进口 -->
+          <div class="up-card">
+            <div class="up-head">
+              <div class="up-title"><span class="up-icon">关</span>海关进口异动</div>
+              <span class="up-badge">近 4 周</span>
+            </div>
+            <div class="up-desc">HS 编码颗粒度监控大宗原料进口量异动 · 滚动对比同比/环比</div>
+            <div class="up-list">
+              <div class="up-row">
+                <div><div class="u-name">开心果仁 · 美国加州</div><div class="u-meta">Q1 进口 +38% · Agri-Nut 主导</div></div>
+                <div class="u-val">+38%</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">白可可脂 · 巴西</div><div class="u-meta">单月 +51% · 成本仍在高位</div></div>
+                <div class="u-val">+51%</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">牛油果油粉 · 墨西哥</div><div class="u-meta">新入 TOP50 · 零烘焙新原料</div></div>
+                <div class="u-val warn">NEW</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">柚子果粉 · 日本</div><div class="u-meta">4 周 +22% · 饮品厂采购</div></div>
+                <div class="u-val">+22%</div>
+              </div>
+            </div>
+            <div class="up-foot"><strong>推导逻辑：</strong>进口量异动 = 下游工厂已开始备料 → 12 周内必有新品上市。</div>
+          </div>
+
+          <!-- ② 香精公司报告 -->
+          <div class="up-card">
+            <div class="up-head">
+              <div class="up-title"><span class="up-icon">香</span>香精公司报告</div>
+              <span class="up-badge">本季</span>
+            </div>
+            <div class="up-desc">Firmenich · Givaudan · IFF · Symrise 四大香精巨头季度风味报告抓取</div>
+            <div class="up-list">
+              <div class="up-row">
+                <div><div class="u-name">Firmenich 2025 秋 TOP10</div><div class="u-meta">"绿色坚果风味" 首次入选 · 开心果/青柠/罗勒</div></div>
+                <div class="u-val">✦ TOP10</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">Givaudan · 东方茶系</div><div class="u-meta">茉莉+乌龙+白茶重点推 · 亚太定制线</div></div>
+                <div class="u-val">重点推</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">IFF · Mood Taste 报告</div><div class="u-meta">"微奢犒赏" 情绪标签 +64% 被提及</div></div>
+                <div class="u-val warn">情绪↑</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">Symrise · 植物蛋白</div><div class="u-meta">开心果奶基/杏仁奶基新推 · 燕麦奶疲劳</div></div>
+                <div class="u-val">NEW</div>
+              </div>
+            </div>
+            <div class="up-foot"><strong>推导逻辑：</strong>香精巨头重点推 = 头部品牌 6–9 个月内一定会用到该风味。</div>
+          </div>
+
+          <!-- ③ 食品展会样品 -->
+          <div class="up-card">
+            <div class="up-head">
+              <div class="up-title"><span class="up-icon">展</span>食品展会样品</div>
+              <span class="up-badge">FIC / SIAL 2026</span>
+            </div>
+            <div class="up-desc">中国食品添加剂展 · 上海 SIAL · FoodTalks · 代工厂样品柜抓取</div>
+            <div class="up-list">
+              <div class="up-row">
+                <div><div class="u-name">开心果×乳脂 组合</div><div class="u-meta">SIAL 2026 · 14 家代工厂同步展样</div></div>
+                <div class="u-val">14 家</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">咸甜解构 · 咸蛋黄酥</div><div class="u-meta">FIC 本届 9 家样品 · 4 家已量产</div></div>
+                <div class="u-val">9 家</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">低度果露 · 酒感饮品</div><div class="u-meta">FoodTalks · 0–3 度酒感组合上升</div></div>
+                <div class="u-val warn">NEW</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">植物基奶酪 · 腰果发酵</div><div class="u-meta">SIAL · 5 家展样 · 预制菜渠道</div></div>
+                <div class="u-val">5 家</div>
+              </div>
+            </div>
+            <div class="up-foot"><strong>推导逻辑：</strong>展会样品 ≥ 5 家代工同步 = 供应链已就绪，离量产上市 6–8 周。</div>
+          </div>
+
+          <!-- ④ 专利/商标 -->
+          <div class="up-card">
+            <div class="up-head">
+              <div class="up-title"><span class="up-icon">专</span>专利商标申报</div>
+              <span class="up-badge">近 8 周</span>
+            </div>
+            <div class="up-desc">CNIPA 食品类商标 + 发明专利申请抓取 · 品牌"提前订名"信号</div>
+            <div class="up-list">
+              <div class="up-row">
+                <div><div class="u-name">"开心厚乳" 商标</div><div class="u-meta">蜜雪冰城关联主体已申报 · 30 类</div></div>
+                <div class="u-val hot">强信号</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">"茉莉初雪" 商标</div><div class="u-meta">霸王茶姬关联 · 30/32 类双申</div></div>
+                <div class="u-val hot">强信号</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">柚子椒麻饮品 专利</div><div class="u-meta">某茶饮头部工厂 · 配方发明专利</div></div>
+                <div class="u-val warn">待审</div>
+              </div>
+              <div class="up-row">
+                <div><div class="u-name">"山茶蜜桃" 商标</div><div class="u-meta">独立新品牌已申报 · 小众可观察</div></div>
+                <div class="u-val">普通</div>
+              </div>
+            </div>
+            <div class="up-foot"><strong>推导逻辑：</strong>头部品牌提前订名 = 上市时间锁定 6–10 周内。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ▼▼▼ L2 · 中游段 · 跟什么 ▼▼▼ -->
+      <div class="section-band mid">
+        <span class="band-tag">L2 · 中游</span>
+        <span class="band-title">中游验证 · 跟什么</span>
+        <span class="band-sub">对应③④阶段 · 多源交叉 + TSI 穿越 65 阈值才进入选品池</span>
+        <span class="band-line"></span>
+      </div>
+
+      <!-- Main chart + signal source -->
+      <section class="row-2-1">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">口味热度指数 · TSI 趋势 <span class="tag">TOP 6</span></div>
+              <div class="panel-sub">多源加权的口味信号强度。纵轴为 TSI（0–100）， 虚线为"真趋势"阈值 65。</div>
+            </div>
+            <div class="panel-actions">
+              <div class="seg">
+                <button>4W</button><button class="on">12W</button><button>26W</button><button>52W</button>
+              </div>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="tsiChart"></canvas></div>
+          <div class="legend-row" id="tsiLegend"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">信号源权重分布</div>
+              <div class="panel-sub">本周 TSI 贡献度（多源交叉验证后）</div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:200px;"><canvas id="srcChart"></canvas></div>
+          <div class="src-list">
+            <div class="src"><span class="name">小红书 / 抖音</span><div class="bar"><span style="width:92%; background:linear-gradient(90deg,#4A7FFF,#7B9BFF);"></span></div><span class="val">28.4%</span></div>
+            <div class="src"><span class="name">电商榜单</span><div class="bar"><span style="width:78%; background:linear-gradient(90deg,#10D9A3,#3BD5FF);"></span></div><span class="val">24.1%</span></div>
+            <div class="src"><span class="name">外卖到店</span><div class="bar"><span style="width:65%; background:linear-gradient(90deg,#FFB547,#FFD86E);"></span></div><span class="val">20.0%</span></div>
+            <div class="src"><span class="name">便利鲜食</span><div class="bar"><span style="width:48%; background:linear-gradient(90deg,#A77BFF,#FF5E7E);"></span></div><span class="val">14.7%</span></div>
+            <div class="src"><span class="name">海外前瞻</span><div class="bar"><span style="width:40%; background:linear-gradient(90deg,#3BD5FF,#A77BFF);"></span></div><span class="val">12.8%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sankey + Map -->
+      <section class="row-1-1">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">跨品类迁移路径 <span class="tag">MIGRATION</span></div>
+              <div class="panel-sub">「开心果 × 乳制品」组合在过去 12 周的跨品类扩散轨迹</div>
+            </div>
+            <div class="panel-actions"><div class="seg"><button class="on">开心果×乳</button><button>茉莉×乌龙</button><button>咸蛋黄×酥皮</button></div></div>
+          </div>
+          <div class="sankey-wrap">
+            <svg id="sankey" width="100%" height="100%" viewBox="0 0 620 280" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">地域扩散热度 <span class="tag">REGIONAL</span></div>
+              <div class="panel-sub">「茉莉 × 乌龙」信号从华东起量向外扩散，4 周内触达 6 大区域</div>
+            </div>
+            <div class="panel-actions"><div class="seg"><button>W12</button><button>W13</button><button>W14</button><button class="on">W16</button></div></div>
+          </div>
+          <div class="map-wrap">
+            <svg class="map-bg" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid meet">
+              <!-- Stylized china silhouette (rough shapes) -->
+              <defs>
+                <linearGradient id="landGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#1a2263" stop-opacity="0.55"/>
+                  <stop offset="100%" stop-color="#0e1242" stop-opacity="0.2"/>
+                </linearGradient>
+              </defs>
+              <g fill="url(#landGrad)" stroke="rgba(120,145,220,0.18)" stroke-width="1">
+                <path d="M110 170 Q90 130 130 95 Q180 55 250 60 Q320 55 380 70 Q440 80 480 110 Q520 140 525 180 Q520 220 480 245 Q440 275 390 275 Q340 290 290 280 Q220 295 180 270 Q130 245 115 210 Z"/>
+                <path d="M140 230 Q130 250 150 270 Q175 285 200 275 Q190 255 175 245 Z" opacity="0.6"/>
+                <path d="M500 220 Q525 230 530 255 Q515 268 495 260 Q485 240 500 220 Z" opacity="0.6"/>
+              </g>
+              <!-- Grid lines -->
+              <g stroke="rgba(120,145,220,0.08)" stroke-dasharray="3,4">
+                <line x1="0" y1="170" x2="600" y2="170"/>
+                <line x1="300" y1="0" x2="300" y2="340"/>
+              </g>
+            </svg>
+
+            <!-- Dots -->
+            <div class="city-dot" style="left:68%; top:56%;">
+              <div class="core" style="background:#10D9A3; box-shadow:0 0 12px #10D9A3, 0 0 0 2px rgba(16,217,163,0.25);"></div>
+              <div class="ring" style="color:#10D9A3; border-color:#10D9A3;"></div>
+              <div class="ring delay" style="color:#10D9A3; border-color:#10D9A3;"></div>
+              <div class="city-label">上海 · 起量点<div class="sub">TSI 86 · 领先 3 周</div></div>
+            </div>
+            <div class="city-dot" style="left:63%; top:64%;">
+              <div class="core" style="background:#4A7FFF; box-shadow:0 0 10px #4A7FFF;"></div>
+              <div class="ring" style="color:#4A7FFF; border-color:#4A7FFF;"></div>
+              <div class="city-label">杭州<div class="sub">TSI 79</div></div>
+            </div>
+            <div class="city-dot" style="left:55%; top:75%;">
+              <div class="core" style="background:#4A7FFF; box-shadow:0 0 8px #4A7FFF;"></div>
+              <div class="ring" style="color:#4A7FFF; border-color:#4A7FFF;"></div>
+              <div class="city-label">广州<div class="sub">TSI 73</div></div>
+            </div>
+            <div class="city-dot" style="left:42%; top:60%;">
+              <div class="core" style="background:#FFB547; box-shadow:0 0 8px #FFB547;"></div>
+              <div class="ring" style="color:#FFB547; border-color:#FFB547;"></div>
+              <div class="city-label">成都<div class="sub">TSI 62</div></div>
+            </div>
+            <div class="city-dot" style="left:54%; top:38%;">
+              <div class="core" style="background:#FFB547; box-shadow:0 0 8px #FFB547;"></div>
+              <div class="ring" style="color:#FFB547; border-color:#FFB547;"></div>
+              <div class="city-label">北京<div class="sub">TSI 58</div></div>
+            </div>
+            <div class="city-dot" style="left:35%; top:80%;">
+              <div class="core" style="background:#A77BFF; box-shadow:0 0 6px #A77BFF;"></div>
+              <div class="ring" style="color:#A77BFF; border-color:#A77BFF;"></div>
+              <div class="city-label">昆明<div class="sub">TSI 44</div></div>
+            </div>
+
+            <div class="map-legend">
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10D9A3;margin-right:4px;"></span>起量点</span>
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4A7FFF;margin-right:4px;"></span>主力扩散</span>
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFB547;margin-right:4px;"></span>跟进</span>
+              <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#A77BFF;margin-right:4px;"></span>潜在</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DNA cards -->
+      <section class="row-3">
+        <div class="dna-card">
+          <div class="glow"></div>
+          <div class="dna-head">
+            <div>
+              <div class="dna-title">开心果 × 乳制品</div>
+              <div class="dna-sub">跨品类迁移中 · 一线都市起量</div>
+            </div>
+            <span class="tsi-badge">TSI 89</span>
+          </div>
+          <div class="spark-wrap"><canvas id="spark1"></canvas></div>
+          <div class="dna-dims">
+            <div class="d"><span class="k">主风味</span><span class="v">坚果香 · 清甜</span></div>
+            <div class="d"><span class="k">原料</span><span class="v">开心果酱 / 开心果奶</span></div>
+            <div class="d"><span class="k">组合 CP</span><span class="v">坚果 × 乳脂</span></div>
+            <div class="d"><span class="k">形态</span><span class="v">绿色分层饮品 / 冰淇淋</span></div>
+            <div class="d"><span class="k">场景</span><span class="v">下午茶 · 送礼</span></div>
+            <div class="d"><span class="k">情绪</span><span class="v">精致 · 微奢</span></div>
+          </div>
+          <div class="dna-foot">
+            <div>多源交叉 <strong style="color:#E8ECFF;">5/5</strong> · 耐久性 <strong style="color:#E8ECFF;">高</strong></div>
+            <div class="src-icons">
+              <div class="sc" style="background:#FF2442;">红</div>
+              <div class="sc" style="background:#010101;">抖</div>
+              <div class="sc" style="background:#FF5E1F;">淘</div>
+              <div class="sc" style="background:#FFC300;">美</div>
+              <div class="sc" style="background:#4A7FFF;">便</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dna-card green">
+          <div class="glow"></div>
+          <div class="dna-head">
+            <div>
+              <div class="dna-title">茉莉 × 乌龙</div>
+              <div class="dna-sub">东方茶饮 · 华东起量扩散中</div>
+            </div>
+            <span class="tsi-badge">TSI 84</span>
+          </div>
+          <div class="spark-wrap"><canvas id="spark2"></canvas></div>
+          <div class="dna-dims">
+            <div class="d"><span class="k">主风味</span><span class="v">花香 · 回甘</span></div>
+            <div class="d"><span class="k">原料</span><span class="v">茉莉初雪 · 青心乌龙</span></div>
+            <div class="d"><span class="k">组合 CP</span><span class="v">花香 × 发酵茶</span></div>
+            <div class="d"><span class="k">形态</span><span class="v">冷萃茶基 / 轻乳茶</span></div>
+            <div class="d"><span class="k">场景</span><span class="v">办公 · 日常佐餐</span></div>
+            <div class="d"><span class="k">情绪</span><span class="v">新中式 · 清雅</span></div>
+          </div>
+          <div class="dna-foot">
+            <div>多源交叉 <strong style="color:#E8ECFF;">4/5</strong> · 耐久性 <strong style="color:#E8ECFF;">高</strong></div>
+            <div class="src-icons">
+              <div class="sc" style="background:#FF2442;">红</div>
+              <div class="sc" style="background:#010101;">抖</div>
+              <div class="sc" style="background:#FFC300;">美</div>
+              <div class="sc" style="background:#4A7FFF;">便</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dna-card violet">
+          <div class="glow"></div>
+          <div class="dna-head">
+            <div>
+              <div class="dna-title">咸蛋黄 × 酥皮</div>
+              <div class="dna-sub">华南强势 · 向北方扩散</div>
+            </div>
+            <span class="tsi-badge mid">TSI 76</span>
+          </div>
+          <div class="spark-wrap"><canvas id="spark3"></canvas></div>
+          <div class="dna-dims">
+            <div class="d"><span class="k">主风味</span><span class="v">咸香 · 酥脆</span></div>
+            <div class="d"><span class="k">原料</span><span class="v">流心咸蛋黄 · 千层酥</span></div>
+            <div class="d"><span class="k">组合 CP</span><span class="v">咸 × 油脂 × 酥</span></div>
+            <div class="d"><span class="k">形态</span><span class="v">爆浆 · 千层 · 夹心</span></div>
+            <div class="d"><span class="k">场景</span><span class="v">伴手礼 · 下午茶</span></div>
+            <div class="d"><span class="k">情绪</span><span class="v">港式复古 · 解馋</span></div>
+          </div>
+          <div class="dna-foot">
+            <div>多源交叉 <strong style="color:#E8ECFF;">4/5</strong> · 耐久性 <strong style="color:#E8ECFF;">中</strong></div>
+            <div class="src-icons">
+              <div class="sc" style="background:#FF2442;">红</div>
+              <div class="sc" style="background:#FF5E1F;">淘</div>
+              <div class="sc" style="background:#FFC300;">美</div>
+              <div class="sc" style="background:#4A7FFF;">便</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ▼▼▼ L2 · 下游段 · 退什么 ▼▼▼ -->
+      <div class="section-band down">
+        <span class="band-tag">L2 · 下游</span>
+        <span class="band-title">决策窗口 · 退什么</span>
+        <span class="band-sub">对应⑤⑥阶段 · 衰退预警 + 头部上市监测</span>
+        <span class="band-line"></span>
+      </div>
+
+      <!-- 衰退预警 (L2 · 下游) -->
+      <section style="margin-bottom:18px;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">衰退预警 · 建议汰换 SKU <span class="tag" style="background:rgba(255,94,126,0.15);color:#ff9eb1;">⑥ 阶段触发</span></div>
+              <div class="panel-sub">TSI 连续 ≥3 周下滑且负面情感率上升。提前 6–8 周触发清库</div>
+            </div>
+            <div class="panel-actions"><button class="btn">批量生成汰换方案</button></div>
+          </div>
+          <div class="decline-list">
+            <div class="decline-item">
+              <div>
+                <div class="nm">葡萄柚 × 玫瑰</div>
+                <div class="reason">TSI 连续 5 周下滑 · 社交疲劳度 ↑ · 竞品已集中上市</div>
+              </div>
+              <div class="delta">-34%</div>
+              <button class="action">查看汰换建议</button>
+            </div>
+            <div class="decline-item">
+              <div>
+                <div class="nm">杨梅 × 荔枝</div>
+                <div class="reason">季节性退潮 · 建议 6 周内退出主推位</div>
+              </div>
+              <div class="delta">-28%</div>
+              <button class="action">查看汰换建议</button>
+            </div>
+            <div class="decline-item">
+              <div>
+                <div class="nm">冷萃 × 黑巧</div>
+                <div class="reason">搜索量见顶 · 同质化 SKU &gt; 140 款</div>
+              </div>
+              <div class="delta">-22%</div>
+              <button class="action">查看汰换建议</button>
+            </div>
+            <div class="decline-item">
+              <div>
+                <div class="nm">桂花 × 酒酿</div>
+                <div class="reason">耐久性低 · 限时节日款窗口已过</div>
+              </div>
+              <div class="delta">-41%</div>
+              <button class="action">查看汰换建议</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ▼▼▼ L3 · 决策层 · 研发简报 ▼▼▼ -->
+      <div class="section-band decision">
+        <span class="band-tag">L3 · 决策</span>
+        <span class="band-title">最终输出 · 下周上新候选</span>
+        <span class="band-sub">六阶段 + 四层标签 + 多源交叉 · 综合判定后的 TOP5 选品建议</span>
+        <span class="band-line"></span>
+      </div>
+
+      <section style="margin-bottom:18px;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">AI 选品建议 · 下周上新候选 <span class="tag" style="background:rgba(167,123,255,0.15);color:#c8aeff;">DECISION</span></div>
+              <div class="panel-sub">基于风味 DNA + 品牌调性 + 产能约束，自动筛选 Top 5 · 均已通过多源交叉验证</div>
+            </div>
+            <div class="panel-actions"><button class="btn">导出研发简报 ↗</button></div>
+          </div>
+          <table class="rec-table">
+            <thead>
+              <tr>
+                <th style="width:30px;">#</th>
+                <th>候选新品</th>
+                <th style="width:150px;">胜率预测</th>
+                <th style="width:140px;">证据链</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="rank">1</div></td>
+                <td>
+                  <div class="rec-name">开心果厚乳拿铁</div>
+                  <div class="rec-tags">
+                    <span class="tag-pill">咖啡茶饮</span><span class="tag-pill">坚果乳脂</span><span class="tag-pill">下午茶</span><span class="tag-pill">新中产</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="win-bar"><span style="width:78%;"></span></div>
+                  <div class="win-text">命中率 78% · CI ±6%</div>
+                </td>
+                <td><div class="evidence"><span class="ev">5/5源</span><span class="ev">迁移→咖啡</span></div></td>
+              </tr>
+              <tr>
+                <td><div class="rank">2</div></td>
+                <td>
+                  <div class="rec-name">茉莉初雪轻乳茶</div>
+                  <div class="rec-tags">
+                    <span class="tag-pill">咖啡茶饮</span><span class="tag-pill">花香×乌龙</span><span class="tag-pill">新中式</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="win-bar"><span style="width:71%;"></span></div>
+                  <div class="win-text">命中率 71% · CI ±7%</div>
+                </td>
+                <td><div class="evidence"><span class="ev">4/5源</span><span class="ev">华东起量</span></div></td>
+              </tr>
+              <tr>
+                <td><div class="rank">3</div></td>
+                <td>
+                  <div class="rec-name">咸蛋黄千层酥雪糕</div>
+                  <div class="rec-tags">
+                    <span class="tag-pill">乳品冷饮</span><span class="tag-pill">咸×酥</span><span class="tag-pill">伴手礼</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="win-bar"><span style="width:66%;"></span></div>
+                  <div class="win-text">命中率 66% · CI ±8%</div>
+                </td>
+                <td><div class="evidence"><span class="ev">4/5源</span><span class="ev">华南强势</span></div></td>
+              </tr>
+              <tr>
+                <td><div class="rank">4</div></td>
+                <td>
+                  <div class="rec-name">开心果可颂（烘焙迁移）</div>
+                  <div class="rec-tags">
+                    <span class="tag-pill">烘焙</span><span class="tag-pill">坚果酱</span><span class="tag-pill">送礼</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="win-bar"><span style="width:62%;"></span></div>
+                  <div class="win-text">命中率 62% · CI ±9%</div>
+                </td>
+                <td><div class="evidence"><span class="ev">3/5源</span><span class="ev">前瞻·日本</span></div></td>
+              </tr>
+              <tr>
+                <td><div class="rank">5</div></td>
+                <td>
+                  <div class="rec-name">柚子椒麻气泡水</div>
+                  <div class="rec-tags">
+                    <span class="tag-pill">即饮</span><span class="tag-pill">猎奇组合</span><span class="tag-pill">Z 世代</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="win-bar"><span style="width:54%;"></span></div>
+                  <div class="win-text">命中率 54% · CI ±11%</div>
+                </td>
+                <td><div class="evidence"><span class="ev">3/5源</span><span class="ev">上升中</span></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </section>
+    <!-- ============ END VIEW 1 ============ -->
+
+
+    <!-- ============ VIEW 2 · 风味 DNA 拆解 ============ -->
+    <section class="view" data-view="dna">
+      <div class="topbar">
+        <div class="title">
+          <h1>风味 DNA 拆解 · 单品解剖</h1>
+          <div class="sub">基于「六维风味 DNA」框架对上升中口味做结构化拆解 · 证据链可追溯</div>
+        </div>
+        <div class="actions">
+          <div class="chip">搜索 · 风味/原料/品牌 ⌘K</div>
+          <div class="chip primary">当前对象：开心果 × 乳制品 ▾</div>
+          <div class="chip live"><span class="pulse"></span>LIVE</div>
+          <div class="avatar">XF</div>
+        </div>
+      </div>
+
+      <div class="dna-layout">
+        <!-- Left: flavor list -->
+        <div class="panel flavor-list">
+          <div class="fl-title">TOP 10 上升中口味</div>
+          <div class="fl-item on">
+            <div class="fl-name">开心果 × 乳制品</div>
+            <div class="fl-meta"><span>坚果·乳脂</span><span class="tsi-mini up">TSI 89 ▲</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">茉莉 × 乌龙</div>
+            <div class="fl-meta"><span>花香·发酵茶</span><span class="tsi-mini up">TSI 84 ▲</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">咸蛋黄 × 酥皮</div>
+            <div class="fl-meta"><span>咸香·酥脆</span><span class="tsi-mini up">TSI 76 ▲</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">焙茶 × 黑糖</div>
+            <div class="fl-meta"><span>烘焙·焦糖</span><span class="tsi-mini up">TSI 68 ▲</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">柚子 × 椒麻</div>
+            <div class="fl-meta"><span>酸·麻·清冽</span><span class="tsi-mini up">TSI 58 ▲</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">山茶 × 蜜桃</div>
+            <div class="fl-meta"><span>花·果·清甜</span><span class="tsi-mini up">TSI 54 ▲</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">抹茶 × 白巧</div>
+            <div class="fl-meta"><span>苦·甜·奶脂</span><span class="tsi-mini up">TSI 51 ▲</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">生椰 × 抹茶</div>
+            <div class="fl-meta"><span>热带·茶感</span><span class="tsi-mini up">TSI 48 ▲</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">葡萄柚 × 玫瑰</div>
+            <div class="fl-meta"><span>花·果·苦</span><span class="tsi-mini down">TSI 38 ▼</span></div>
+          </div>
+          <div class="fl-item">
+            <div class="fl-name">杨梅 × 荔枝</div>
+            <div class="fl-meta"><span>甜·酸·果</span><span class="tsi-mini down">TSI 32 ▼</span></div>
+          </div>
+        </div>
+
+        <!-- Right: main content -->
+        <div>
+          <!-- Hero -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">开心果 × 乳制品 <span class="tag">六维 DNA</span> <span class="tag" style="background:rgba(16,217,163,0.15);color:#5bf0c5;">TSI 89</span></div>
+                <div class="panel-sub">覆盖 5/5 信号源 · 耐久性评分 高 · 已识别跨品类迁移路径</div>
+              </div>
+              <div class="panel-actions">
+                <button class="btn">推送给 R&D</button>
+                <button class="btn" style="background:rgba(16,217,163,0.15);color:#8bf0c5;border-color:rgba(16,217,163,0.35);">生成研发简报 ↗</button>
+              </div>
+            </div>
+            <div class="dna-hero">
+              <div>
+                <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+                <div class="radar-caption">六维加权综合得分 · 满分 100</div>
+              </div>
+              <div class="dna-detail-list">
+                <div class="dl-row"><span class="k">主风味层</span><span class="v">坚果焦香 65% · 乳脂清甜 25% · 轻微盐粒感 10%</span></div>
+                <div class="dl-row"><span class="k">原料层</span><span class="v">开心果酱（进口 Agri-Nut 60%）· 开心果碎 · 开心果奶基 · 可替代：榛果酱（成本↓22%）</span></div>
+                <div class="dl-row"><span class="k">组合 CP</span><span class="v">坚果 × 全脂乳（强）· 坚果 × 抹茶（上升中）· 坚果 × 可可（成熟）</span></div>
+                <div class="dl-row"><span class="k">形态层</span><span class="v">分层饮品 42% · 冰淇淋 28% · 可颂夹心 14% · 酸奶拌酱 9% · 其他 7%</span></div>
+                <div class="dl-row"><span class="k">场景层</span><span class="v">下午茶 62% · 送礼伴手 22% · 早餐代餐 16%</span></div>
+                <div class="dl-row"><span class="k">情绪层</span><span class="v">精致 · 微奢 · 新中产自我犒赏 · "绿色系精致主义"视觉语言已成熟</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage maturity for this flavor (开心果 × 乳制品) -->
+          <div class="panel" style="margin-top:16px;">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">
+                  当前阶段成熟度
+                  <span class="tag" style="background:rgba(74,127,255,0.18);color:#EAF1FF;">④ 内容种草 · 进行中</span>
+                  <span class="stage-window-tag"><span class="pulse"></span>距离头部上市 · 预计 5 周</span>
+                </div>
+                <div class="panel-sub">「开心果 × 乳制品」已完成原料/研发/海外先行，正处于内容种草加速期 · <strong style="color:#5bf0c5;">fast-follower 窗口尚未关闭</strong>，现在立项仍能赶上⑤–⑥阶段的品类利润放大</div>
+              </div>
+              <div class="panel-actions">
+                <button class="btn">查看同链路其它口味</button>
+              </div>
+            </div>
+
+            <div class="maturity-bar">
+              <div class="mat-step done">
+                <div class="mat-idx">① 2025 Q3</div>
+                <div class="mat-name">原料端</div>
+                <div class="mat-note">Agri-Nut 开心果进口量 ↑ 38%</div>
+              </div>
+              <div class="mat-step done">
+                <div class="mat-idx">② 2025 Q4</div>
+                <div class="mat-name">研发 / 代工端</div>
+                <div class="mat-note">Firmenich 风味报告入选 TOP10</div>
+              </div>
+              <div class="mat-step done">
+                <div class="mat-idx">③ 2026 W03</div>
+                <div class="mat-name">海外 / 小众先行</div>
+                <div class="mat-note">东京/首尔/LA 已上 14 款</div>
+              </div>
+              <div class="mat-step current">
+                <div class="mat-idx">④ 2026 W10–W16</div>
+                <div class="mat-name">内容种草</div>
+                <div class="mat-note">TSI 89 · 5/5 源 · 加速中</div>
+              </div>
+              <div class="mat-step future">
+                <div class="mat-idx">⑤ 预计 W20–W28</div>
+                <div class="mat-name">头部上市</div>
+                <div class="mat-note">已有 2 家头部品牌测试</div>
+              </div>
+              <div class="mat-step future">
+                <div class="mat-idx">⑥ 预计 W32+</div>
+                <div class="mat-name">大众渗透</div>
+                <div class="mat-note">便利/商超铺货，进入红海</div>
+              </div>
+            </div>
+
+            <div class="stage-insights" style="margin-top:14px;">
+              <div class="si green">
+                <strong>上游证据（①②）：</strong>2025Q3 Agri-Nut 开心果进口量 +38%，Firmenich 秋季香精报告把"绿色坚果风味"列入十大风味 —— 信号早在社媒爆点之前就已确认。
+              </div>
+              <div class="si green">
+                <strong>海外前瞻（③）：</strong>东京 7-11 / 首尔 CU / LA Whole Foods 共上架 14 款开心果×乳品 SKU，平均溢价 32%，用户复购率 27% —— 模板已被海外验证。
+              </div>
+              <div class="si amber">
+                <strong>跟进窗口（现在 → ⑤）：</strong>国内仅 2 家头部品牌测试，未进⑥阶段；预留 <strong>4–6 周</strong>完成立项→样品→首批上市，fast-follower 可捕 40–55% 品类利润。
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle row -->
+          <div class="row-1-1" style="margin-top:16px;">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">12 周 TSI 走势</div>
+                  <div class="panel-sub">越过真趋势阈值 65 后继续加速 · 未见疲劳信号</div>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:220px;"><canvas id="dnaTrendChart"></canvas></div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">信号源贡献 · 周度堆叠</div>
+                  <div class="panel-sub">小红书+抖音占比持续扩大，便利鲜食近期介入</div>
+                </div>
+              </div>
+              <div class="chart-wrap" style="height:220px;"><canvas id="dnaStackChart"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Bottom row -->
+          <div class="row-1-1" style="margin-top:16px;">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">同家族候选 · 可迁移原料</div>
+                  <div class="panel-sub">基于口味本体库亲和度算法（满分 1.0）</div>
+                </div>
+              </div>
+              <div class="family-grid">
+                <div class="family-card">
+                  <div class="fm-title">榛果 × 乳制品</div>
+                  <span class="fm-score">亲和度 0.87</span>
+                  <div class="fm-note">成本较开心果低 22% · 供应稳定 · 可作为试产替代原料</div>
+                </div>
+                <div class="family-card">
+                  <div class="fm-title">核桃 × 乳制品</div>
+                  <span class="fm-score">亲和度 0.81</span>
+                  <div class="fm-note">东方文化共鸣度高 · 适合做"新中式"语义包装</div>
+                </div>
+                <div class="family-card">
+                  <div class="fm-title">巴旦木 × 乳制品</div>
+                  <span class="fm-score">亲和度 0.76</span>
+                  <div class="fm-note">清甜主调 · 更适合轻乳/燕麦奶基底</div>
+                </div>
+                <div class="family-card">
+                  <div class="fm-title">开心果 × 抹茶</div>
+                  <span class="fm-score">亲和度 0.91</span>
+                  <div class="fm-note">新组合 · 日本海外前瞻信号已验证 · 建议优先试产</div>
+                </div>
+                <div class="family-card">
+                  <div class="fm-title">开心果 × 白巧</div>
+                  <span class="fm-score">亲和度 0.85</span>
+                  <div class="fm-note">节日礼盒语境强 · 可配合双 11/春节档上新</div>
+                </div>
+                <div class="family-card">
+                  <div class="fm-title">开心果 × 酸奶</div>
+                  <span class="fm-score">亲和度 0.79</span>
+                  <div class="fm-note">早餐代餐场景延伸 · 乳品厂优先候选</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">供应链提示 · 采购/产能就绪度</div>
+                  <div class="panel-sub">结合原料库存、交期、成本波动自动生成</div>
+                </div>
+              </div>
+              <div class="supply-list">
+                <div class="supply-row">
+                  <div>
+                    <div class="sr-name">开心果酱 · 进口 · Agri-Nut</div>
+                    <div class="sr-meta">交期 45 天 · 现货库存 2.4T · FOB 价格 72 元/kg (4 周 +6%)</div>
+                  </div>
+                  <div class="sr-tag warn">交期偏长</div>
+                </div>
+                <div class="supply-row">
+                  <div>
+                    <div class="sr-name">开心果碎 · 国产 · 云啡坚果</div>
+                    <div class="sr-meta">交期 14 天 · 可稳定供货 · 48 元/kg · 品牌"国产化"叙事可用</div>
+                  </div>
+                  <div class="sr-tag ok">就绪</div>
+                </div>
+                <div class="supply-row">
+                  <div>
+                    <div class="sr-name">厚乳 · 蒙牛工业线</div>
+                    <div class="sr-meta">已有合同框架 · 产能空余 · 可支持 200 万支月产</div>
+                  </div>
+                  <div class="sr-tag ok">就绪</div>
+                </div>
+                <div class="supply-row">
+                  <div>
+                    <div class="sr-name">开心果奶基 · 新物种</div>
+                    <div class="sr-meta">需建样品线 · 4 周打样 · 成本待定 · 建议作为二期方案</div>
+                  </div>
+                  <div class="sr-tag warn">需打样</div>
+                </div>
+                <div class="supply-row">
+                  <div>
+                    <div class="sr-name">绿色系包装 · 定制印刷</div>
+                    <div class="sr-meta">产能匹配 · 交期 21 天 · 情绪层"精致微奢"视觉已有样稿</div>
+                  </div>
+                  <div class="sr-tag ok">就绪</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ============ END VIEW 2 ============ -->
+
+
+    <!-- ============ VIEW 3 · 选品建议 ============ -->
+    <section class="view" data-view="rec">
+      <div class="topbar">
+        <div class="title">
+          <h1>选品建议 · 新品 Pipeline</h1>
+          <div class="sub">AI 推荐未来 8 周上新候选 · 含胜率预测、证据链、产能匹配度</div>
+        </div>
+        <div class="actions">
+          <div class="chip">品类：全部 ▾</div>
+          <div class="chip primary">胜率 ≥ 60% ▾</div>
+          <div class="chip">研发周期 ≤ 4 周 ▾</div>
+          <div class="chip">供应链就绪 ✓</div>
+          <div class="avatar">XF</div>
+        </div>
+      </div>
+
+      <div class="pipeline">
+        <!-- Col 1: 推荐上新（本周） -->
+        <div class="pipe-col">
+          <div class="pipe-head">
+            <h4><span class="swatch" style="background:var(--green);"></span>推荐上新 · 本周</h4>
+            <span class="pc-count">4</span>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">开心果厚乳拿铁</div>
+            <div class="pc-sub">咖啡茶饮 · 预计 8 天试产完成</div>
+            <div class="pc-tags">
+              <span class="tag-pill">坚果×乳脂</span><span class="tag-pill">下午茶</span><span class="tag-pill">新中产</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>78%</strong></div>
+              <div class="win-bar"><span style="width:78%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>5/5 源 · 迁移 4.2 周</span><span>预期首月 ¥2.8 亿</span></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">茉莉初雪轻乳茶</div>
+            <div class="pc-sub">咖啡茶饮 · 预计 10 天试产完成</div>
+            <div class="pc-tags">
+              <span class="tag-pill">花×乌龙</span><span class="tag-pill">新中式</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>71%</strong></div>
+              <div class="win-bar"><span style="width:71%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>4/5 源 · 华东起量</span><span>预期首月 ¥1.9 亿</span></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">咸蛋黄千层酥雪糕</div>
+            <div class="pc-sub">乳品冷饮 · 12 天试产</div>
+            <div class="pc-tags">
+              <span class="tag-pill">咸×酥</span><span class="tag-pill">伴手礼</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>66%</strong></div>
+              <div class="win-bar"><span style="width:66%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>4/5 源 · 华南强势</span><span>预期首月 ¥0.9 亿</span></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">开心果可颂</div>
+            <div class="pc-sub">烘焙 · 6 天试产</div>
+            <div class="pc-tags">
+              <span class="tag-pill">坚果酱</span><span class="tag-pill">送礼</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>62%</strong></div>
+              <div class="win-bar"><span style="width:62%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>3/5 源 · 海外前瞻</span><span>预期首月 ¥0.4 亿</span></div>
+          </div>
+        </div>
+
+        <!-- Col 2: 待试产 -->
+        <div class="pipe-col">
+          <div class="pipe-head">
+            <h4><span class="swatch" style="background:var(--amber);"></span>待试产 · 下周</h4>
+            <span class="pc-count">3</span>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">柚子椒麻气泡水</div>
+            <div class="pc-sub">即饮 · 猎奇组合 · Z 世代</div>
+            <div class="pc-tags">
+              <span class="tag-pill">酸×麻</span><span class="tag-pill">猎奇</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>54%</strong></div>
+              <div class="win-bar"><span style="width:54%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>3/5 源 · 上升中</span><span>¥0.6 亿</span></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">焙茶黑糖厚奶</div>
+            <div class="pc-sub">咖啡茶饮 · 日系风</div>
+            <div class="pc-tags">
+              <span class="tag-pill">烘焙×焦糖</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>58%</strong></div>
+              <div class="win-bar"><span style="width:58%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>3/5 源 · 日本前瞻</span><span>¥0.8 亿</span></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">开心果抹茶巧克力</div>
+            <div class="pc-sub">零食 · 节日礼盒</div>
+            <div class="pc-tags">
+              <span class="tag-pill">坚果×抹茶</span><span class="tag-pill">礼盒</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>52%</strong></div>
+              <div class="win-bar"><span style="width:52%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>3/5 源 · 亲和度 0.91</span><span>¥0.3 亿</span></div>
+          </div>
+        </div>
+
+        <!-- Col 3: 已立项 -->
+        <div class="pipe-col">
+          <div class="pipe-head">
+            <h4><span class="swatch" style="background:var(--brand);"></span>已立项 · 研发中</h4>
+            <span class="pc-count">3</span>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">轻乳山茶花蜜桃</div>
+            <div class="pc-sub">PM：刘悦 · 进度 65%</div>
+            <div class="pc-tags">
+              <span class="tag-pill">花×果</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>69%</strong></div>
+              <div class="win-bar"><span style="width:69%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>试饮 A/B 第 2 轮</span><span>W18 上线</span></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">生椰抹茶芝士厚奶</div>
+            <div class="pc-sub">PM：周远 · 进度 40%</div>
+            <div class="pc-tags">
+              <span class="tag-pill">热带×茶</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>64%</strong></div>
+              <div class="win-bar"><span style="width:64%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>口味稳定度调整中</span><span>W19 上线</span></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">东方焙茶可颂</div>
+            <div class="pc-sub">PM：陈玥 · 进度 80%</div>
+            <div class="pc-tags">
+              <span class="tag-pill">烘焙</span><span class="tag-pill">新中式</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>命中率预测</span><strong>72%</strong></div>
+              <div class="win-bar"><span style="width:72%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>包装打样完毕</span><span>W17 上线</span></div>
+          </div>
+        </div>
+
+        <!-- Col 4: 已上市回流 -->
+        <div class="pipe-col">
+          <div class="pipe-head">
+            <h4><span class="swatch" style="background:var(--violet);"></span>已上市 · 回流</h4>
+            <span class="pc-count">2</span>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">茉莉乌龙轻乳茶</div>
+            <div class="pc-sub">W11 上线 · 上市第 5 周</div>
+            <div class="pc-tags">
+              <span class="tag-pill">命中</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>实际 / 预测</span><strong>81% / 71%</strong></div>
+              <div class="win-bar"><span style="width:81%;"></span></div>
+            </div>
+            <div class="pc-foot"><span>复购率 38%</span><span>累计 ¥2.1 亿</span></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pc-title">葡萄柚玫瑰气泡水</div>
+            <div class="pc-sub">W9 上线 · 衰退中</div>
+            <div class="pc-tags">
+              <span class="tag-pill">低于预期</span>
+            </div>
+            <div class="pc-win">
+              <div class="pc-win-text"><span>实际 / 预测</span><strong style="color:#ff9eb1;">42% / 55%</strong></div>
+              <div class="win-bar"><span style="width:42%;background:linear-gradient(90deg,#FF5E7E,#FFB547);"></span></div>
+            </div>
+            <div class="pc-foot"><span>已触发退市预警</span><span>建议 W18 下架</span></div>
+          </div>
+        </div>
+
+        <!-- Right: summary -->
+        <div class="summary-card">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">本月汇总 · 2026-04</div>
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:8px;">相比 2026-Q1 平均</div>
+
+          <div class="summary-kpi">
+            <div class="skl">推荐数</div>
+            <div class="skv">28</div>
+            <div class="skd up">▲ +3 条 / 月</div>
+          </div>
+          <div class="summary-kpi">
+            <div class="skl">已采纳立项</div>
+            <div class="skv">19<span style="font-size:13px;color:var(--text-3);font-weight:500;"> / 28</span></div>
+            <div class="skd up">采纳率 68% · ▲ +12pp</div>
+          </div>
+          <div class="summary-kpi">
+            <div class="skl">已上市命中率</div>
+            <div class="skv" style="color:#5bf0c5;">67%</div>
+            <div class="skd up">▲ +22pp（对比无 AI 期）</div>
+          </div>
+          <div class="summary-kpi">
+            <div class="skl">滞销 SKU 占比</div>
+            <div class="skv" style="color:#FFC97A;">8.3%</div>
+            <div class="skd up">▼ -6.2pp · 退市预警前置</div>
+          </div>
+
+          <div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);">
+            <div style="font-size:11px;color:var(--text-3);margin-bottom:8px;letter-spacing:0.5px;">胜率分布（近 12 周上市）</div>
+            <div class="chart-wrap" style="height:120px;"><canvas id="winHistChart"></canvas></div>
+          </div>
+
+          <button class="btn" style="width:100%;margin-top:14px;padding:10px;">导出本月选品报告 ↗</button>
+        </div>
+      </div>
+    </section>
+    <!-- ============ END VIEW 3 ============ -->
+
+
+    <!-- ============ VIEW 4 · 跨品类迁移 ============ -->
+    <section class="view" data-view="migration">
+      <div class="topbar">
+        <div class="title">
+          <h1>跨品类迁移 · 口味流动图谱</h1>
+          <div class="sub">追踪同一口味组合在不同品类间的扩散路径 · 预判下一个跳转窗口</div>
+        </div>
+        <div class="actions">
+          <div class="chip primary">对象：开心果 × 乳制品 ▾</div>
+          <div class="chip">对比模式</div>
+          <div class="chip">时间窗：12 周 ▾</div>
+          <div class="avatar">XF</div>
+        </div>
+      </div>
+
+      <!-- Big sankey -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">5 层迁移流图 <span class="tag">MIGRATION FLOW</span></div>
+            <div class="panel-sub">从"源信号"到"成熟品类"，宽度表示信号强度；颜色代表上游起点</div>
+          </div>
+          <div class="panel-actions">
+            <div class="seg">
+              <button class="on">开心果×乳</button><button>茉莉×乌龙</button><button>咸蛋黄×酥皮</button>
+            </div>
+          </div>
+        </div>
+        <div class="migration-sankey"><svg id="bigSankey" width="100%" height="100%" viewBox="0 0 1100 420" preserveAspectRatio="xMidYMid meet"></svg></div>
+      </div>
+
+      <!-- Timeline + Rules -->
+      <div class="row-1-1" style="margin-top:16px;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">迁移时间轴</div>
+              <div class="panel-sub">「开心果 × 乳制品」在各品类的首落时间</div>
+            </div>
+          </div>
+          <div class="timeline-wrap">
+            <div class="tl-axis">
+              <div class="tl-point" style="left:0%;background:#FF2442;"></div>
+              <div class="tl-label top" style="left:0%;">W1 · 社交话题</div>
+              <div class="tl-label bottom" style="left:0%;">小红书 · 首波种草</div>
+
+              <div class="tl-point" style="left:22%;background:#10D9A3;"></div>
+              <div class="tl-label top" style="left:22%;">W4 · 甜品冰淇淋</div>
+              <div class="tl-label bottom" style="left:22%;">钟薛高限定款</div>
+
+              <div class="tl-point" style="left:45%;background:#4A7FFF;"></div>
+              <div class="tl-label top" style="left:45%;">W7 · 咖啡茶饮</div>
+              <div class="tl-label bottom" style="left:45%;">喜茶·奈雪跟进</div>
+
+              <div class="tl-point" style="left:65%;background:#FFB547;"></div>
+              <div class="tl-label top" style="left:65%;">W10 · 烘焙</div>
+              <div class="tl-label bottom" style="left:65%;">鲍师傅·好利来</div>
+
+              <div class="tl-point" style="left:85%;background:#A77BFF;"></div>
+              <div class="tl-label top" style="left:85%;">W13 · 乳品/酸奶</div>
+              <div class="tl-label bottom" style="left:85%;">预判：W14-16 进入</div>
+
+              <div class="tl-point" style="left:100%;background:var(--pink);border:2px dashed var(--pink);background:transparent;"></div>
+              <div class="tl-label top" style="left:100%;">W16-17 · 零食</div>
+              <div class="tl-label bottom" style="left:100%;">预判窗口</div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--border);">
+            <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">💡 窗口判断</div>
+            <div style="font-size:12.5px;color:var(--text);line-height:1.7;">当前为"烘焙→乳品"交接期。<strong style="color:#5bf0c5;">建议 2–3 周内锁定乳品/酸奶 SKU</strong>，同时预研零食品类候选配方。错过本窗口，后续仅剩<strong style="color:#FFC97A;">跟随者红利 (-35% 预期收益)</strong>。</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">迁移规则库 <span class="tag">RULES</span></div>
+              <div class="panel-sub">基于历史 120+ 爆款回溯的统计规律 · 平均置信区间 ±15%</div>
+            </div>
+          </div>
+          <div class="rules-list">
+            <div class="rule-row">
+              <div class="rr-path"><strong>社交话题</strong><span class="arrow">→</span><strong>甜品/冰品</strong></div>
+              <div class="rr-week">3.8 周</div>
+              <div class="rr-conf">置信 87%</div>
+              <div class="rr-bar"><span style="width:87%;"></span></div>
+            </div>
+            <div class="rule-row">
+              <div class="rr-path"><strong>甜品/冰品</strong><span class="arrow">→</span><strong>咖啡茶饮</strong></div>
+              <div class="rr-week">5.2 周</div>
+              <div class="rr-conf">置信 84%</div>
+              <div class="rr-bar"><span style="width:84%;"></span></div>
+            </div>
+            <div class="rule-row">
+              <div class="rr-path"><strong>咖啡茶饮</strong><span class="arrow">→</span><strong>烘焙酥点</strong></div>
+              <div class="rr-week">4.6 周</div>
+              <div class="rr-conf">置信 79%</div>
+              <div class="rr-bar"><span style="width:79%;"></span></div>
+            </div>
+            <div class="rule-row">
+              <div class="rr-path"><strong>烘焙</strong><span class="arrow">→</span><strong>乳制品/酸奶</strong></div>
+              <div class="rr-week">3.4 周</div>
+              <div class="rr-conf">置信 72%</div>
+              <div class="rr-bar"><span style="width:72%;"></span></div>
+            </div>
+            <div class="rule-row">
+              <div class="rr-path"><strong>乳品</strong><span class="arrow">→</span><strong>即饮零食</strong></div>
+              <div class="rr-week">6.1 周</div>
+              <div class="rr-conf">置信 68%</div>
+              <div class="rr-bar"><span style="width:68%;"></span></div>
+            </div>
+            <div class="rule-row">
+              <div class="rr-path"><strong>海外前瞻</strong><span class="arrow">→</span><strong>国内首落</strong></div>
+              <div class="rr-week">16.2 周</div>
+              <div class="rr-conf">置信 64%</div>
+              <div class="rr-bar"><span style="width:64%;"></span></div>
+            </div>
+            <div class="rule-row">
+              <div class="rr-path"><strong>便利鲜食</strong><span class="arrow">→</span><strong>大众商超</strong></div>
+              <div class="rr-week">8.7 周</div>
+              <div class="rr-conf">置信 76%</div>
+              <div class="rr-bar"><span style="width:76%;"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historical cases -->
+      <div class="panel" style="margin-top:16px;">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">历史案例对照 <span class="tag">CASE</span></div>
+            <div class="panel-sub">过去 3 年同类迁移的完整路径与收益回流，用于校准当前判断</div>
+          </div>
+        </div>
+        <div class="case-row">
+          <div class="case-card">
+            <div class="cc-year">2021–2022</div>
+            <div class="cc-name">生椰 × 咖啡</div>
+            <div class="cc-path">
+              <span class="cc-chip">小红书</span>
+              <span class="cc-chip">冰淇淋</span>
+              <span class="cc-chip highlight">咖啡</span>
+              <span class="cc-chip">茶饮</span>
+              <span class="cc-chip">烘焙</span>
+              <span class="cc-chip">零食</span>
+            </div>
+            <div class="cc-stats">
+              <div class="cc-stat">首落→爆款 <strong>11 周</strong></div>
+              <div class="cc-stat">全周期 GMV <strong>¥58 亿</strong></div>
+              <div class="cc-stat">耐久 <strong>&gt;3 年</strong></div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="cc-year">2022–2023</div>
+            <div class="cc-name">咸蛋黄 × 烘焙</div>
+            <div class="cc-path">
+              <span class="cc-chip">粤港传统</span>
+              <span class="cc-chip highlight">烘焙</span>
+              <span class="cc-chip">零食</span>
+              <span class="cc-chip">冰淇淋</span>
+              <span class="cc-chip">咖啡</span>
+            </div>
+            <div class="cc-stats">
+              <div class="cc-stat">首落→爆款 <strong>8 周</strong></div>
+              <div class="cc-stat">全周期 GMV <strong>¥31 亿</strong></div>
+              <div class="cc-stat">耐久 <strong>2 年+</strong></div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="cc-year">2023–2024</div>
+            <div class="cc-name">茉莉 × 茶</div>
+            <div class="cc-path">
+              <span class="cc-chip">新中式</span>
+              <span class="cc-chip highlight">茶饮</span>
+              <span class="cc-chip">咖啡</span>
+              <span class="cc-chip">烘焙</span>
+              <span class="cc-chip">乳品</span>
+            </div>
+            <div class="cc-stats">
+              <div class="cc-stat">首落→爆款 <strong>9 周</strong></div>
+              <div class="cc-stat">全周期 GMV <strong>¥42 亿</strong></div>
+              <div class="cc-stat">耐久 <strong>进行中</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ============ END VIEW 4 ============ -->
+
+    </div><!-- /#view-container -->
+
+      <div class="foot">TasteRadar · v0.9 prototype · 口味本体库 3,427 · 规则引擎 6 · 数据源 12 · © 2026 新品选品 AI 平台</div>
+    </main>
+  </div>
+
+<script>
+/* ==============================================
+   Chart configs
+   ============================================== */
+const weeks = ['W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16'];
+const palette = {
+  brand: '#4A7FFF', brand2: '#7B9BFF', green: '#10D9A3',
+  amber: '#FFB547', pink: '#FF5E7E', violet: '#A77BFF', cyan: '#3BD5FF', gold: '#FFD86E'
+};
+
+Chart.defaults.color = '#9BA4C5';
+Chart.defaults.font.family = '-apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
+Chart.defaults.font.size = 11;
+
+/* ---- TSI chart ---- */
+const tsiSeries = [
+  { label: '开心果 × 乳制品',   color: palette.brand,  data: [32,36,41,45,52,58,63,69,74,80,85,89] },
+  { label: '茉莉 × 乌龙',       color: palette.green,  data: [28,30,34,38,44,50,57,63,69,74,79,84] },
+  { label: '咸蛋黄 × 酥皮',     color: palette.amber,  data: [40,44,48,52,56,60,64,67,70,72,74,76] },
+  { label: '焙茶 × 黑糖',       color: palette.violet, data: [22,24,28,33,38,42,47,52,56,61,65,68] },
+  { label: '柚子 × 椒麻',       color: palette.cyan,   data: [18,20,22,26,29,32,36,41,46,50,54,58] },
+  { label: '葡萄柚 × 玫瑰',     color: palette.pink,   data: [76,78,77,74,71,66,60,55,50,46,42,38] },
+];
+
+const tsiCtx = document.getElementById('tsiChart').getContext('2d');
+const makeGrad = (ctx, color) => {
+  const grad = ctx.createLinearGradient(0,0,0,300);
+  grad.addColorStop(0, color + '55');
+  grad.addColorStop(1, color + '00');
+  return grad;
+};
+
+new Chart(tsiCtx, {
+  type: 'line',
+  data: {
+    labels: weeks,
+    datasets: tsiSeries.map(s => ({
+      label: s.label,
+      data: s.data,
+      borderColor: s.color,
+      backgroundColor: makeGrad(tsiCtx, s.color),
+      borderWidth: 2,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      tension: 0.35,
+      fill: true,
+    }))
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(14,18,66,0.95)',
+        borderColor: 'rgba(120,145,220,0.3)', borderWidth: 1,
+        titleColor: '#E8ECFF', bodyColor: '#D7DFFF', padding: 10,
+        callbacks: { title: (items) => '周 ' + items[0].label }
+      },
+      annotation: {}
+    },
+    scales: {
+      x: { grid: { color: 'rgba(120,145,220,0.06)' }, ticks: { color: '#5E6894' } },
+      y: {
+        min: 0, max: 100,
+        grid: { color: 'rgba(120,145,220,0.06)' },
+        ticks: { color: '#5E6894', stepSize: 20, callback: v => v }
+      }
+    }
+  },
+  plugins: [{
+    id: 'threshold',
+    afterDatasetsDraw(chart) {
+      const {ctx, chartArea, scales} = chart;
+      const y = scales.y.getPixelForValue(65);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(16,217,163,0.45)';
+      ctx.setLineDash([6,6]);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(chartArea.left, y);
+      ctx.lineTo(chartArea.right, y);
+      ctx.stroke();
+      ctx.fillStyle = '#10D9A3';
+      ctx.font = '600 10px -apple-system';
+      ctx.fillText('真趋势阈值 65', chartArea.right - 86, y - 6);
+      ctx.restore();
+    }
+  }]
+});
+
+// Custom legend
+const legendEl = document.getElementById('tsiLegend');
+tsiSeries.forEach(s => {
+  const el = document.createElement('div');
+  el.className = 'legend-item';
+  el.innerHTML = `<span class="legend-dot" style="background:${s.color}"></span>${s.label}`;
+  legendEl.appendChild(el);
+});
+
+/* ---- Signal source donut ---- */
+new Chart(document.getElementById('srcChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['小红书/抖音','电商榜单','外卖到店','便利鲜食','海外前瞻'],
+    datasets: [{
+      data: [28.4, 24.1, 20.0, 14.7, 12.8],
+      backgroundColor: [palette.brand, palette.green, palette.amber, palette.violet, palette.cyan],
+      borderColor: '#0E1242', borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '68%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { backgroundColor: 'rgba(14,18,66,0.95)', borderColor: 'rgba(120,145,220,0.3)', borderWidth: 1 }
+    }
+  },
+  plugins: [{
+    id: 'centerText',
+    beforeDraw(chart) {
+      const {ctx, chartArea} = chart;
+      const cx = (chartArea.left + chartArea.right) / 2;
+      const cy = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#E8ECFF';
+      ctx.font = '700 22px -apple-system';
+      ctx.fillText('12', cx, cy - 4);
+      ctx.fillStyle = '#9BA4C5';
+      ctx.font = '500 11px -apple-system';
+      ctx.fillText('活跃数据源', cx, cy + 14);
+      ctx.restore();
+    }
+  }]
+});
+
+/* ---- Sparklines ---- */
+function sparkline(id, color, data) {
+  new Chart(document.getElementById(id), {
+    type: 'line',
+    data: {
+      labels: data.map((_,i) => i),
+      datasets: [{
+        data, borderColor: color, borderWidth: 2,
+        pointRadius: 0, tension: 0.4,
+        backgroundColor: (ctx) => {
+          const c = ctx.chart.ctx.createLinearGradient(0,0,0,36);
+          c.addColorStop(0, color + '55'); c.addColorStop(1, color + '00'); return c;
+        },
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: { x: { display: false }, y: { display: false } }
+    }
+  });
+}
+sparkline('spark1', palette.brand,  [30,34,42,48,55,60,66,72,78,83,86,89]);
+sparkline('spark2', palette.green,  [26,28,32,36,42,48,55,61,67,72,78,84]);
+sparkline('spark3', palette.violet, [38,42,46,50,54,58,62,65,68,71,74,76]);
+
+/* ==============================================
+   Sankey - custom drawn
+   ============================================== */
+(function drawSankey() {
+  const svg = document.getElementById('sankey');
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 620, H = 280;
+
+  const cols = [
+    { x: 20,  title: '信号源',   items: [
+      { y: 30,  h: 30, label: '小红书话题',  val: '22.4k', color: '#FF2442' },
+      { y: 75,  h: 36, label: '抖音短视频',  val: '18.9k', color: '#A77BFF' },
+      { y: 126, h: 28, label: '美团搜索',    val: '11.2k', color: '#FFC300' },
+      { y: 169, h: 26, label: '便利鲜食',    val: '8.6k',  color: '#4A7FFF' },
+      { y: 210, h: 32, label: '海外(日/美)', val: '6.8k',  color: '#3BD5FF' },
+    ] },
+    { x: 215, title: '首落品类', items: [
+      { y: 40,  h: 54, label: '甜品冰淇淋', val: '34%', color: '#10D9A3' },
+      { y: 110, h: 48, label: '咖啡茶饮',  val: '28%', color: '#4A7FFF' },
+      { y: 175, h: 38, label: '烘焙',      val: '22%', color: '#FFB547' },
+      { y: 225, h: 26, label: '零食',      val: '16%', color: '#A77BFF' },
+    ] },
+    { x: 410, title: '扩散成熟期', items: [
+      { y: 30,  h: 44, label: '乳制品', val: '19%', color: '#7B9BFF' },
+      { y: 88,  h: 56, label: '咖啡/茶', val: '26%', color: '#4A7FFF' },
+      { y: 158, h: 50, label: '烘焙酥点', val: '22%', color: '#FFB547' },
+      { y: 222, h: 36, label: '即饮零食', val: '18%', color: '#10D9A3' },
+    ] },
+  ];
+
+  // Column title
+  cols.forEach(col => {
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', col.x + 50);
+    t.setAttribute('y', 16);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('font-size', '10.5');
+    t.setAttribute('fill', '#5E6894');
+    t.setAttribute('letter-spacing', '1');
+    t.textContent = col.title;
+    svg.appendChild(t);
+  });
+
+  // Flow pairs (fromColIdx, fromIdx, toIdx, color opacity)
+  const flows = [
+    [0,0,0,0.55],[0,0,1,0.25],
+    [0,1,0,0.35],[0,1,1,0.35],[0,1,2,0.2],
+    [0,2,1,0.45],[0,2,2,0.25],
+    [0,3,1,0.3],[0,3,2,0.35],[0,3,3,0.2],
+    [0,4,0,0.35],[0,4,2,0.2],
+    [1,0,0,0.65],[1,0,1,0.25],
+    [1,1,1,0.6],[1,1,0,0.25],
+    [1,2,2,0.7],[1,2,1,0.2],
+    [1,3,3,0.65],[1,3,2,0.2],
+  ];
+
+  // Draw ribbons (under nodes)
+  flows.forEach(([ci, fi, ti, op]) => {
+    const from = cols[ci].items[fi];
+    const to = cols[ci+1].items[ti];
+    const x1 = cols[ci].x + 100;
+    const x2 = cols[ci+1].x;
+    const y1 = from.y + from.h/2;
+    const y2 = to.y + to.h/2;
+    const h1 = Math.max(6, from.h * 0.6);
+    const h2 = Math.max(6, to.h * 0.6);
+
+    const d = `
+      M ${x1} ${y1 - h1/2}
+      C ${(x1+x2)/2} ${y1 - h1/2}, ${(x1+x2)/2} ${y2 - h2/2}, ${x2} ${y2 - h2/2}
+      L ${x2} ${y2 + h2/2}
+      C ${(x1+x2)/2} ${y2 + h2/2}, ${(x1+x2)/2} ${y1 + h1/2}, ${x1} ${y1 + h1/2}
+      Z
+    `;
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('fill', from.color);
+    p.setAttribute('opacity', op * 0.6);
+    svg.appendChild(p);
+  });
+
+  // Nodes
+  cols.forEach((col) => {
+    col.items.forEach(it => {
+      const rect = document.createElementNS(NS, 'rect');
+      rect.setAttribute('x', col.x);
+      rect.setAttribute('y', it.y);
+      rect.setAttribute('width', 100);
+      rect.setAttribute('height', it.h);
+      rect.setAttribute('rx', 6);
+      rect.setAttribute('fill', it.color + '22');
+      rect.setAttribute('stroke', it.color);
+      rect.setAttribute('stroke-opacity', 0.6);
+      svg.appendChild(rect);
+
+      const tx = document.createElementNS(NS, 'text');
+      tx.setAttribute('x', col.x + 50);
+      tx.setAttribute('y', it.y + it.h/2 - 2);
+      tx.setAttribute('text-anchor', 'middle');
+      tx.setAttribute('fill', '#E8ECFF');
+      tx.setAttribute('font-size', '11');
+      tx.setAttribute('font-weight', '600');
+      tx.textContent = it.label;
+      svg.appendChild(tx);
+
+      const v = document.createElementNS(NS, 'text');
+      v.setAttribute('x', col.x + 50);
+      v.setAttribute('y', it.y + it.h/2 + 11);
+      v.setAttribute('text-anchor', 'middle');
+      v.setAttribute('fill', '#9BA4C5');
+      v.setAttribute('font-size', '9.5');
+      v.textContent = it.val;
+      svg.appendChild(v);
+    });
+  });
+
+  // Timeline annotation below
+  const note = document.createElementNS(NS, 'text');
+  note.setAttribute('x', W/2);
+  note.setAttribute('y', H - 6);
+  note.setAttribute('text-anchor', 'middle');
+  note.setAttribute('font-size', '10');
+  note.setAttribute('fill', '#5E6894');
+  note.textContent = '平均迁移周期：社交话题 → 首落品类 4.2 周 · 首落 → 扩散成熟 7.8 周';
+  svg.appendChild(note);
+})();
+
+/* ==============================================
+   Tab switchers (seg buttons)
+   ============================================== */
+document.querySelectorAll('.seg').forEach(seg => {
+  seg.addEventListener('click', e => {
+    if (e.target.tagName === 'BUTTON') {
+      seg.querySelectorAll('button').forEach(b => b.classList.remove('on'));
+      e.target.classList.add('on');
+    }
+  });
+});
+
+/* ==============================================
+   View switching + lazy chart init
+   ============================================== */
+const viewCharts = { dashboard: [], dna: [], rec: [], migration: [] };
+const viewInit = { dashboard: true, dna: false, rec: false, migration: false };
+
+/* ---- DNA view charts ---- */
+function initDnaView() {
+  // Radar
+  const radar = new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+      labels: ['主风味','原料','组合 CP','形态','场景','情绪'],
+      datasets: [
+        {
+          label: '当前趋势',
+          data: [92, 85, 88, 78, 82, 90],
+          backgroundColor: 'rgba(74,127,255,0.25)',
+          borderColor: palette.brand,
+          borderWidth: 2,
+          pointBackgroundColor: palette.brand,
+          pointRadius: 3,
+        },
+        {
+          label: '品类均值',
+          data: [60, 58, 55, 52, 60, 55],
+          backgroundColor: 'rgba(155,164,197,0.08)',
+          borderColor: 'rgba(155,164,197,0.5)',
+          borderWidth: 1.5,
+          borderDash: [4,4],
+          pointRadius: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 } } },
+        tooltip: { backgroundColor: 'rgba(14,18,66,0.95)', borderColor: 'rgba(120,145,220,0.3)', borderWidth: 1 }
+      },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          angleLines: { color: 'rgba(120,145,220,0.15)' },
+          grid: { color: 'rgba(120,145,220,0.12)' },
+          pointLabels: { color: '#E8ECFF', font: { size: 12, weight: '500' } },
+          ticks: { display: false, stepSize: 20 }
+        }
+      }
+    }
+  });
+  viewCharts.dna.push(radar);
+
+  // Trend
+  const trend = new Chart(document.getElementById('dnaTrendChart'), {
+    type: 'line',
+    data: {
+      labels: weeks,
+      datasets: [{
+        label: 'TSI',
+        data: [30,34,42,48,55,60,66,72,78,83,86,89],
+        borderColor: palette.brand,
+        backgroundColor: makeGrad(document.getElementById('dnaTrendChart').getContext('2d'), palette.brand),
+        borderWidth: 2.5, pointRadius: 0, tension: 0.35, fill: true,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(14,18,66,0.95)', borderColor: 'rgba(120,145,220,0.3)', borderWidth: 1 } },
+      scales: {
+        x: { grid: { color: 'rgba(120,145,220,0.06)' }, ticks: { color: '#5E6894' } },
+        y: { min: 0, max: 100, grid: { color: 'rgba(120,145,220,0.06)' }, ticks: { color: '#5E6894', stepSize: 25 } }
+      }
+    },
+    plugins: [{
+      id: 'threshold2',
+      afterDatasetsDraw(chart) {
+        const {ctx, chartArea, scales} = chart;
+        const y = scales.y.getPixelForValue(65);
+        ctx.save();
+        ctx.strokeStyle = 'rgba(16,217,163,0.45)'; ctx.setLineDash([5,5]); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(chartArea.left, y); ctx.lineTo(chartArea.right, y); ctx.stroke();
+        ctx.fillStyle = '#10D9A3'; ctx.font = '600 10px -apple-system';
+        ctx.fillText('真趋势阈值 65', chartArea.right - 86, y - 5);
+        ctx.restore();
+      }
+    }]
+  });
+  viewCharts.dna.push(trend);
+
+  // Stack
+  const srcLabels = ['小红书/抖音','电商榜','外卖','便利鲜食','海外前瞻'];
+  const srcColors = [palette.brand, palette.green, palette.amber, palette.violet, palette.cyan];
+  const stackData = [
+    [6,7,8,10,12,13,15,17,19,22,24,26],  // 小红书/抖音
+    [4,5,6,7,8,10,11,13,15,16,18,20],     // 电商
+    [3,3,4,5,6,8,10,12,14,15,17,18],      // 外卖
+    [1,1,2,2,3,4,5,7,9,11,14,16],         // 便利
+    [2,2,3,3,4,4,5,6,7,8,8,9],            // 海外
+  ];
+  const stack = new Chart(document.getElementById('dnaStackChart'), {
+    type: 'bar',
+    data: {
+      labels: weeks,
+      datasets: stackData.map((d, i) => ({
+        label: srcLabels[i],
+        data: d,
+        backgroundColor: srcColors[i] + 'cc',
+        borderColor: srcColors[i],
+        borderWidth: 0.5,
+        stack: 'src',
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 10 }, padding: 10 } },
+        tooltip: { backgroundColor: 'rgba(14,18,66,0.95)', borderColor: 'rgba(120,145,220,0.3)', borderWidth: 1 }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { color: '#5E6894' } },
+        y: { stacked: true, grid: { color: 'rgba(120,145,220,0.06)' }, ticks: { color: '#5E6894' } }
+      }
+    }
+  });
+  viewCharts.dna.push(stack);
+}
+
+/* ---- Rec view chart ---- */
+function initRecView() {
+  const hist = new Chart(document.getElementById('winHistChart'), {
+    type: 'bar',
+    data: {
+      labels: ['<40%','40-50','50-60','60-70','70-80','>80%'],
+      datasets: [{
+        data: [2, 3, 5, 7, 6, 3],
+        backgroundColor: [palette.pink, palette.amber, palette.amber, palette.green, palette.green, palette.cyan],
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(14,18,66,0.95)', borderColor: 'rgba(120,145,220,0.3)', borderWidth: 1 } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#5E6894', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(120,145,220,0.06)' }, ticks: { color: '#5E6894', font: { size: 10 } } }
+      }
+    }
+  });
+  viewCharts.rec.push(hist);
+}
+
+/* ---- Migration view: big Sankey (SVG) ---- */
+function initMigrationView() {
+  const svg = document.getElementById('bigSankey');
+  const NS = 'http://www.w3.org/2000/svg';
+  // 5 columns × nodes
+  const cols = [
+    { x: 20,   title: '源信号',    items: [
+      { y: 30,  h: 38, label: '小红书话题',   val: '22.4k', color: '#FF2442' },
+      { y: 85,  h: 44, label: '抖音短视频',   val: '18.9k', color: '#A77BFF' },
+      { y: 148, h: 34, label: '海外前瞻',     val: '9.2k',  color: '#3BD5FF' },
+      { y: 200, h: 28, label: '便利店鲜食',   val: '6.4k',  color: '#4A7FFF' },
+      { y: 246, h: 24, label: '垂直榜单',     val: '4.1k',  color: '#FFB547' },
+    ] },
+    { x: 250,  title: '起势品类',  items: [
+      { y: 40,  h: 58, label: '甜品冰淇淋',   val: '34%', color: '#10D9A3' },
+      { y: 120, h: 52, label: '咖啡茶饮',     val: '28%', color: '#4A7FFF' },
+      { y: 192, h: 42, label: '烘焙酥点',     val: '22%', color: '#FFB547' },
+      { y: 252, h: 28, label: '零食',         val: '16%', color: '#A77BFF' },
+    ] },
+    { x: 480,  title: '首波迁移',  items: [
+      { y: 40,  h: 62, label: '咖啡茶饮',     val: '32%', color: '#4A7FFF' },
+      { y: 122, h: 56, label: '烘焙',         val: '26%', color: '#FFB547' },
+      { y: 198, h: 46, label: '冰淇淋/雪糕',  val: '22%', color: '#10D9A3' },
+      { y: 262, h: 30, label: '即饮气泡',     val: '20%', color: '#3BD5FF' },
+    ] },
+    { x: 710,  title: '扩散期',    items: [
+      { y: 40,  h: 50, label: '乳品/酸奶',    val: '24%', color: '#7B9BFF' },
+      { y: 112, h: 58, label: '烘焙/可颂',    val: '26%', color: '#FFB547' },
+      { y: 192, h: 50, label: '零食/巧克力',  val: '22%', color: '#A77BFF' },
+      { y: 262, h: 28, label: '预制/即饮',    val: '14%', color: '#10D9A3' },
+    ] },
+    { x: 940,  title: '成熟期',    items: [
+      { y: 40,  h: 56, label: '乳品/酸奶 ★',  val: '28%', color: '#7B9BFF' },
+      { y: 116, h: 48, label: '零食/巧克力',  val: '22%', color: '#A77BFF' },
+      { y: 184, h: 62, label: '烘焙/酥点',    val: '30%', color: '#FFB547' },
+      { y: 266, h: 28, label: '调味/预制',    val: '12%', color: '#10D9A3' },
+    ] },
+  ];
+
+  const colW = 140;
+
+  // Titles
+  cols.forEach(col => {
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', col.x + colW/2);
+    t.setAttribute('y', 16);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('font-size', '11');
+    t.setAttribute('fill', '#5E6894');
+    t.setAttribute('letter-spacing', '1.5');
+    t.textContent = col.title;
+    svg.appendChild(t);
+  });
+
+  // Flows (from-col, from-idx, to-idx, opacity)
+  const flows = [
+    // 源信号 → 起势品类
+    [0,0,0,0.55],[0,0,1,0.28],[0,0,2,0.18],
+    [0,1,0,0.35],[0,1,1,0.40],[0,1,2,0.20],
+    [0,2,0,0.25],[0,2,1,0.35],[0,2,2,0.35],
+    [0,3,1,0.45],[0,3,2,0.25],[0,3,3,0.25],
+    [0,4,2,0.30],[0,4,3,0.45],
+    // 起势 → 首波
+    [1,0,0,0.50],[1,0,2,0.45],
+    [1,1,0,0.55],[1,1,1,0.30],
+    [1,2,1,0.55],[1,2,0,0.25],
+    [1,3,3,0.55],[1,3,2,0.25],
+    // 首波 → 扩散
+    [2,0,1,0.40],[2,0,0,0.35],[2,0,2,0.18],
+    [2,1,1,0.60],[2,1,2,0.25],
+    [2,2,0,0.40],[2,2,1,0.30],
+    [2,3,3,0.60],[2,3,2,0.25],
+    // 扩散 → 成熟
+    [3,0,0,0.75],[3,0,2,0.20],
+    [3,1,2,0.75],[3,1,1,0.20],
+    [3,2,1,0.70],[3,2,0,0.20],
+    [3,3,3,0.65],[3,3,2,0.25],
+  ];
+
+  // Draw ribbons
+  flows.forEach(([ci, fi, ti, op]) => {
+    const from = cols[ci].items[fi];
+    const to = cols[ci+1].items[ti];
+    const x1 = cols[ci].x + colW;
+    const x2 = cols[ci+1].x;
+    const y1 = from.y + from.h/2;
+    const y2 = to.y + to.h/2;
+    const h1 = Math.max(6, from.h * 0.5 * op);
+    const h2 = Math.max(6, to.h * 0.5 * op);
+    const d = `
+      M ${x1} ${y1 - h1/2}
+      C ${(x1+x2)/2} ${y1 - h1/2}, ${(x1+x2)/2} ${y2 - h2/2}, ${x2} ${y2 - h2/2}
+      L ${x2} ${y2 + h2/2}
+      C ${(x1+x2)/2} ${y2 + h2/2}, ${(x1+x2)/2} ${y1 + h1/2}, ${x1} ${y1 + h1/2}
+      Z
+    `;
+    const defs = svg.querySelector('defs') || (() => {
+      const d2 = document.createElementNS(NS, 'defs'); svg.insertBefore(d2, svg.firstChild); return d2;
+    })();
+    const gradId = `grad-${ci}-${fi}-${ti}`;
+    if (!document.getElementById(gradId)) {
+      const lg = document.createElementNS(NS, 'linearGradient');
+      lg.setAttribute('id', gradId);
+      lg.setAttribute('x1','0%'); lg.setAttribute('x2','100%');
+      const s1 = document.createElementNS(NS,'stop');
+      s1.setAttribute('offset','0%'); s1.setAttribute('stop-color', from.color); s1.setAttribute('stop-opacity', op);
+      const s2 = document.createElementNS(NS,'stop');
+      s2.setAttribute('offset','100%'); s2.setAttribute('stop-color', to.color); s2.setAttribute('stop-opacity', op * 0.7);
+      lg.appendChild(s1); lg.appendChild(s2);
+      defs.appendChild(lg);
+    }
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('fill', `url(#${gradId})`);
+    svg.appendChild(p);
+  });
+
+  // Nodes
+  cols.forEach(col => {
+    col.items.forEach(it => {
+      const rect = document.createElementNS(NS, 'rect');
+      rect.setAttribute('x', col.x); rect.setAttribute('y', it.y);
+      rect.setAttribute('width', colW); rect.setAttribute('height', it.h);
+      rect.setAttribute('rx', 7);
+      rect.setAttribute('fill', it.color + '26');
+      rect.setAttribute('stroke', it.color); rect.setAttribute('stroke-opacity', 0.7);
+      svg.appendChild(rect);
+
+      const tx = document.createElementNS(NS, 'text');
+      tx.setAttribute('x', col.x + colW/2);
+      tx.setAttribute('y', it.y + it.h/2 - 1);
+      tx.setAttribute('text-anchor', 'middle');
+      tx.setAttribute('fill', '#E8ECFF');
+      tx.setAttribute('font-size', '12');
+      tx.setAttribute('font-weight', '600');
+      tx.textContent = it.label;
+      svg.appendChild(tx);
+
+      const v = document.createElementNS(NS, 'text');
+      v.setAttribute('x', col.x + colW/2);
+      v.setAttribute('y', it.y + it.h/2 + 13);
+      v.setAttribute('text-anchor', 'middle');
+      v.setAttribute('fill', '#9BA4C5');
+      v.setAttribute('font-size', '10');
+      v.textContent = it.val;
+      svg.appendChild(v);
+    });
+  });
+
+  // Period labels at bottom
+  const periods = ['W1–W3','W4–W6','W7–W9','W10–W13','W14–W16+'];
+  periods.forEach((p, i) => {
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', cols[i].x + colW/2);
+    t.setAttribute('y', 408);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('font-size', '10');
+    t.setAttribute('fill', '#5E6894');
+    t.setAttribute('letter-spacing', '1');
+    t.textContent = p;
+    svg.appendChild(t);
+  });
+}
+
+/* ---- Nav click handler ---- */
+document.querySelectorAll('.nav-item[data-view]').forEach(nav => {
+  nav.addEventListener('click', () => {
+    const target = nav.dataset.view;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    nav.classList.add('active');
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.dataset.view === target));
+    if (!viewInit[target]) {
+      if (target === 'dna') initDnaView();
+      if (target === 'rec') initRecView();
+      if (target === 'migration') initMigrationView();
+      viewInit[target] = true;
+    } else {
+      (viewCharts[target] || []).forEach(c => c.resize && c.resize());
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+</script>
+
+<!-- ============================================================
+     Animation layer · 自动判定 + 入场 + 滚动浮现 + 数字爬升 + 视图切换
+     ============================================================ -->
+<style>
+  /* Respect reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .tr, .tr-left, .tr-up, .tr-pop, .tr-bar { transition: none !important; }
+    .logo-mark, .panel::after, .ambient-light { animation: none !important; }
+  }
+
+  /* ---- Initial hidden states (will animate to natural state when .in is added) ---- */
+  .tr        { opacity: 0; transform: translateY(22px);
+               transition: opacity .75s cubic-bezier(.22,1,.36,1), transform .75s cubic-bezier(.22,1,.36,1); will-change: opacity, transform; }
+  .tr-left   { opacity: 0; transform: translateX(-24px);
+               transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+  .tr-up     { opacity: 0; transform: translateY(-14px);
+               transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1); }
+  .tr-pop    { opacity: 0; transform: translateY(16px) scale(.96);
+               transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.34,1.56,.64,1); }
+  .tr.in, .tr-left.in, .tr-up.in, .tr-pop.in { opacity: 1; transform: none; }
+
+  /* Bar fill animation — height stays via CSS, width tweens */
+  .tr-bar    { width: 0 !important; transition: width 1.1s cubic-bezier(.16,1,.3,1); }
+  .tr-bar.in { /* width restored inline by JS */ }
+
+  /* Band line draw */
+  .section-band .band-line { transform-origin: left; transform: scaleX(0);
+                             transition: transform .9s cubic-bezier(.22,1,.36,1) .15s; }
+  .section-band.in .band-line { transform: scaleX(1); }
+
+  /* ---- Hover polish: subtle lift + brand-ring glow ---- */
+  .panel, .dna-card, .rec-card, .step-card, .kpi {
+    transition: transform .25s cubic-bezier(.22,1,.36,1),
+                border-color .25s ease,
+                box-shadow .35s ease;
+  }
+  .panel:hover, .dna-card:hover, .rec-card:hover, .step-card:hover, .kpi:hover {
+    transform: translateY(-2px);
+    border-color: rgba(123,155,255,0.32);
+    box-shadow: 0 18px 48px -28px rgba(74,127,255,0.55),
+                0 0 0 1px rgba(123,155,255,0.18) inset;
+  }
+
+  /* Stage funnel nodes pop with a friendly spring */
+  .stage-node {
+    opacity: 0; transform: translateY(14px) scale(.94);
+    transition: opacity .55s cubic-bezier(.22,1,.36,1),
+                transform .55s cubic-bezier(.34,1.56,.64,1);
+  }
+  .stage-node.in { opacity: 1; transform: none; }
+  .stage-node:hover { transform: translateY(-3px) scale(1.01); }
+  .stage-node.current { animation: stage-glow 2.8s ease-in-out infinite; }
+  @keyframes stage-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(74,127,255,0); }
+    50%      { box-shadow: 0 0 0 4px rgba(74,127,255,0.10); }
+  }
+
+  /* Nav item active dot — soft ping */
+  .nav-item.active .dot { animation: nav-dot-ping 2.4s ease-out infinite; }
+  @keyframes nav-dot-ping {
+    0%   { box-shadow: 0 0 0 0 rgba(74,127,255,0.65); }
+    70%  { box-shadow: 0 0 0 8px rgba(74,127,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(74,127,255,0); }
+  }
+  .nav-item { transition: background .2s ease, color .2s ease, transform .2s ease; }
+  .nav-item:not(.disabled):hover { transform: translateX(2px); }
+  .nav-item.active::before { transition: top .35s ease, bottom .35s ease, opacity .35s ease; }
+
+  /* Logo mark — slow ambient rotation of the conic gradient */
+  .logo-mark { animation: logo-spin 22s linear infinite; }
+  @keyframes logo-spin { to { transform: rotate(360deg); } }
+  .logo-mark::after { /* inner dot is centered, so parent rotation has no visual impact on it */ }
+
+  /* Chips & buttons — micro polish */
+  .chip { transition: background .2s, color .2s, border-color .2s, transform .2s; }
+  .chip:hover { transform: translateY(-1px); }
+  .seg button { transition: background .2s, color .2s; }
+  .seg button:hover:not(.on) { background: rgba(255,255,255,0.04); color: var(--text); }
+  .btn, button.btn { transition: transform .15s ease, box-shadow .25s ease, background .2s; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px -10px rgba(74,127,255,0.5); }
+
+  /* View switching — animated fade-up */
+  .view { transition: opacity .35s ease; }
+  .view.active { animation: view-in .55s cubic-bezier(.22,1,.36,1); }
+  @keyframes view-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Ambient cursor-follow soft light (very subtle, dashboard-y) */
+  .ambient-light {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(420px 320px at var(--mx, 50%) var(--my, 30%),
+                                rgba(123,155,255,0.10), transparent 70%);
+    mix-blend-mode: screen;
+    transition: opacity .4s ease;
+  }
+  /* Make sure interactive content sits above the ambient layer */
+  .app { position: relative; z-index: 1; }
+
+  /* KPI / digit number — gentle "just updated" flash when count-up completes */
+  .num-bloom { animation: num-bloom .9s cubic-bezier(.22,1,.36,1); }
+  @keyframes num-bloom {
+    0%   { text-shadow: 0 0 0 rgba(123,155,255,0); }
+    35%  { text-shadow: 0 0 18px rgba(123,155,255,0.55); }
+    100% { text-shadow: 0 0 0 rgba(123,155,255,0); }
+  }
+</style>
+
+<script>
+/* ============================================================
+   Auto-animate: pick targets, observe, reveal with stagger.
+   Re-fire on view switch so each view has its own entrance.
+   ============================================================ */
+(function () {
+  const REVEAL_SELECTORS = [
+    '.section-band',
+    '.panel',
+    '.dna-card',
+    '.rec-card',
+    '.step-card',
+    '.kpi',
+    '.stage-node',
+    '.src',
+    '.legend-item',
+    '.city-dot',
+    '.chart-wrap',
+    '.map-wrap',
+    '.sankey-wrap',
+  ].join(',');
+
+  // ---- Ambient cursor light ----
+  const ambient = document.createElement('div');
+  ambient.className = 'ambient-light';
+  document.body.appendChild(ambient);
+  let mx = window.innerWidth / 2, my = window.innerHeight / 3;
+  let raf = null;
+  window.addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      ambient.style.setProperty('--mx', mx + 'px');
+      ambient.style.setProperty('--my', my + 'px');
+      raf = null;
+    });
+  });
+
+  // ---- Tag elements with anim classes (idempotent) ----
+  function tagElements(root) {
+    (root || document).querySelectorAll(REVEAL_SELECTORS).forEach(el => {
+      if (el.classList.contains('tr') || el.classList.contains('tr-pop')) return;
+      // pop for stage-nodes (springy), rise for everything else
+      if (el.matches('.stage-node')) {
+        /* already styled via .stage-node base rules */
+      } else if (el.matches('.kpi, .dna-card, .rec-card, .step-card')) {
+        el.classList.add('tr-pop');
+      } else {
+        el.classList.add('tr');
+      }
+    });
+
+    // Sidebar slides from left, topbar fades down
+    document.querySelectorAll('.sidebar').forEach(el => el.classList.add('tr-left'));
+    document.querySelectorAll('.topbar').forEach(el => el.classList.add('tr-up'));
+
+    // Source bars: store target width, zero out until reveal
+    (root || document).querySelectorAll('.src .bar > span').forEach(bar => {
+      if (bar.dataset.targetWidth) return;
+      const w = bar.style.width || getComputedStyle(bar).width;
+      bar.dataset.targetWidth = w;
+      bar.classList.add('tr-bar');
+    });
+  }
+
+  tagElements();
+
+  // ---- Reveal logic: when an element scrolls into view, .in is added.
+  //      Stagger by index inside the same direct parent. ----
+  function indexInGroup(el) {
+    const parent = el.parentElement;
+    if (!parent) return 0;
+    const siblings = Array.from(parent.children).filter(c =>
+      c.classList.contains('tr') || c.classList.contains('tr-pop') ||
+      c.classList.contains('tr-left') || c.classList.contains('tr-up') ||
+      c.matches('.stage-node, .src, .legend-item')
+    );
+    return siblings.indexOf(el);
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const idx = indexInGroup(el);
+      const delay = Math.min(idx * 0.06, 0.5); // cap at .5s so late items don't lag
+      el.style.transitionDelay = delay + 's';
+      el.classList.add('in');
+
+      // Restore bar widths
+      if (el.matches('.src')) {
+        el.querySelectorAll('.bar > .tr-bar').forEach(bar => {
+          setTimeout(() => {
+            bar.style.width = bar.dataset.targetWidth;
+            bar.classList.add('in');
+          }, (delay + 0.05) * 1000);
+        });
+      }
+      io.unobserve(el);
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -8% 0px' });
+
+  function observeAll() {
+    document.querySelectorAll(
+      '.tr:not(.in), .tr-pop:not(.in), .tr-left:not(.in), .tr-up:not(.in), .stage-node:not(.in), .src:not(.in)'
+    ).forEach(el => io.observe(el));
+  }
+  observeAll();
+
+  // ---- Number count-up for headline metrics ----
+  //      Targets: .kpi .val, .stage-count, .stage-delta, .src .val, .panel-title .tag (if numeric)
+  function countUp(el) {
+    if (el.dataset.countDone) return;
+    const txt = el.textContent.trim();
+    // Match a number with optional decimals, prefix (+/-/¥/$), and trailing unit
+    const m = txt.match(/^([+\-]?)([\d,]+(?:\.\d+)?)(.*)$/);
+    if (!m) return;
+    const prefix = m[1] || '';
+    const numStr = m[2];
+    const suffix = m[3] || '';
+    const target = parseFloat(numStr.replace(/,/g, ''));
+    if (!isFinite(target) || target === 0) return;
+    const decimals = (numStr.split('.')[1] || '').length;
+    const dur = 900 + Math.min(target, 9999) * 0.15; // ms; bigger numbers take a bit longer
+    const start = performance.now();
+    el.dataset.countDone = '1';
+    function frame(t) {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3); // ease-out-cubic
+      const v = target * eased;
+      const formatted = decimals > 0 ? v.toFixed(decimals) : Math.round(v).toLocaleString('en');
+      el.textContent = prefix + formatted + suffix;
+      if (p < 1) requestAnimationFrame(frame);
+      else {
+        el.textContent = prefix + (decimals > 0 ? target.toFixed(decimals) : target.toLocaleString('en')) + suffix;
+        el.classList.add('num-bloom');
+        setTimeout(() => el.classList.remove('num-bloom'), 1100);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  const numTargets = '.kpi .val, .stage-count, .src .val';
+  const countIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        countUp(e.target);
+        countIO.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll(numTargets).forEach(el => countIO.observe(el));
+
+  // ---- Re-fire entrance on view switch ----
+  document.querySelectorAll('.nav-item[data-view]').forEach(nav => {
+    nav.addEventListener('click', () => {
+      // Wait for the existing handler to flip .active, then re-tag + re-observe
+      setTimeout(() => {
+        const active = document.querySelector('.view.active');
+        if (!active) return;
+        // Re-tag in case the view was lazy-initialized after this script ran
+        tagElements(active);
+        // Reset reveals inside this view, then re-observe so they animate in again
+        active.querySelectorAll('.in').forEach(el => {
+          el.classList.remove('in');
+          el.style.transitionDelay = '';
+        });
+        active.querySelectorAll('.src .bar > .tr-bar').forEach(bar => {
+          bar.classList.remove('in');
+          bar.style.width = '0%';
+        });
+        // Force reflow before re-adding
+        void active.offsetWidth;
+        active.querySelectorAll(
+          '.tr, .tr-pop, .tr-left, .tr-up, .stage-node, .src'
+        ).forEach(el => io.observe(el));
+
+        // Number counters too: reset and re-observe
+        active.querySelectorAll('[data-count-done]').forEach(el => {
+          delete el.dataset.countDone;
+        });
+        active.querySelectorAll(numTargets).forEach(el => countIO.observe(el));
+      }, 30);
+    });
+  });
+})();
+</script>
+</body>
+</html>

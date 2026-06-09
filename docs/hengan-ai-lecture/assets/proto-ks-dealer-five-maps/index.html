@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>经销商生意大脑 · 五张地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <div id="stage-wrap">
+    <div class="stage-sizer" id="stage-sizer">
+      <div id="stage">
+        <div id="root"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- React (pinned) -->
+  <script src="vendor/react.min.js"></script>
+  <script src="vendor/react-dom.min.js"></script>
+
+  <!-- data -->
+  <script src="data.js"></script>
+
+  <!-- scenes (each one assigns to window) -->
+  <script src="compiled/app.js"></script>
+  <script src="compiled/scene-intro.js"></script>
+  <script src="compiled/scene-customer.js"></script>
+  <script src="compiled/scene-decision.js"></script>
+  <script src="compiled/scene-risk.js"></script>
+  <script src="compiled/scene-capability.js"></script>
+  <script src="compiled/scene-network.js"></script>
+  <script src="compiled/scene-dossier.js"></script>
+
+  <!-- boot last -->
+  <script src="compiled/boot.js"></script>
+</body>
+</html>
