@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>XXYY集团-服务售前调研-V5.0(脱敏版)</title>
+<style>
+:root{
+  /* feishu-deck-h5 标准 CJK 字体栈 */
+  --fs-font-cjk:"方正兰亭黑 Pro GB18030","方正兰亭黑Pro_GB18030","FZLanTingHeiPro_GB18030 Light","FZLanTingHeiPro-Light","FZLanTingHei","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+
+  --brand:#8B1A1A;       /* 酒红 */
+  --brand-deep:#5C0F0F;
+  --gold:#C49A4A;        /* 金 */
+  --gold-soft:#E5C98A;
+  --ink:#1A1311;
+  --ink-2:#3B2E2A;
+  --muted:#7A6E6A;
+  --line:#E7DFD4;
+  --bg:#FBF7F1;          /* 米纸 */
+  --paper:#FFFFFF;
+  --danger:#C0392B;
+  --ok:#1E7F4B;
+  --warn:#C88A00;
+  --shadow:0 4px 24px rgba(60,20,20,.06);
+  --shadow-lg:0 18px 48px rgba(60,20,20,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:var(--fs-font-cjk);
+  -webkit-font-smoothing:antialiased;line-height:1.75;font-size:24px;}
+.sans{font-family:var(--fs-font-cjk);letter-spacing:.02em}
+.mono{font-family:"JetBrains Mono","SF Mono",Menlo,monospace}
+a{color:var(--brand);text-decoration:none}
+hr{border:0;border-top:1px solid var(--line);margin:48px 0}
+
+/* ====== 容器 ====== */
+.page{max-width:1180px;margin:0 auto;padding:0 56px}
+.section{padding:96px 0;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:none}
+
+/* ====== 封面 ====== */
+.cover{
+  position:relative;min-height:64vh;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(196,154,74,.20), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(139,26,26,.30), transparent 60%),
+    linear-gradient(160deg,#3a0c0c 0%,#5C0F0F 45%,#8B1A1A 100%);
+  color:#fff;display:flex;align-items:center;overflow:hidden;
+}
+.cover::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:80px 80px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 75%);
+}
+.cover-inner{position:relative;z-index:1;width:100%}
+.cover .eyebrow{font-family:"Inter",sans-serif;letter-spacing:.4em;color:var(--gold-soft);font-size:16px;font-weight:600;margin-bottom:28px}
+.cover h1{font-size:48px;line-height:1.18;font-weight:700;margin:0 0 14px;letter-spacing:-.01em;
+  background:linear-gradient(180deg,#fff 0%, #f4e4c1 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cover h2{font-size:24px;color:#f1ddb8;font-weight:400;margin:0 0 36px;letter-spacing:.05em}
+.cover .meta{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;border-top:1px solid rgba(255,255,255,.18);padding-top:24px;max-width:980px}
+.cover .meta b{display:block;font-size:16px;letter-spacing:.25em;color:var(--gold-soft);margin-bottom:8px;font-family:"Inter",sans-serif;font-weight:600}
+.cover .meta span{font-size:24px;color:#fff;font-weight:500}
+.cover .seal{position:absolute;right:56px;bottom:32px;text-align:right;font-family:"Inter",sans-serif;font-size:16px;letter-spacing:.25em;color:var(--gold-soft);opacity:.85}
+.cover .seal b{display:block;font-size:28px;color:#fff;letter-spacing:.04em;margin-bottom:6px;font-family:inherit}
+
+/* ====== 章节标题 ====== */
+.eyebrow-line{display:flex;align-items:center;gap:18px;font-family:"Inter",sans-serif;font-size:16px;letter-spacing:.32em;color:var(--gold);font-weight:600;margin-bottom:18px}
+.eyebrow-line::before{content:"";width:48px;height:2px;background:var(--gold)}
+h2.s-title{font-size:48px;line-height:1.25;margin:0 0 14px;font-weight:700;color:var(--ink);letter-spacing:-.005em}
+h2.s-title em{font-style:normal;color:var(--brand)}
+.s-deck{font-size:24px;color:var(--ink-2);max-width:840px;margin:0 0 56px;line-height:1.85}
+h3{font-size:24px;margin:48px 0 18px;font-weight:700;color:var(--ink);letter-spacing:.005em;
+  border-left:4px solid var(--gold);padding-left:14px}
+h4{font-size:24px;margin:32px 0 14px;font-weight:700;color:var(--brand-deep);letter-spacing:.02em}
+
+/* ====== 五句话结论 ====== */
+.lead-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:8px}
+.lead-card{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:24px 20px;position:relative;box-shadow:var(--shadow);transition:transform .25s,box-shadow .25s}
+.lead-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.lead-card .num{font-family:"Inter",sans-serif;font-size:48px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:10px;letter-spacing:-.02em}
+.lead-card .num::after{content:"";display:block;width:24px;height:2px;background:var(--brand);margin-top:10px}
+.lead-card p{margin:0;font-size:16px;line-height:1.7;color:var(--ink-2)}
+.lead-card b{color:var(--brand-deep)}
+
+/* ====== KPI 卡 ====== */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin:24px 0}
+.kpi{background:linear-gradient(180deg,#fff 0%, #fbf6ec 100%);border:1px solid var(--line);border-radius:8px;padding:28px 24px;position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--brand),var(--gold))}
+.kpi .label{font-family:"Inter",sans-serif;font-size:16px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;font-weight:600}
+.kpi .v{font-size:48px;font-weight:700;color:var(--brand-deep);margin:8px 0 4px;letter-spacing:-.02em;line-height:1}
+.kpi .v small{font-size:24px;color:var(--gold);font-weight:500;margin-left:4px}
+.kpi .sub{font-size:16px;color:var(--ink-2);line-height:1.55;margin-top:6px}
+
+/* ====== 表格 ====== */
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--paper);
+  border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:16px;margin:18px 0;box-shadow:var(--shadow)}
+thead th{background:linear-gradient(180deg,#fbf6ec,#f5ecdb);color:var(--brand-deep);
+  text-align:left;font-weight:700;padding:14px 16px;letter-spacing:.02em;border-bottom:2px solid var(--gold);font-size:16px}
+tbody td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.7;color:var(--ink-2)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:#fdf8ee}
+td b{color:var(--brand-deep)}
+.tag{display:inline-block;font-family:"Inter",sans-serif;font-size:16px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:.06em;line-height:1.6;vertical-align:middle}
+.tag-red{background:#fbe4e0;color:var(--danger)}
+.tag-orange{background:#fbeed1;color:var(--warn)}
+.tag-yellow{background:#fdf6df;color:#a07b13}
+.tag-green{background:#dcefe2;color:var(--ok)}
+.tag-gold{background:#f5e9cc;color:var(--brand)}
+.code{font-family:"Inter",sans-serif;font-weight:700;color:var(--brand);letter-spacing:.04em}
+
+/* ====== 引文 ====== */
+.quote{background:linear-gradient(180deg,#fff,#fbf6ec);border-left:3px solid var(--gold);
+  border-radius:0 6px 6px 0;padding:20px 24px;margin:14px 0;position:relative;box-shadow:var(--shadow)}
+.quote::before{content:"\201C";position:absolute;top:-4px;right:18px;font-size:48px;color:var(--gold);opacity:.35;font-family:Georgia,serif;line-height:1}
+.quote .t{font-size:24px;line-height:1.85;color:var(--ink);font-style:italic}
+.quote .r{font-family:"Inter",sans-serif;font-size:16px;letter-spacing:.12em;color:var(--muted);margin-top:10px;text-transform:uppercase;font-weight:600}
+.quote .r::before{content:"— "}
+.quote-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ====== Callout ====== */
+.callout{background:#fdf6e7;border:1px solid var(--gold-soft);border-left:4px solid var(--gold);
+  padding:22px 26px;border-radius:6px;margin:22px 0;font-size:24px;line-height:1.85;color:var(--ink-2)}
+.callout b{color:var(--brand-deep)}
+.callout-red{background:#fdf0ec;border-color:#e8b8ad;border-left-color:var(--danger)}
+.callout-red b{color:var(--danger)}
+
+/* ====== 病灶卡 ====== */
+.disease{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:32px 36px;margin:18px 0;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.disease::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--brand),var(--gold))}
+.disease .head{display:flex;align-items:baseline;gap:16px;margin-bottom:16px}
+.disease .head .no{font-family:"Inter",sans-serif;font-size:48px;font-weight:200;color:var(--gold);line-height:1;letter-spacing:-.02em}
+.disease .head h3{margin:0;border:0;padding:0;font-size:28px;color:var(--brand-deep)}
+.disease .head .tagline{color:var(--muted);font-size:16px;font-style:italic;margin-left:auto}
+
+/* ====== 流程图 ====== */
+.flow{background:linear-gradient(180deg,#fbf6ec,#fff);border:1px solid var(--gold-soft);border-radius:10px;padding:30px;margin:18px 0;box-shadow:var(--shadow)}
+
+/* ====== 视角矩阵 ====== */
+.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.role{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:26px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .25s}
+.role:hover{transform:translateY(-3px)}
+.role::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--brand)}
+.role .role-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.role .role-title h4{margin:0;font-size:24px;color:var(--brand-deep)}
+.role .stars{font-size:16px;color:var(--gold);letter-spacing:.1em}
+.role ul{margin:0 0 12px;padding-left:18px;font-size:16px;line-height:1.85;color:var(--ink-2)}
+.role .pic{font-family:var(--fs-font-cjk);font-style:italic;color:var(--muted);font-size:16px;border-top:1px dashed var(--line);padding-top:12px;margin-top:12px}
+
+/* ====== 访谈画像卡 ====== */
+.persona{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:28px 32px;margin:18px 0;display:grid;grid-template-columns:80px 1fr;gap:24px;box-shadow:var(--shadow)}
+.persona .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--brand) 0%,var(--gold) 100%);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:300;font-family:"Inter",sans-serif;letter-spacing:-.02em;box-shadow:var(--shadow)}
+.persona .meta-line{font-family:"Inter",sans-serif;font-size:16px;letter-spacing:.2em;color:var(--muted);font-weight:600;margin-bottom:6px}
+.persona h4{margin:0 0 8px;font-size:24px;color:var(--brand-deep)}
+.persona .pic-line{font-style:italic;color:var(--ink-2);margin-bottom:12px;font-size:16px}
+.persona .qkey{background:linear-gradient(180deg,#fff,#fbf6ec);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 4px 4px 0;font-size:16px;line-height:1.8;font-style:italic;color:var(--ink)}
+
+/* ====== 收口 ====== */
+.finale{background:linear-gradient(160deg,#5C0F0F 0%, #8B1A1A 100%);color:#fff;border-radius:12px;padding:60px 64px;position:relative;overflow:hidden;margin:24px 0;box-shadow:var(--shadow-lg)}
+.finale::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(800px 400px at 100% 0%, rgba(196,154,74,.20), transparent 60%);pointer-events:none}
+.finale .eyebrow-line{color:var(--gold-soft);margin-bottom:14px}
+.finale .eyebrow-line::before{background:var(--gold-soft)}
+.finale h3{border:0;padding:0;color:#fff;font-size:28px;margin:0 0 22px}
+.finale p{font-size:24px;line-height:1.95;color:#f1ddb8;max-width:880px;margin:0 0 16px}
+.finale .triplet{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:36px;padding-top:32px;border-top:1px solid rgba(255,255,255,.18)}
+.finale .triplet b{display:block;font-family:"Inter",sans-serif;font-size:16px;letter-spacing:.3em;color:var(--gold-soft);margin-bottom:14px;font-weight:600}
+.finale .triplet ul{margin:0;padding:0;list-style:none}
+.finale .triplet li{font-size:24px;color:#fff;margin-bottom:8px;line-height:1.7}
+.finale .triplet li .em{color:var(--gold-soft);font-family:"Inter",sans-serif;font-weight:700;letter-spacing:.04em;margin-right:8px}
+
+/* ====== 页脚 ====== */
+.footer{padding:48px 56px;text-align:center;color:var(--muted);font-size:16px;font-family:"Inter",sans-serif;letter-spacing:.18em;background:#fbf6ec;border-top:1px solid var(--line)}
+
+/* ====== SVG 图表通用 ====== */
+.chart{width:100%;display:block;margin:8px 0 4px}
+.chart text{font-family:"Inter","PingFang SC",sans-serif}
+.legend{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;font-size:16px;color:var(--muted);margin-top:8px;font-family:"Inter",sans-serif;letter-spacing:.05em}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+/* ====== 需求清单分组 ====== */
+.req-cat{display:flex;align-items:baseline;gap:14px;margin:32px 0 14px}
+.req-cat .pill{font-family:"Inter",sans-serif;font-size:16px;font-weight:700;letter-spacing:.18em;background:var(--brand);color:#fff;padding:5px 12px;border-radius:3px}
+.req-cat h4{margin:0;font-size:24px;color:var(--brand-deep);border:0;padding:0}
+.req-cat .cnt{font-family:"Inter",sans-serif;font-size:16px;color:var(--muted);font-weight:600;letter-spacing:.1em;margin-left:auto}
+
+@media (max-width:980px){
+  .page{padding:0 24px}
+  .lead-grid{grid-template-columns:1fr 1fr}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .role-grid{grid-template-columns:1fr}
+  .quote-grid{grid-template-columns:1fr}
+  .cover h1{font-size:48px}
+  .cover .meta{grid-template-columns:1fr 1fr}
+  .finale{padding:40px 28px}
+  .finale .triplet{grid-template-columns:1fr}
+}
+
+/* ===== V3.0 Polish Layer ===== */
+.version-badge{position:absolute;right:36px;bottom:32px;font-family:Inter,sans-serif;font-size:16px;letter-spacing:.18em;color:#E5C98A;opacity:.78;border:1px solid rgba(229,201,138,.45);padding:5px 12px;border-radius:2px;text-transform:uppercase;font-weight:600;z-index:5}
+/* 章节节奏:统一上下呼吸 */
+.section{padding:88px 0!important}
+.section .page > h2.s-title{margin-top:0}
+.section .page > .s-deck{margin-bottom:44px}
+/* 各 viz-block 上下间距统一 */
+.viz-block{margin-top:44px!important;padding-top:8px;border-top:1px dashed rgba(196,154,74,.35)}
+.viz-block:first-child{border-top:0;padding-top:0}
+.viz-block h3{margin-top:0!important}
+.viz-block h4{margin-top:0!important}
+/* KPI / lead 卡片优化 */
+.lead-grid{gap:18px!important;margin-top:14px!important;margin-bottom:8px}
+.kpi-grid{gap:22px!important;margin:28px 0 8px!important}
+.kpi{padding:30px 26px!important}
+/* 表格上下留白 */
+table{margin:24px 0 8px!important}
+/* 病灶卡片 */
+.disease{padding:36px 40px!important;margin:22px 0!important}
+.disease + .disease{margin-top:28px!important}
+/* flow 框上下间距 */
+.flow{padding:36px 30px 40px!important;margin:14px 0 8px!important}
+/* ===== 业务断点 V3 精修 ===== */
+.evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:32px}
+.ev-card{background:#fff;border:1px solid #E8DCC4;border-top:3px solid #8B1A1A;padding:18px 18px 16px;transition:transform .25s,box-shadow .25s;border-radius:4px}
+.ev-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(139,26,26,.16)}
+.ev-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.ev-no{width:32px;height:32px;flex-shrink:0;background:radial-gradient(circle at 35% 30%,#E5C98A,#C49A4A 60%,#5C0F0F);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;font-weight:900;font-size:24px;box-shadow:0 2px 6px rgba(92,15,15,.35)}
+.ev-title{flex:1;min-width:0}
+.ev-name{font-family:var(--fs-font-cjk);font-size:24px;font-weight:700;color:#5C0F0F;line-height:1.3}
+.ev-layer{font-family:Inter,sans-serif;font-size:16px;color:#8a7a72;margin-top:4px;letter-spacing:.5px}
+.ev-loss{text-align:right;flex-shrink:0}
+.ev-loss-v{font-family:Inter,sans-serif;font-size:24px;font-weight:800;color:#8B1A1A;line-height:1;letter-spacing:-.02em}
+.ev-loss-l{font-family:Inter,sans-serif;font-size:16px;color:#8a7a72;letter-spacing:1.5px;margin-top:3px}
+.ev-quote{font-family:var(--fs-font-cjk);font-style:italic;font-size:16px;color:#3D2A2A;line-height:1.7;padding:11px 12px 11px 14px;border-left:2px solid #C49A4A;background:rgba(229,201,138,.12);margin:10px 0 11px;border-radius:0 3px 3px 0}
+.ev-basis{font-family:Inter,sans-serif;font-size:16px;color:#8a7a72;margin-bottom:10px;letter-spacing:.3px}
+.ev-bar{width:100%;height:6px;background:#F0E6CE;border-radius:3px;overflow:hidden}
+.ev-bar-fill{height:100%;background:linear-gradient(90deg,#C49A4A,#8B1A1A);border-radius:3px}
+.aha-strip{margin-top:36px;padding:28px 32px;background:linear-gradient(135deg,#5C0F0F 0%,#8B1A1A 100%);position:relative;overflow:hidden;border-radius:4px}
+.aha-strip::before,.aha-strip::after{content:"";position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#E5C98A 50%,transparent)}
+.aha-strip::before{top:0}.aha-strip::after{bottom:0}
+.aha-quote{font-family:var(--fs-font-cjk);font-size:24px;line-height:1.65;color:#FBF7F1;font-weight:600;text-align:center}
+.aha-quote em{color:#E5C98A;font-style:normal;font-weight:700;border-bottom:1px dashed #E5C98A;padding-bottom:2px}
+.aha-tag{font-family:Inter,sans-serif;font-size:16px;letter-spacing:4px;color:#E5C98A;text-align:center;margin-top:14px;opacity:.85;font-weight:700}
+/* 文末水印 */
+.doc-footer{text-align:center;padding:28px 0 36px;font-family:Inter,sans-serif;font-size:16px;letter-spacing:3px;color:#C49A4A;opacity:.6;font-weight:600}
+
+
+/* ===== V3.1 Voice & Polish ===== */
+.voice-strip{display:flex;align-items:flex-start;gap:14px;padding:18px 26px;margin:18px 0 26px;background:linear-gradient(90deg,rgba(229,201,138,.18),rgba(229,201,138,.04));border-left:3px solid #C49A4A;border-radius:0 4px 4px 0;font-family:var(--fs-font-cjk)}
+.voice-strip--top{margin:8px 0 32px}
+.voice-strip--mid{margin:36px 0 26px}
+.voice-mark{font-family:Georgia,'Source Han Serif',serif;font-size:48px;line-height:.7;color:#C49A4A;font-weight:700;margin-top:4px;flex-shrink:0;font-style:italic}
+.voice-text{font-size:24px;font-style:italic;color:#5C0F0F;line-height:1.65;font-weight:600;padding-top:6px}
+
+/* 主流程图框增强 */
+.flow--polished{padding:36px 40px 24px!important;background:linear-gradient(180deg,#FFFCF5 0%,#FBF6EC 100%)!important;border:1px solid #E5C98A;border-radius:6px;box-shadow:0 6px 28px rgba(92,15,15,.08)}
+.flow-caption{display:flex;align-items:center;gap:14px;padding-bottom:18px;margin-bottom:14px;border-bottom:1px dashed rgba(196,154,74,.5)}
+.flow-caption-tag{font-family:Inter,sans-serif;font-size:16px;letter-spacing:3px;color:#FBF7F1;background:#8B1A1A;padding:4px 10px;border-radius:2px;font-weight:700}
+.flow-caption-title{font-family:var(--fs-font-cjk);font-size:16px;color:#5C0F0F;font-weight:600}
+.flow-legend{display:flex;justify-content:center;gap:32px;padding-top:14px;margin-top:8px;border-top:1px dashed rgba(196,154,74,.5);font-family:Inter,sans-serif;font-size:16px;color:#5C0F0F;font-weight:600}
+.flow-legend span{display:inline-flex;align-items:center;gap:8px}
+.flow-legend i{display:inline-block;width:18px;height:10px;border-radius:2px}
+.flow-legend i.line-solid{height:0;border-top:2px solid #8B1A1A;width:24px}
+.flow-legend i.line-dash{height:0;border-top:2px dashed #C49A4A;width:24px}
+
+/* 证据卡:加入 formula */
+.ev-formula{margin:8px 0 12px;padding:10px 12px;background:#FBF6EC;border:1px dashed rgba(196,154,74,.55);border-radius:3px}
+.ev-formula-label{font-family:Inter,sans-serif;font-size:16px;letter-spacing:2px;color:#C49A4A;font-weight:700;margin-bottom:5px}
+.ev-formula-text{font-family:Inter,'Source Han Serif',serif;font-size:16px;color:#5C0F0F;line-height:1.65}
+.ev-formula-text b{color:#8B1A1A;font-weight:800;font-size:16px}
+.ev-basis{display:none}
+
+/* 标题间距收紧 */
+.breakpoint-section h3{margin-top:36px;margin-bottom:18px}
+
+</style>
+</head>
+<body>
+
+<!-- ============ 封面 ============ -->
+<section class="cover">
+  <div class="version-badge">V5.0 · 脱敏版 · 2026-05-20</div>
+  <div class="page cover-inner">
+    <div class="eyebrow">CONFIDENTIAL · BOARDROOM EDITION</div>
+    <h1>XXYY 集团 · 销售执行力<br/>与数据真实性</h1>
+    <h2>面向董事长 / CEO 的调研总结纲要</h2>
+    <div class="meta">
+      <div><b>样本</b><span>335 份独立深访 + 5 场 1 对 1</span></div>
+      <div><b>覆盖</b><span>事业部 / 大区 / 区域 / 一线 / 总部</span></div>
+      <div><b>方法</b><span>AI 结构化深访 + 高层定向访谈</span></div>
+      <div><b>呈送</b><span>XXYY 集团董事长 + CEO + 高管层</span></div>
+    </div>
+    <div class="seal">
+      <b>飞书 · 大消费</b>
+      SOLUTION TEAM · 2026.05
+    </div>
+  </div>
+</section>
+
+<!-- ============ 调研时效说明 (V4.2 配色优化 + 文案修订, 便于截图呈现) ============ -->
+<section class="section"><div class="page">
+  <div class="eyebrow-line" style="color:#d4af37;letter-spacing:.3em;">RESEARCH SCOPE & TIMELINESS · 调研口径与时效说明</div>
+  <h2 class="s-title" style="margin-bottom:8px;">关于本报告 · <em>调研口径与时效</em> 的重要说明</h2>
+  <p class="s-deck" style="margin-bottom:28px;">便于阅读者准确理解本报告中"现状 / 病灶"描述的成立时点 — 请优先阅读本页。</p>
+
+  <div style="
+      background: linear-gradient(135deg, #1a1410 0%, #221913 60%, #1a1410 100%);
+      border: 1px solid rgba(212,175,55,0.55);
+      border-left: 5px solid #d4af37;
+      border-radius: 14px;
+      padding: 32px 40px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      margin-top: 12px;
+  ">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+      <div style="font-size:28px;line-height:1;">📌</div>
+      <div style="font-size:24px;font-weight:700;color:#ffffff;letter-spacing:.02em;">本报告素材来源 · 时间口径</div>
+      <div style="margin-left:auto;font-size:16px;letter-spacing:.25em;color:#d4af37;font-family:'Inter',sans-serif;font-weight:700;">SNAPSHOT · BEFORE 2026-05-05</div>
+    </div>
+
+    <p style="font-size:24px;line-height:1.85;color:#f4ead0;margin:0 0 20px;">
+      本报告核心素材来源于 <b style="color:#ffffff;">2026 年 5 月 5 日前后</b> 开展的
+      <b style="color:#ffffff;">数百份一线结构化深访</b> 与 <b style="color:#ffffff;">高层 1 对 1 沟通</b>,
+      所呈现的现状、病灶、痛点描述,均为 <b style="color:#ffd766;">该时点之前的客观快照</b>。
+    </p>
+
+    <div style="
+        background: #0e0a07;
+        border-radius: 10px;
+        padding: 22px 26px;
+        margin: 18px 0 20px;
+        border: 1px solid rgba(212,175,55,0.30);
+    ">
+      <div style="font-size:16px;letter-spacing:.18em;color:#ffd766;font-weight:700;margin-bottom:14px;font-family:'Inter',sans-serif;">⚙ 报告完成后 · XXYY 集团集团已快速推进的整改与动作</div>
+      <p style="font-size:24px;line-height:1.85;color:#ede2c5;margin:0 0 12px;">
+        在本次调研完成之后的 <b style="color:#ffffff;">过去两到三周内</b>,XXYY 集团集团已按照高层既定要求,
+        完成多项关键整改与机制升级,包括但不限于:
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px 22px;margin-top:14px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="color:#ffd766;font-weight:700;flex-shrink:0;font-size:24px;line-height:1.5;">▸</div>
+          <div style="font-size:16px;color:#ede2c5;line-height:1.7;"><b style="color:#ffffff;">推广线索的真实填报</b> · 多维表格管控一拜 / 二拜,水分大幅收敛</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="color:#ffd766;font-weight:700;flex-shrink:0;font-size:24px;line-height:1.5;">▸</div>
+          <div style="font-size:16px;color:#ede2c5;line-height:1.7;"><b style="color:#ffffff;">双雷达项目初步上线</b> · 5 月 20 日前后宏观 / 微观双视角看板正式投入运行</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="color:#ffd766;font-weight:700;flex-shrink:0;font-size:24px;line-height:1.5;">▸</div>
+          <div style="font-size:16px;color:#ede2c5;line-height:1.7;"><b style="color:#ffffff;">信息检核机制建立</b> · 关键节点背靠背确认 / 现场记录留痕</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="color:#ffd766;font-weight:700;flex-shrink:0;font-size:24px;line-height:1.5;">▸</div>
+          <div style="font-size:16px;color:#ede2c5;line-height:1.7;"><b style="color:#ffffff;">三部曲八步法逐步试点推广</b> · 5 月以来在两个事业部分阶段试点与推广</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="color:#ffd766;font-weight:700;flex-shrink:0;font-size:24px;line-height:1.5;">▸</div>
+          <div style="font-size:16px;color:#ede2c5;line-height:1.7;"><b style="color:#ffffff;">4×5 作战地图落地</b> · 两个事业部与YY均已建立分层动作 / 考核要求</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="color:#ffd766;font-weight:700;flex-shrink:0;font-size:24px;line-height:1.5;">▸</div>
+          <div style="font-size:16px;color:#ede2c5;line-height:1.7;"><b style="color:#ffffff;">规则严格化执行</b> · 一线动作要求与考核口径同步严格化</div>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:16px;line-height:1.85;color:#d4c597;margin:0;font-style:italic;">
+      💡 因此,本报告中描述的部分病灶与痛点,在过去两到三周内已经发生了 <b style="color:#ffd766;font-style:normal;">显著、积极的快速改变</b>。
+      报告中的"病灶 / 现状"应被理解为 <b style="color:#ffffff;font-style:normal;">XXYY 集团启动整改前的基线快照</b>,
+      用以解释 "为什么要做这次变革" 与 "我们从哪里出发";
+      后续整改成果与改进进展,将在 <b style="color:#ffffff;font-style:normal;">方案汇报材料</b> 中专项呈现。
+    </p>
+  </div>
+</div></section>
+
+<!-- ============ 0 致董事长五句话 ============ -->
+<section class="section"><div class="page">
+  <div class="eyebrow-line">PART 0 · EXECUTIVE TAKEAWAY</div>
+  <h2 class="s-title">致董事长 / CEO 的 <em>5 句话</em> 结论</h2>
+  <p class="s-deck">如果只有 30 秒，请读完这一页。其余九章，是为这五句话提供证据。</p>
+
+  <div class="lead-grid">
+    <div class="lead-card"><div class="num">1</div>
+      <p><b>核心矛盾不是"人不行"。</b>是机制让对的人做错的事——人治盯不过来、数字看不透底、动作落不下去。</p></div>
+    <div class="lead-card"><div class="num">2</div>
+      <p><b>外因 60% / 内因 40%。</b>外是消费降级；内 40% 中"执行慢、能力跟不上、上层盯得不够"是主因（大区负责人 A量化口径）。</p></div>
+    <div class="lead-card"><div class="num">3</div>
+      <p><b>真实率天花板已现。</b>管理层自评 71% / 二拜率 70% 看似还行，<b>剩下 2-3 成是看不见的盲区</b>。</p></div>
+    <div class="lead-card"><div class="num">4</div>
+      <p><b>治理在变成新内耗。</b>晨会 / 督查 / 审计 / 层层把关，<b>越管越多、越多越假、越假越管</b>，闭环已经形成。</p></div>
+    <div class="lead-card"><div class="num">5</div>
+      <p><b>董事长真正想要的，</b>不是"再加一层管"，而是<b>让我直接看到每一层是不是真在动</b>——这是所有需求的发动机。</p></div>
+  </div>
+
+  <h3>核心 KPI 一览</h3>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="label">SAMPLE SIZE</div><div class="v">335<small>份</small></div><div class="sub">管理层 97 + 一线 238<br/>独立结构化深访</div></div>
+    <div class="kpi"><div class="label">DATA TRUTHFULNESS</div><div class="v">71<small>%</small></div><div class="sub">管理层自评真实率均值<br/>中位 72%（仍有 28% 盲区）</div></div>
+    <div class="kpi"><div class="label">SECOND-VISIT RATE</div><div class="v">67<small>%</small></div><div class="sub">二次拜访真实执行率均值<br/>中位 70%（人工核查成本未降）</div></div>
+    <div class="kpi"><div class="label">DAILY REPORTING</div><div class="v">1.13<small>h</small></div><div class="sub">一线日均填报时长<br/>占工作时长 14%</div></div>
+  </div>
+
+<div class="viz-block">
+  <h3 style="margin-top:36px">五维健康度雷达 · <em>越靠外越健康</em></h3>
+  <div style="display:flex;gap:32px;align-items:center;flex-wrap:wrap;margin-top:18px">
+    <svg viewBox="0 0 520 480" width="100%" style="max-width:520px;flex:1 1 420px">
+      <polygon points="260.0,198.8 299.2,227.3 284.2,273.4 235.8,273.4 220.8,227.3" fill="none" stroke="#E8DCC4" stroke-width="1"/><polygon points="260.0,157.5 338.5,214.5 308.5,306.7 211.5,306.7 181.5,214.5" fill="none" stroke="#E8DCC4" stroke-width="1"/><polygon points="260.0,116.2 377.7,201.8 332.7,340.1 187.3,340.1 142.3,201.8" fill="none" stroke="#E8DCC4" stroke-width="1"/><polygon points="260.0,75.0 416.9,189.0 357.0,373.5 163.0,373.5 103.1,189.0" fill="none" stroke="#E8DCC4" stroke-width="1"/><line x1="260" y1="240" x2="260.0" y2="75.0" stroke="#E8DCC4" stroke-width="1"/><line x1="260" y1="240" x2="416.9" y2="189.0" stroke="#E8DCC4" stroke-width="1"/><line x1="260" y1="240" x2="357.0" y2="373.5" stroke="#E8DCC4" stroke-width="1"/><line x1="260" y1="240" x2="163.0" y2="373.5" stroke="#E8DCC4" stroke-width="1"/><line x1="260" y1="240" x2="103.1" y2="189.0" stroke="#E8DCC4" stroke-width="1"/><polygon points="260.0,122.9 365.1,205.8 273.6,258.7 240.6,266.7 205.1,222.2" fill="#8B1A1A" fill-opacity="0.18" stroke="#8B1A1A" stroke-width="2"/><circle cx="260.0" cy="122.9" r="4" fill="#8B1A1A"/><circle cx="365.1" cy="205.8" r="4" fill="#8B1A1A"/><circle cx="273.6" cy="258.7" r="4" fill="#8B1A1A"/><circle cx="240.6" cy="266.7" r="4" fill="#8B1A1A"/><circle cx="205.1" cy="222.2" r="4" fill="#8B1A1A"/><text x="260.0" y="45.3" text-anchor="middle" font-family="Inter,Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">数据真实率</text><text x="260.0" y="61.3" text-anchor="middle" font-family="Inter" font-size="11" fill="#8B1A1A" font-weight="700">71</text><text x="445.2" y="179.8" text-anchor="start" font-family="Inter,Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">二拜真实率</text><text x="445.2" y="195.8" text-anchor="start" font-family="Inter" font-size="11" fill="#8B1A1A" font-weight="700">67</text><text x="374.4" y="397.5" text-anchor="start" font-family="Inter,Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">填报效率</text><text x="374.4" y="413.5" text-anchor="start" font-family="Inter" font-size="11" fill="#8B1A1A" font-weight="700">14</text><text x="145.6" y="397.5" text-anchor="end" font-family="Inter,Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">品鉴会闭环</text><text x="145.6" y="413.5" text-anchor="end" font-family="Inter" font-size="11" fill="#8B1A1A" font-weight="700">20</text><text x="74.8" y="179.8" text-anchor="end" font-family="Inter,Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">信任带宽</text><text x="74.8" y="195.8" text-anchor="end" font-family="Inter" font-size="11" fill="#8B1A1A" font-weight="700">35</text>
+      <text x="260" y="244" text-anchor="middle" font-family="Inter" font-size="11" fill="#C49A4A" opacity="0.7">100=最佳</text>
+    </svg>
+    <div style="flex:1 1 320px;font-size:16px;line-height:1.85">
+      <div style="border-left:3px solid #8B1A1A;padding:8px 14px;background:#fff;margin-bottom:10px">
+        <b>数据真实率 71</b> · 管理层自评的真实率均值,中位 72%,剩 28% 盲区即"看不见的真"。</div>
+      <div style="border-left:3px solid #8B1A1A;padding:8px 14px;background:#fff;margin-bottom:10px">
+        <b>二拜真实率 67</b> · 二次拜访真实执行率,中位 70%,意味着 1/3 的"二拜"含水。</div>
+      <div style="border-left:3px solid #C49A4A;padding:8px 14px;background:#fff;margin-bottom:10px">
+        <b>填报效率 14</b> · 一线日均 1.13h 用于填报、占比 14%,负担接近临界。</div>
+      <div style="border-left:3px solid #C49A4A;padding:8px 14px;background:#fff;margin-bottom:10px">
+        <b>品鉴会闭环 20</b> · 一线 + 管理共 669 次提及,普遍认为约 20% 转化到结果。</div>
+      <div style="border-left:3px solid #C49A4A;padding:8px 14px;background:#fff">
+        <b>信任带宽 35</b> · "考核压力 179 / 上下博弈 186"两类高频词导致信任余额偏低。</div>
+    </div>
+  </div>
+</div>
+
+</div></section>
+
+<!-- ============ 1 五大核心需求 ============ -->
+<section class="section"><div class="page">
+  <div class="eyebrow-line">PART 1 · TOP-DOWN VOICE</div>
+  <h2 class="s-title">董事长 / CEO 视角的 <em>5 大核心需求</em></h2>
+
+
+  <table>
+    <thead><tr><th style="width:60px">序</th><th style="width:280px">核心需求</th><th>一句话表述</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="code">N1</span></td>
+        <td><b>战略指令的纵向穿透与自动核验</b><br/><span class="tag tag-red">最高优先级</span></td>
+        <td>下一道指令，要能<b>直接核验各层级是否传达到位、是否真正在做</b>——AI 替代人工审计督查，让董事长越过中层看见一线。</td>
+        
+      </tr>
+      <tr>
+        <td><span class="code">N2</span></td>
+        <td><b>大客户 / 大单销售方法论的 AI 沉淀</b><br/><span class="tag tag-gold">战略级</span></td>
+        <td>不再依赖"销冠个人能力"，把<b>优秀销售经验通过 AI 总结成方法论</b>；新客找商、转化、升单都要有标准动作。</td>
+        
+      </tr>
+      <tr>
+        <td><span class="code">N3</span></td>
+        <td><b>会议与拜访的"质检"机制</b><br/><span class="tag tag-orange">高频</span></td>
+        <td>不仅看结果、更看过程是否符合公司要求：<b>会议有没有传达战略 / 拜访质量打几分 / AI 给出 ABC 评级与改进建议</b>。</td>
+        
+      </tr>
+      <tr>
+        <td><span class="code">N4</span></td>
+        <td><b>管理动作的自动化触发</b><br/>（自下而上 + 自上而下闭环）</td>
+        <td>拜访 → 未完成 → 自动上抛上级 → 上级跟拜 → 再不行再上抛 ——<b>以前是人治，未来要系统化流程</b>。</td>
+        
+      </tr>
+      <tr>
+        <td><span class="code">N5</span></td>
+        <td><b>统一一线门户 + 减少事务负担</b></td>
+        <td>飞书要成为一线统一 PORTAL，<b>减少人工提报和层层审核的事务性工作</b>，不要再增加每日填报。</td>
+        
+      </tr>
+    </tbody>
+  </table>
+
+  </div></section>
+
+<!-- ============ 2 三大病灶 ============ -->
+<section class="section"><div class="page">
+  <div class="eyebrow-line">PART 2 · BOTTOM-UP DIAGNOSIS</div>
+  <h2 class="s-title">三大病灶 · <em>来自 335 份 AI 深访的独立诊断</em></h2>
+  <div class="voice-strip"><span class="voice-mark">"</span><span class="voice-text">数字越漂亮,我越睡不着。</span></div>
+  
+
+  <!-- 病灶 1 -->
+  <div class="disease">
+    <div class="head"><div class="no">①</div><h3>数字不可信</h3><div class="tagline">"我看到的数据，到底是真的还是被加工过的？"</div></div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin:14px 0">
+      <div class="kpi"><div class="label">真实率（管理层自评 · 均值/中位）</div><div class="v">71<small>% / 72%</small></div><div class="sub">8 成已是最乐观口径</div></div>
+      <div class="kpi"><div class="label">"造假/水分" 主题提及次数</div><div class="v">192</div><div class="sub">管理 74 + 一线 118</div></div>
+      <div class="kpi"><div class="label">隐性盲区比例</div><div class="v">28<small>%–30%</small></div><div class="sub">无法被中层口径覆盖的数据</div></div>
+    </div>
+    <div class="quote-grid">
+      <div class="quote"><div class="t">数据上面如果还去造假，那这个企业就完蛋了……是犯罪。</div><div class="r">大区总监 · 管理层</div></div>
+      <div class="quote"><div class="t">政策没符合实际，业务员只能去做一些造假的情况。</div><div class="r">区域管理者 · 管理层</div></div>
+    </div>
+    <div class="callout-red callout"><b>结构性根因：</b>考核 → 倒逼 → 美化 → 督查 → 再倒逼，机制闭环已经形成。这不是个人问题，是系统问题。</div>
+  </div>
+
+  <!-- 病灶 2 -->
+  <div class="disease">
+    <div class="head"><div class="no">②</div><h3>动作不增值</h3><div class="tagline">"公司每天在做的事，多少在产出业务？"</div></div>
+
+    <!-- 主题热度条形图 -->
+    <h4>一线主题热度（提及次数 · n=238）</h4>
+    <svg class="chart" viewBox="0 0 820 240" preserveAspectRatio="xMidYMid meet">
+      <g font-size="12" fill="#3B2E2A">
+        <g><text x="0" y="30">线索 / 客户</text>
+          <rect x="110" y="18" width="618" height="18" fill="#fbeed1"/>
+          <rect x="110" y="18" width="618.0" height="18" fill="#1E7F4B" opacity=".75"/>
+          <text x="736.0" y="32" font-weight="700" fill="#1E7F4B">1,214</text>
+        </g>
+        <g><text x="0" y="60">拜访动作</text>
+          <rect x="110" y="48" width="618" height="18" fill="#fbeed1"/>
+          <rect x="110" y="48" width="342.1" height="18" fill="#C49A4A"/>
+          <text x="460.1" y="62" font-weight="700" fill="#C49A4A">672</text>
+        </g>
+        <g><text x="0" y="90">填报负担</text>
+          <rect x="110" y="78" width="618" height="18" fill="#fbeed1"/>
+          <rect x="110" y="78" width="233.1" height="18" fill="#8B1A1A"/>
+          <text x="351.1" y="92" font-weight="700" fill="#8B1A1A">458</text>
+        </g>
+        <g><text x="0" y="120">工具入口</text>
+          <rect x="110" y="108" width="618" height="18" fill="#fbeed1"/>
+          <rect x="110" y="108" width="68.7" height="18" fill="#8B1A1A" opacity=".7"/>
+          <text x="186.7" y="122" font-weight="700" fill="#8B1A1A">135</text>
+        </g>
+        <g><text x="0" y="150">打卡（应付式）</text>
+          <rect x="110" y="138" width="618" height="18" fill="#fbeed1"/>
+          <rect x="110" y="138" width="47.3" height="18" fill="#C0392B"/>
+          <text x="165.3" y="152" font-weight="700" fill="#C0392B">93</text>
+        </g>
+        <g><text x="0" y="180">重复 / 形式</text>
+          <rect x="110" y="168" width="618" height="18" fill="#fbeed1"/>
+          <rect x="110" y="168" width="25.5" height="18" fill="#C0392B"/>
+          <text x="143.5" y="182" font-weight="700" fill="#C0392B">50</text>
+        </g>
+        <g><text x="0" y="210">凑数</text>
+          <rect x="110" y="198" width="618" height="18" fill="#fbeed1"/>
+          <rect x="110" y="198" width="4.6" height="18" fill="#C88A00"/>
+          <text x="122.6" y="212" font-weight="700" fill="#C88A00">9</text>
+        </g>
+      </g>
+    </svg>
+    <div class="legend"><span><i style="background:#1E7F4B;opacity:.75"></i>业务话题</span><span><i style="background:#C49A4A"></i>动作话题</span><span><i style="background:#8B1A1A"></i>负担话题</span><span><i style="background:#C0392B"></i>反向信号</span></div>
+
+    <div class="quote-grid">
+      <div class="quote"><div class="t">应付式打卡拍照……为了完成任务而做。</div><div class="r">一线业务员</div></div>
+      <div class="quote"><div class="t">条条框框太多反而增加了内耗，最好的留痕就是达成结果。</div><div class="r">一线业务员</div></div>
+    </div>
+    <div class="callout-red callout"><b>结构性根因：</b>过程指标 KPI 化 → 行为劣币驱良币。"打卡数量"取代了"客户关系"，"留痕厚度"取代了"成交质量"。</div>
+  </div>
+
+  <!-- 病灶 3 -->
+  <div class="disease">
+    <div class="head"><div class="no">③</div><h3>资源不闭环</h3><div class="tagline">"钱花出去了，转化在哪里、谁负责？"</div></div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin:14px 0">
+      <div class="kpi"><div class="label">品鉴会主题提及（合计）</div><div class="v">669</div><div class="sub">管理 377 + 一线 292，单一最高业务话题</div></div>
+      <div class="kpi"><div class="label">管理层口径"有效性占比"</div><div class="v">≈ 20<small>%</small></div><div class="sub">"剩下 80% 在打水漂"</div></div>
+      <div class="kpi"><div class="label">合作商招商单客 ROI</div><div class="v">20<small>万 / 年</small></div><div class="sub">投入 2-3 个月人月才换 20 万年贡献</div></div>
+    </div>
+    <div class="quote-grid">
+      <div class="quote"><div class="t">品鉴会有效性可能 20% 左右。</div><div class="r">区域管理者</div></div>
+      <div class="quote"><div class="t">品鉴收集资料太多了，核销流程太繁琐。</div><div class="r">一线业务员</div></div>
+    </div>
+    <div class="callout-red callout"><b>结构性根因：</b>预算配给 → 执行变形 → ROI 不可回溯。费用闭环断在最后一公里——<b>钱在台账里、效果在朋友圈里、责任无处可归</b>。</div>
+  
+<div class="viz-block" style="margin-top:18px">
+  <h4 style="font-family:var(--fs-font-cjk);color:#8B1A1A;font-size:24px;margin-bottom:6px">↓ 品鉴会有效性 · 一线 + 管理共 669 次提及</h4>
+  <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+    <svg viewBox="0 0 320 320" width="100%" style="max-width:300px;flex:1 1 240px">
+      <path d="M150.0,40.0 A110,110 0 0 1 254.6,116.0 L211.8,129.9 A65,65 0 0 0 150.0,85.0 Z" fill="#C49A4A"/><path d="M254.6,116.0 A110,110 0 1 1 150.0,40.0 L150.0,85.0 A65,65 0 1 0 211.8,129.9 Z" fill="#D8C8A8"/>
+      <text x="150" y="146" text-anchor="middle" font-family="Inter" font-size="26" fill="#8B1A1A" font-weight="800">20%</text>
+      <text x="150" y="168" text-anchor="middle" font-family="Inter" font-size="11" fill="#3D2A2A" opacity="0.75">真转化为成交</text>
+      <text x="262" y="80" font-family="Inter" font-size="11" fill="#C49A4A" font-weight="700">有效 20%</text>
+      <text x="40" y="240" font-family="Inter" font-size="11" fill="#9c8866" font-weight="700">流于形式 80%</text>
+    </svg>
+    <div style="flex:1 1 240px;font-size:16px;line-height:1.75;color:#3D2A2A">
+      <p>一线提及 <b>292 次</b>,管理层提及 <b>377 次</b>——是<b>全份调研中讨论密度最高的资源动作</b>。</p>
+      <p>普遍判断:仅 <b>1/5 真正转化为终端成交</b>,其余四成是"凑数客户、应付指标、形式聚餐"。</p>
+      <p>资源不闭环的根因:<b>预算→执行→效果→复盘</b> 没有被串成同一份数据。</p>
+    </div>
+  </div>
+</div>
+
+  </div>
+</div></section>
+
+<!-- ============ 3 三层视角 ============ -->
+<section class="section"><div class="page">
+  <div class="eyebrow-line">PART 3 · WHO IS HURTING</div>
+  <h2 class="s-title">三层视角 · <em>谁在受伤</em></h2>
+  <div class="voice-strip"><span class="voice-mark">"</span><span class="voice-text">越管越多,越多越假,越假越管。</span></div>
+  <p class="s-deck">同一组数据，三个角色看到三种伤痕。</p>
+
+  <div class="role-grid">
+    <div class="role">
+      <div class="role-title"><h4>一线（n = 238）</h4><div class="stars">★★★★★</div></div>
+      <ul>
+        <li>填报负担提及 <b>458 次</b></li>
+        <li>"打卡"提及 <b>93 次</b>（应付式）</li>
+        <li>工具入口分裂提及 <b>135 次</b></li>
+      </ul>
+      <div class="pic">入口分裂、动作堆叠、看不到自己的反馈。</div>
+    </div>
+    <div class="role">
+      <div class="role-title"><h4>中层 · 区域 / 大区 / 督导</h4><div class="stars">★★★★</div></div>
+      <ul>
+        <li>"晨会"提及 <b>107 次</b></li>
+        <li>"督查 / 审计"合计 <b>40 次</b></li>
+        <li>"考核压力"提及 <b>179 次</b></li>
+      </ul>
+      <div class="pic">治理动作堆积，管理动作 &gt; 业务动作。</div>
+    </div>
+    <div class="role">
+      <div class="role-title"><h4>高层 · 事业部 / 总部</h4><div class="stars">★★★★</div></div>
+      <ul>
+        <li>"权限"提及 <b>264 次</b></li>
+        <li>"上下博弈"提及 <b>186 次</b></li>
+        <li>品鉴会提及 <b>377 次</b></li>
+      </ul>
+      <div class="pic">看不到底、政策与执行脱节、费用 ROI 黑盒。</div>
+    </div>
+  </div>
+
+<div class="viz-block" style="margin-top:32px">
+  <h3>三层角色受伤指数 · <em>压力 / 消耗 / 余力</em> 占比</h3>
+  <svg viewBox="0 0 820 220" width="100%" style="max-width:820px;margin-top:10px">
+    
+    <text x="0" y="48" font-family="Source Han Serif" font-size="14" fill="#3D2A2A" font-weight="600">一线 (238 人)</text>
+    <text x="770" y="48" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700" text-anchor="end">5/5 痛感</text>
+    <rect x="160" y="30" width="300.0" height="28" fill="#8B1A1A"/>
+    <rect x="460.0" y="30" width="210.0" height="28" fill="#C49A4A"/>
+    <rect x="670.0" y="30" width="90.0" height="28" fill="#D8C8A8"/>
+    <text x="310.0" y="48" text-anchor="middle" font-family="Inter" font-size="11" fill="#fff" font-weight="700">50%</text>
+    <text x="565.0" y="48" text-anchor="middle" font-family="Inter" font-size="11" fill="#fff" font-weight="700">35%</text>
+    <text x="715.0" y="48" text-anchor="middle" font-family="Inter" font-size="11" fill="#3D2A2A" font-weight="700">15%</text>
+    
+    <text x="0" y="104" font-family="Source Han Serif" font-size="14" fill="#3D2A2A" font-weight="600">中层 (97 人)</text>
+    <text x="770" y="104" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700" text-anchor="end">4/5 痛感</text>
+    <rect x="160" y="86" width="240.0" height="28" fill="#8B1A1A"/>
+    <rect x="400.0" y="86" width="210.0" height="28" fill="#C49A4A"/>
+    <rect x="610.0" y="86" width="150.0" height="28" fill="#D8C8A8"/>
+    <text x="280.0" y="104" text-anchor="middle" font-family="Inter" font-size="11" fill="#fff" font-weight="700">40%</text>
+    <text x="505.0" y="104" text-anchor="middle" font-family="Inter" font-size="11" fill="#fff" font-weight="700">35%</text>
+    <text x="685.0" y="104" text-anchor="middle" font-family="Inter" font-size="11" fill="#3D2A2A" font-weight="700">25%</text>
+    
+    <text x="0" y="160" font-family="Source Han Serif" font-size="14" fill="#3D2A2A" font-weight="600">高层 (CEO/高管助理)</text>
+    <text x="770" y="160" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700" text-anchor="end">4/5 痛感</text>
+    <rect x="160" y="142" width="180.0" height="28" fill="#8B1A1A"/>
+    <rect x="340.0" y="142" width="180.0" height="28" fill="#C49A4A"/>
+    <rect x="520.0" y="142" width="240.0" height="28" fill="#D8C8A8"/>
+    <text x="250.0" y="160" text-anchor="middle" font-family="Inter" font-size="11" fill="#fff" font-weight="700">30%</text>
+    <text x="430.0" y="160" text-anchor="middle" font-family="Inter" font-size="11" fill="#fff" font-weight="700">30%</text>
+    <text x="640.0" y="160" text-anchor="middle" font-family="Inter" font-size="11" fill="#3D2A2A" font-weight="700">40%</text>
+    
+    <g font-family="Inter" font-size="11" fill="#3D2A2A">
+      <rect x="160" y="200" width="14" height="10" fill="#8B1A1A"/><text x="180" y="209">被压力占据</text>
+      <rect x="280" y="200" width="14" height="10" fill="#C49A4A"/><text x="300" y="209">被流程消耗</text>
+      <rect x="400" y="200" width="14" height="10" fill="#D8C8A8"/><text x="420" y="209">仍可投入业务</text>
+    </g>
+  </svg>
+</div>
+
+</div></section>
+
+
+<!-- ============ 4 业务断点 V3.1 ============ -->
+<section class="section breakpoint-section"><div class="page">
+  <div class="eyebrow-line">PART 4 · BREAKPOINT MAP</div>
+  <h2 class="s-title">业务断点全景 · <em>5 道裂缝</em></h2>
+  <p class="s-deck">从战略到一线 · 让 <b style="color:#8B1A1A">28%</b> 的真相消失在路上</p>
+
+  <!-- 引语:进入主图前 -->
+  <div class="voice-strip voice-strip--top">
+    <span class="voice-mark">"</span>
+    <span class="voice-text">流程是顺的,真相不一定是顺的。</span>
+  </div>
+
+  <!-- 主流程图:加大留白与对齐 -->
+  <div class="flow flow--polished">
+    <div class="flow-caption">
+      <span class="flow-caption-tag">FLOW MAP</span>
+      <span class="flow-caption-title">从战略下行到结果回收的 5 处传导损耗</span>
+    </div>
+    <svg class="chart" viewBox="0 0 1100 500" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="boxg2" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fbf6ec"/>
+        </linearGradient>
+        <linearGradient id="boxg-final" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#7A1818"/><stop offset="1" stop-color="#5C0F0F"/>
+        </linearGradient>
+        <radialGradient id="boltdot" cx="0.35" cy="0.3" r="0.8">
+          <stop offset="0" stop-color="#E5C98A"/>
+          <stop offset="0.45" stop-color="#C0392B"/>
+          <stop offset="1" stop-color="#5C0F0F"/>
+        </radialGradient>
+        <filter id="boltfx" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#5C0F0F" flood-opacity="0.45"/>
+        </filter>
+        <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#8B1A1A"/>
+        </marker>
+        <marker id="arrgd" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#C49A4A"/>
+        </marker>
+      </defs>
+
+      <!-- 顶部分层标签 -->
+      <text x="50" y="32" font-family="Inter,sans-serif" font-size="10.5" letter-spacing="3" fill="#C49A4A" font-weight="700">↓ 意志下行 · INTENT</text>
+      <text x="50" y="222" font-family="Inter,sans-serif" font-size="10.5" letter-spacing="3" fill="#8B1A1A" font-weight="700">◆ 结果汇集 · RESULT</text>
+      <text x="50" y="382" font-family="Inter,sans-serif" font-size="10.5" letter-spacing="3" fill="#8B1A1A" font-weight="700">↑ 穿透回看 · X-RAY</text>
+
+      <!-- 4 节点 上行 -->
+      <g font-family="'Source Han Serif',serif">
+        <g><rect x="50"  y="50" width="220" height="90" rx="4" fill="url(#boxg2)" stroke="#C49A4A" stroke-width="1.5"/>
+          <text x="160" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#5C0F0F">公司战略</text>
+          <text x="160" y="112" text-anchor="middle" font-family="Inter" font-size="11" fill="#7A6E6A">董事长指令</text></g>
+        <g><rect x="300" y="50" width="220" height="90" rx="4" fill="url(#boxg2)" stroke="#C49A4A" stroke-width="1.5"/>
+          <text x="410" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#5C0F0F">总部规则</text>
+          <text x="410" y="112" text-anchor="middle" font-family="Inter" font-size="11" fill="#7A6E6A">SOP / 考核 / 政策</text></g>
+        <g><rect x="550" y="50" width="220" height="90" rx="4" fill="url(#boxg2)" stroke="#C49A4A" stroke-width="1.5"/>
+          <text x="660" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#5C0F0F">中层管控</text>
+          <text x="660" y="112" text-anchor="middle" font-family="Inter" font-size="11" fill="#7A6E6A">大区 / 区域 / 督导</text></g>
+        <g><rect x="800" y="50" width="220" height="90" rx="4" fill="url(#boxg2)" stroke="#C49A4A" stroke-width="1.5"/>
+          <text x="910" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#5C0F0F">一线执行</text>
+          <text x="910" y="112" text-anchor="middle" font-family="Inter" font-size="11" fill="#7A6E6A">业务员 / 加一层</text></g>
+
+        <!-- 中部 结果回收 -->
+        <g><rect x="380" y="240" width="340" height="90" rx="4" fill="url(#boxg2)" stroke="#C49A4A" stroke-width="1.5"/>
+          <text x="550" y="278" text-anchor="middle" font-size="15" font-weight="700" fill="#5C0F0F">结果回收</text>
+          <text x="550" y="302" text-anchor="middle" font-family="Inter" font-size="11" fill="#7A6E6A">品鉴会 / B 类客户 / 合作商</text></g>
+
+        <!-- 底部 董事长视图 -->
+        <g><rect x="50" y="400" width="220" height="90" rx="4" fill="url(#boxg-final)" stroke="#C49A4A" stroke-width="2"/>
+          <text x="160" y="438" text-anchor="middle" font-size="15" font-weight="700" fill="#FBF7F1">董事长视图</text>
+          <text x="160" y="462" text-anchor="middle" font-family="Inter" font-size="11" fill="#E5C98A">穿透回看 · X-RAY VIEW</text></g>
+      </g>
+
+      <!-- 主箭头 上行 -->
+      <g stroke="#8B1A1A" stroke-width="1.8" fill="none" marker-end="url(#arr2)">
+        <line x1="270" y1="95" x2="298" y2="95"/>
+        <line x1="520" y1="95" x2="548" y2="95"/>
+        <line x1="770" y1="95" x2="798" y2="95"/>
+      </g>
+      <!-- 一线 → 结果回收 -->
+      <g stroke="#8B1A1A" stroke-width="1.8" fill="none" marker-end="url(#arr2)">
+        <path d="M910 140 C 910 200, 770 220, 720 240"/>
+      </g>
+      <!-- 结果回收 → 董事长视图 -->
+      <g stroke="#8B1A1A" stroke-width="1.8" fill="none" marker-end="url(#arr2)">
+        <path d="M380 285 C 220 285, 160 340, 160 398"/>
+      </g>
+      <!-- 董事长视图 ⇢ 公司战略(穿透回看,虚线金) -->
+      <g stroke="#C49A4A" stroke-width="1.8" fill="none" stroke-dasharray="6 5" marker-end="url(#arrgd)">
+        <path d="M160 400 C 160 240, 50 200, 50 142"/>
+      </g>
+
+      <!-- 5 个闪电断点(改为金属渐变球 + 编号) -->
+      <g filter="url(#boltfx)">
+        <g><circle cx="285" cy="95" r="16" fill="url(#boltdot)" stroke="#E5C98A" stroke-width="1.2"/>
+           <text x="285" y="100" text-anchor="middle" font-family="Inter" font-size="13" font-weight="900" fill="#FBF7F1">1</text></g>
+        <g><circle cx="535" cy="95" r="16" fill="url(#boltdot)" stroke="#E5C98A" stroke-width="1.2"/>
+           <text x="535" y="100" text-anchor="middle" font-family="Inter" font-size="13" font-weight="900" fill="#FBF7F1">2</text></g>
+        <g><circle cx="785" cy="95" r="16" fill="url(#boltdot)" stroke="#E5C98A" stroke-width="1.2"/>
+           <text x="785" y="100" text-anchor="middle" font-family="Inter" font-size="13" font-weight="900" fill="#FBF7F1">3</text></g>
+        <g><circle cx="780" cy="215" r="16" fill="url(#boltdot)" stroke="#E5C98A" stroke-width="1.2"/>
+           <text x="780" y="220" text-anchor="middle" font-family="Inter" font-size="13" font-weight="900" fill="#FBF7F1">4</text></g>
+        <g><circle cx="225" cy="350" r="16" fill="url(#boltdot)" stroke="#E5C98A" stroke-width="1.2"/>
+           <text x="225" y="355" text-anchor="middle" font-family="Inter" font-size="13" font-weight="900" fill="#FBF7F1">5</text></g>
+      </g>
+
+      <!-- 断点标签(对齐到节点正下方) -->
+      <g font-family="'Source Han Serif',serif" font-size="13" font-weight="700">
+        <g><text x="285" y="178" text-anchor="middle" fill="#8B1A1A">① 政策落地</text>
+           <text x="285" y="196" text-anchor="middle" font-family="Inter" font-size="10.5" font-weight="600" fill="#7A6E6A">政策不符实际,倒逼造假</text></g>
+        <g><text x="535" y="178" text-anchor="middle" fill="#8B1A1A">② 动作设计</text>
+           <text x="535" y="196" text-anchor="middle" font-family="Inter" font-size="10.5" font-weight="600" fill="#7A6E6A">治理动作 &gt; 业务动作</text></g>
+        <g><text x="785" y="178" text-anchor="middle" fill="#8B1A1A">③ 数据回流</text>
+           <text x="785" y="196" text-anchor="middle" font-family="Inter" font-size="10.5" font-weight="600" fill="#7A6E6A">多入口 / 重复填 / 无反馈</text></g>
+        <g><text x="900" y="245" text-anchor="middle" fill="#8B1A1A">④ 结果回收</text>
+           <text x="900" y="263" text-anchor="middle" font-family="Inter" font-size="10.5" font-weight="600" fill="#7A6E6A">费用闭环不全 · ROI 黑盒</text></g>
+        <g><text x="350" y="370" text-anchor="middle" fill="#8B1A1A">⑤ 穿透回看</text>
+           <text x="350" y="388" text-anchor="middle" font-family="Inter" font-size="10.5" font-weight="600" fill="#7A6E6A">权限分散 · 客观盲区</text></g>
+      </g>
+    </svg>
+    <!-- 图例 -->
+    <div class="flow-legend">
+      <span><i style="background:linear-gradient(135deg,#E5C98A,#5C0F0F)"></i>断点标识</span>
+      <span><i class="line-solid"></i>真实路径</span>
+      <span><i class="line-dash"></i>穿透回看路径</span>
+    </div>
+  </div>
+
+  <!-- 引语:进入证据卡前 -->
+  <div class="voice-strip voice-strip--mid">
+    <span class="voice-mark">"</span>
+    <span class="voice-text">每一道裂缝,都不是一个人的问题——而是一段路径上的损耗。</span>
+  </div>
+
+  <!-- 5 张证据卡(增加计算公式) -->
+  <h3 style="margin-top:28px">五道裂缝 · <em>损耗量化与计算依据</em></h3>
+<div class="evidence-grid">
+    <div class="ev-card">
+      <div class="ev-head">
+        <div class="ev-no">1</div>
+        <div class="ev-title">
+          <div class="ev-name">政策落地</div>
+          <div class="ev-layer">影响层级 · 上层</div>
+        </div>
+        <div class="ev-loss">
+          <div class="ev-loss-v">18%</div>
+          <div class="ev-loss-l">损耗</div>
+        </div>
+      </div>
+      <div class="ev-quote">"政策不接地,动作就只能造假。"</div>
+      <div class="ev-formula">
+        <div class="ev-formula-label">计算口径</div>
+        <div class="ev-formula-text">97 份管理层样本中真实率分布 ≥80% / 70-80% / 60-70% / &lt;60% = 20% / 30% / 32% / <b>18%</b></div>
+      </div>
+      <div class="ev-bar"><div class="ev-bar-fill" style="width:18%"></div></div>
+    </div>
+    <div class="ev-card">
+      <div class="ev-head">
+        <div class="ev-no">2</div>
+        <div class="ev-title">
+          <div class="ev-name">动作设计</div>
+          <div class="ev-layer">影响层级 · 中层</div>
+        </div>
+        <div class="ev-loss">
+          <div class="ev-loss-v">27%</div>
+          <div class="ev-loss-l">损耗</div>
+        </div>
+      </div>
+      <div class="ev-quote">"不是不想干活,是要干的事不直接产出业务。"</div>
+      <div class="ev-formula">
+        <div class="ev-formula-label">计算口径</div>
+        <div class="ev-formula-text">一线日均 8h · 填报 1.13h ÷ 8h = <b>14.1%</b> + 晨会 / 督查 / 审计 等治理动作约 13% = <b>27.1%</b></div>
+      </div>
+      <div class="ev-bar"><div class="ev-bar-fill" style="width:27%"></div></div>
+    </div>
+    <div class="ev-card">
+      <div class="ev-head">
+        <div class="ev-no">3</div>
+        <div class="ev-title">
+          <div class="ev-name">数据回流</div>
+          <div class="ev-layer">影响层级 · 中-一线</div>
+        </div>
+        <div class="ev-loss">
+          <div class="ev-loss-v">29%</div>
+          <div class="ev-loss-l">损耗</div>
+        </div>
+      </div>
+      <div class="ev-quote">"我填了三遍,最后看的人在哪儿?"</div>
+      <div class="ev-formula">
+        <div class="ev-formula-label">计算口径</div>
+        <div class="ev-formula-text">管理层自评数据真实率均值 71% · 中位 72% → 100% − 71% = <b>29%</b> 盲区</div>
+      </div>
+      <div class="ev-bar"><div class="ev-bar-fill" style="width:29%"></div></div>
+    </div>
+    <div class="ev-card">
+      <div class="ev-head">
+        <div class="ev-no">4</div>
+        <div class="ev-title">
+          <div class="ev-name">结果回收</div>
+          <div class="ev-layer">影响层级 · 一线</div>
+        </div>
+        <div class="ev-loss">
+          <div class="ev-loss-v">80%</div>
+          <div class="ev-loss-l">损耗</div>
+        </div>
+      </div>
+      <div class="ev-quote">"请客花了钱,谁成交了不知道。"</div>
+      <div class="ev-formula">
+        <div class="ev-formula-label">计算口径</div>
+        <div class="ev-formula-text">一线 + 管理层共提及品鉴会 669 次 · 普遍认为约 1/5 转化为成交 → 100% − 20% = <b>80%</b></div>
+      </div>
+      <div class="ev-bar"><div class="ev-bar-fill" style="width:80%"></div></div>
+    </div>
+    <div class="ev-card">
+      <div class="ev-head">
+        <div class="ev-no">5</div>
+        <div class="ev-title">
+          <div class="ev-name">穿透回看</div>
+          <div class="ev-layer">影响层级 · 高层</div>
+        </div>
+        <div class="ev-loss">
+          <div class="ev-loss-v">6×N</div>
+          <div class="ev-loss-l">损耗</div>
+        </div>
+      </div>
+      <div class="ev-quote">"数据都在,我看不到——这才是问题。"</div>
+      <div class="ev-formula">
+        <div class="ev-formula-label">计算口径</div>
+        <div class="ev-formula-text">管理层词频「权限」<b>264 次</b> · 实际报表/审批/费用/拜访/资源/品鉴 <b>≈6 套系统</b>,各自分管 N 人,穿透成本 6×N</div>
+      </div>
+      <div class="ev-bar"><div class="ev-bar-fill" style="width:60%"></div></div>
+    </div>
+  </div>
+  <!-- aha 收口 -->
+  <div class="aha-strip">
+    <div class="aha-quote">先让真相浮上来,再让<em>每一层是不是真在动</em>这件事,直接被看到。</div>
+    <div class="aha-tag">— 5 道裂缝合起来后,董事长唯一需要的视图 —</div>
+  </div>
+</div></section>
+
+<!-- ============ 5 详细需求清单 ============ -->
+<section class="section"><div class="page">
+  <div class="eyebrow-line">PART 5 · DETAILED REQUIREMENT LIST</div>
+  <h2 class="s-title">详细需求清单 · <em>A / B / C / D / E 五类共 22 项</em></h2>
+  <div class="voice-strip"><span class="voice-mark">"</span><span class="voice-text">不要再加一层管,要让每一层自己说话。</span></div>
+  <p class="s-deck">全量呈现，按业务结构分类，覆盖所有调研发现。</p>
+
+  <div class="req-cat"><div class="pill">A</div><h4>战略执行 / 数据穿透</h4><div class="cnt">4 项</div></div>
+  <table>
+    <thead><tr><th style="width:60px">编号</th><th style="width:320px">需求 / 问题</th><th>痛点画像</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code">A1</span></td><td><b>战略指令传达后无法可信地核验落地</b></td><td>现状靠晨会 / 周会人工汇报，董事长不信任中层口径</td></tr>
+      <tr><td><span class="code">A3</span></td><td><b>工作传达快但落地变形，主要断在区域经理层</b></td><td>司令："董事长有要求事不过夜，但区域经理盯不力"</td></tr>
+      <tr><td><span class="code">A4</span></td><td><b>想看：哪个中高层没在天天盯负向、并给出有效反馈</b></td><td>关注从"业务员动作"扩展到"管理者管理动作"是否到位</td></tr>
+    </tbody>
+  </table>
+
+  <div class="req-cat"><div class="pill">B</div><h4>销售动作 / 标准化</h4><div class="cnt">7 项</div></div>
+  <table>
+    <thead><tr><th style="width:60px">编号</th><th style="width:320px">需求 / 问题</th><th>痛点画像</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code">B1</span></td><td><b>三步曲 / +1 加一层中"二级拜访"是核心审核点，但人工统计比例失真</b></td><td>一级线索量大，二拜只占 1/4–1/5；加一层人数比例对不上</td></tr>
+      <tr><td><span class="code">B2</span></td><td><b>新客招商效率低 + 转化周期长</b></td><td>开发一个核心合作商 2-3 个月、年贡献 20 万</td></tr>
+      <tr><td><span class="code">B3</span></td><td><b>存量客户池消耗殆尽，今年必须从陌生市场找客户、找不准 / 找不到</b></td><td>"去年靠存量转化，今年存量耗完，难度上一个台阶"</td></tr>
+      <tr><td><span class="code">B4</span></td><td><b>无统一"线索 → 意向 → 成交"两级转化标准</b></td><td>每个区域自己定义；线索 / 意向口径不统一</td></tr>
+      <tr><td><span class="code">B5</span></td><td><b>执行不到位 = 工作懈怠 + 业务能力欠缺 + 上层盯得不够（三因并存）</b></td><td>司令明确归因</td></tr>
+      <tr><td><span class="code">B6</span></td><td><b>大客户 / 大单缺乏标准跟单流程，仍依赖销冠个人能力</b></td><td>董事长希望把销冠经验 AI 化沉淀</td></tr>
+      <tr><td><span class="code">B7</span></td><td><b>升单（运营老客）方法论缺失；高端产品受外部冲击销量下滑 90%</b></td><td>核心高端产品在某大区下滑 90%；中端单品增长但补不完</td></tr>
+    </tbody>
+  </table>
+
+  <div class="req-cat"><div class="pill">C</div><h4>工具 / 入口 / 数据</h4><div class="cnt">5 项</div></div>
+  <table>
+    <thead><tr><th style="width:60px">编号</th><th style="width:320px">需求 / 问题</th><th>痛点画像</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code">C1</span></td><td><b>一线入口分裂：飞书 + SFA + 微信群 + 多 APP 并存</b></td><td>客户希望飞书成为一线统一 PORTAL</td></tr>
+      <tr><td><span class="code">C2</span></td><td><b>信息化替代人工督查，审计 / 督查工作要数字化</b></td><td>"不要去增加每日填报，要用数据化方式实现督导"</td></tr>
+      <tr><td><span class="code">C3</span></td><td><b>多维表格 + 仪表盘已成为业务主载体</b></td><td>"要通过飞书多维表格做线索收集、调度、考核"</td></tr>
+      <tr><td><span class="code">C4</span></td><td><b>AI 总结 / AI 抽检对会议、拜访做质量评分</b></td><td>"业务体系已闭环，要从督查角度也能看见每个个体"</td></tr>
+      <tr><td><span class="code">C5</span></td><td><b>数据 / 业务洞察 / 档案保护诉求</b></td><td>董事长直接提出"删档"诉求</td></tr>
+    </tbody>
+  </table>
+
+  <div class="req-cat"><div class="pill">D</div><h4>组织 / 文化 / 治理</h4><div class="cnt">4 项</div></div>
+  <table>
+    <thead><tr><th style="width:60px">编号</th><th style="width:320px">需求 / 问题</th><th>痛点画像</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code">D1</span></td><td><b>正在清理"混日子"员工</b></td><td>司令明确表态</td></tr>
+      <tr><td><span class="code">D2</span></td><td><b>思想意识转变跟不上市场变化（顺风顺水时代结束）</b></td><td>司令归因之一</td></tr>
+      <tr><td><span class="code">D3</span></td><td><b>"老板要求 ↔ 一线变形"是组织顽疾</b></td><td>"明明告诉他要去开发头部经销商，下面就是不到位"</td></tr>
+      <tr><td><span class="code">D4</span></td><td><b>业绩外因 60% / 内因 40%（消费降级 + 内部执行各占一半）</b></td><td>司令量化口径</td></tr>
+    </tbody>
+  </table>
+
+  <div class="req-cat"><div class="pill">E</div><h4>费用 / 经销商体系</h4><div class="cnt">2 项</div></div>
+  <table>
+    <thead><tr><th style="width:60px">编号</th><th style="width:320px">需求 / 问题</th><th>痛点画像</th></tr></thead>
+    <tbody>
+      <tr><td><span class="code">E1</span></td><td><b>合作商体系（外商联盟 / 中端联盟 / 传统 / 小 B）是新增长极但规则不齐</b></td><td>AI 深访管理层提及 31 次</td></tr>
+      <tr><td><span class="code">E2</span></td><td><b>招商投入产出比窄：单客年贡献 20 万 vs 团队投入 2-3 个月</b></td><td>副总监原话</td></tr>
+    </tbody>
+  </table>
+
+<div class="viz-block" style="margin-top:30px">
+  <h3>五类需求数量分布 · <em>共 22 项</em></h3>
+  <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-top:14px">
+    <svg viewBox="0 0 380 360" width="100%" style="max-width:380px;flex:1 1 300px">
+      <path d="M170.0,50.0 A120,120 0 0 1 260.7,91.4 L215.3,130.7 A60,60 0 0 0 170.0,110.0 Z" fill="#8B1A1A"/><path d="M260.7,91.4 A120,120 0 0 1 260.7,248.6 L215.3,209.3 A60,60 0 0 0 215.3,130.7 Z" fill="#C49A4A"/><path d="M260.7,248.6 A120,120 0 0 1 136.2,285.1 L153.1,227.6 A60,60 0 0 0 215.3,209.3 Z" fill="#A85050"/><path d="M136.2,285.1 A120,120 0 0 1 51.2,152.9 L110.6,161.5 A60,60 0 0 0 153.1,227.6 Z" fill="#D4A864"/><path d="M51.2,152.9 A120,120 0 0 1 170.0,50.0 L170.0,110.0 A60,60 0 0 0 110.6,161.5 Z" fill="#7A2A2A"/><text x="232.3" y="33.6" text-anchor="start" font-family="Source Han Serif" font-size="12" fill="#3D2A2A" font-weight="600">A · 数据真实</text><text x="232.3" y="48.6" text-anchor="start" font-family="Inter" font-size="11" fill="#8B1A1A" font-weight="700">3 项</text><text x="320.0" y="170.0" text-anchor="start" font-family="Source Han Serif" font-size="12" fill="#3D2A2A" font-weight="600">B · AI 方法论</text><text x="320.0" y="185.0" text-anchor="start" font-family="Inter" font-size="11" fill="#C49A4A" font-weight="700">5 项</text><text x="212.3" y="313.9" text-anchor="middle" font-family="Source Han Serif" font-size="12" fill="#3D2A2A" font-weight="600">C · 会议拜访质检</text><text x="212.3" y="328.9" text-anchor="middle" font-family="Inter" font-size="11" fill="#A85050" font-weight="700">4 项</text><text x="43.8" y="251.1" text-anchor="end" font-family="Source Han Serif" font-size="12" fill="#3D2A2A" font-weight="600">D · 管理动作触发</text><text x="43.8" y="266.1" text-anchor="end" font-family="Inter" font-size="11" fill="#D4A864" font-weight="700">5 项</text><text x="71.8" y="56.6" text-anchor="end" font-family="Source Han Serif" font-size="12" fill="#3D2A2A" font-weight="600">E · 统一门户减负</text><text x="71.8" y="71.6" text-anchor="end" font-family="Inter" font-size="11" fill="#7A2A2A" font-weight="700">5 项</text>
+      <text x="170" y="166" text-anchor="middle" font-family="Inter" font-size="22" fill="#8B1A1A" font-weight="800">22</text>
+      <text x="170" y="186" text-anchor="middle" font-family="Inter" font-size="11" fill="#3D2A2A" opacity="0.7">需求条目</text>
+    </svg>
+    <div style="flex:1 1 280px;font-size:16px;line-height:1.85;color:#3D2A2A">
+      <p><b>A (3 项)</b> 数据真实 —— 数量虽少,但是<b>所有需求的发动机</b>。</p>
+      <p><b>B (5 项)</b> AI 方法论 —— 大单复制能力,<b>关系到第二曲线</b>。</p>
+      <p><b>C (4 项)</b> 会议 / 拜访质检 —— <b>把"开过 / 拜过"变成"开好 / 拜好"</b>。</p>
+      <p><b>D (5 项)</b> 管理动作触发 —— 让<b>异常自动出现在该出现的人面前</b>。</p>
+      <p><b>E (5 项)</b> 统一门户减负 —— <b>把 1.13h/日还给一线</b>。</p>
+    </div>
+  </div>
+</div>
+
+</div></section>
+
+
+
+<!-- ============ 7 收口 ============ -->
+
+<section class="section"><div class="page">
+  <div class="eyebrow-line">PART 6 · KEYWORD HEATMAP</div>
+  <h2 class="s-title">管理层 97 份深访 · <em>关键词频次热度</em></h2>
+  <p style="font-size:16px;color:#5a4a44;line-height:1.8;margin-bottom:16px">
+    在 97 份管理层深访中,以下 7 个关键词出现频次最高,清晰指向"<b>资源闭环 / 权限治理 / 上下信任 / 考核张力</b>"四大议题——
+    与 PART 2 三大病灶高度对齐。
+  </p>
+  <svg viewBox="0 0 760 350" width="100%" style="max-width:760px">
+    
+    <text x="100" y="48" text-anchor="end" font-family="Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">品鉴会管理</text>
+    <rect x="120" y="30" width="540.0" height="28" fill="#8B1A1A" rx="2"/>
+    <text x="668.0" y="48" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700">377</text>
+    
+    <text x="100" y="92" text-anchor="end" font-family="Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">权限</text>
+    <rect x="120" y="74" width="378.1" height="28" fill="#8B1A1A" rx="2"/>
+    <text x="506.1" y="92" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700">264</text>
+    
+    <text x="100" y="136" text-anchor="end" font-family="Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">上下博弈</text>
+    <rect x="120" y="118" width="266.4" height="28" fill="#8B1A1A" rx="2"/>
+    <text x="394.4" y="136" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700">186</text>
+    
+    <text x="100" y="180" text-anchor="end" font-family="Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">考核压力</text>
+    <rect x="120" y="162" width="256.4" height="28" fill="#C49A4A" rx="2"/>
+    <text x="384.4" y="180" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700">179</text>
+    
+    <text x="100" y="224" text-anchor="end" font-family="Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">晨会</text>
+    <rect x="120" y="206" width="153.3" height="28" fill="#C49A4A" rx="2"/>
+    <text x="281.3" y="224" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700">107</text>
+    
+    <text x="100" y="268" text-anchor="end" font-family="Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">督查</text>
+    <rect x="120" y="250" width="40.1" height="28" fill="#D4A864" rx="2"/>
+    <text x="168.1" y="268" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700">28</text>
+    
+    <text x="100" y="312" text-anchor="end" font-family="Source Han Serif" font-size="13" fill="#3D2A2A" font-weight="600">审计</text>
+    <rect x="120" y="294" width="17.2" height="28" fill="#D4A864" rx="2"/>
+    <text x="145.2" y="312" font-family="Inter" font-size="12" fill="#8B1A1A" font-weight="700">12</text>
+    
+    <line x1="120" y1="20" x2="120" y2="320" stroke="#E8DCC4" stroke-width="1"/>
+  </svg>
+  <p style="font-size:16px;color:#7a6a64;line-height:1.8;margin-top:16px">
+    <b>读图法</b>:品鉴会管理(377) 与 权限(264) 是最高密度议题——<b>钱怎么花</b>、<b>权怎么放</b>;
+    上下博弈(186) 与 考核压力(179) 紧随其后——<b>信任与张力</b>;
+    晨会(107) / 督查(28) / 审计(12) 显示<b>越往下越具体</b>的执行手段。
+  </p>
+</div></section>
+
+<section class="section"><div class="page">
+  <div class="eyebrow-line">PART 7 · CLOSING</div>
+  <h2 class="s-title">收口 · <em>三个不 × 三个要</em></h2>
+  <p class="s-deck">第二轮 335 份独立深访 + 5 场关键沟通指向同一个判断。</p>
+
+  <div class="finale">
+    <div class="eyebrow-line">FINAL VERDICT</div>
+    <h3>核心矛盾不是"人不行"，是<br/>"机制在让对的人做错的事"。</h3>
+    <p>用过程动作衡量结果、用督查替代信任、用会议替代复盘、用预算替代转化——这就是组织正在经历的"三个不"。</p>
+    <p>而董事长真正在问的，是"三个要"：要穿透看见、要 AI 沉淀、要质检过程；再加上配套的 要触发流程、要门户减负。</p>
+
+    <div class="triplet">
+      <div>
+        <b>THREE FAILURES · 三个不</b>
+        <ul>
+          <li><span class="em">①</span>数字不可信</li>
+          <li><span class="em">②</span>动作不增值</li>
+          <li><span class="em">③</span>资源不闭环</li>
+        </ul>
+      </div>
+      <div>
+        <b>FIVE DEMANDS · 五个要</b>
+        <ul>
+          <li><span class="em">N1</span>要穿透看见</li>
+          <li><span class="em">N2</span>要 AI 沉淀方法论</li>
+          <li><span class="em">N3</span>要质检过程</li>
+          <li><span class="em">N4</span>要触发流程</li>
+          <li><span class="em">N5</span>要门户减负</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  
+</div></section>
+
+<div class="footer">飞书 · 大消费行业解决方案团队 · 呈送XXYY 集团董事长办公室 · 2026.05</div>
+<div class="doc-footer">XXYY 集团 · 销售执行力与数据真实性 · 总结纲要 · v3.1 · 2026-05-05</div>
+
+</body>
+</html>
