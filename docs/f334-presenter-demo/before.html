@@ -3978,29 +3978,30 @@ body {
 <script>try{localStorage.setItem('fs-deck-mode','present')}catch(e){}</script>
 <div class="deck">
   <div class="slide-frame"><div class="slide" data-layout="raw" data-slide-key="cover"
-       style="background:linear-gradient(135deg,#0b1020,#11183a);color:#fff;display:flex;flex-direction:column;gap:22px;align-items:center;justify-content:center;text-align:center;padding:0 7%">
-     <div style="font-size:40px;font-weight:800">F-334 · 投屏演示者 × demo 动画测试</div>
-     <div style="font-size:25px;color:#ff6b6b;font-weight:700">修复前（复现 Bug）</div>
-     <div style="font-size:20px;line-height:1.9;color:#cdd9f5;max-width:1120px;text-align:left">
-       <b>怎么测：</b><br>
-       <b>① 最简复现</b>：按 <b>→</b> 到第 2 页（交互 demo）→ <b>点一下 demo 里的按钮</b>（焦点进 demo）→ 再按 <b>→</b> 想翻页。<br>
-       <b>② 还原同事场景（投屏窗）</b>：按 <b>P</b> 进演示者 → 点 <b>📺 放映窗</b> 开观众窗 → 在观众窗翻到第 2 页 demo → 点进 demo → 想翻页 / 找翻页按钮。
+       style="background:linear-gradient(135deg,#0b1020,#11183a);color:#fff;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:center;text-align:center;padding:0 7%">
+     <div style="font-size:38px;font-weight:800">F-334 · 投屏演示者 × demo 动画</div>
+     <div style="font-size:24px;color:#ff6b6b;font-weight:700">修复前（复现 Bug）</div>
+     <div style="font-size:19px;line-height:1.85;color:#cdd9f5;max-width:1160px;text-align:left">
+       <b>同事的投屏场景这样测：</b><br>
+       1. 按 <b>P</b> 进演示者 → 点 <b>📺 放映窗</b> 开观众窗（允许弹窗）。<br>
+       2. 在<b>观众窗</b>里翻到第 2 页（有 demo）。<br>
+       3. <b>点进 demo</b>（焦点被 iframe 吃掉，键盘翻页失灵 —— 这是浏览器标准行为，两版都一样）。<br>
+       4. 第 2 页有 demo → 点进 demo（焦点被它吃掉）→ 这时只有右上角「✕ 关闭」，<b>没有翻页按钮 = 卡死</b>。<br>
+       <span style="color:#8fa3c8;font-size:16px">（核心差别在<b>观众窗</b>：修复后底部有翻页控制条，修复前没有。）</span>
      </div>
-     <div style="font-size:17px;color:#8fa3c8">→ ← 翻页 · P 演示者 · F 全屏</div>
   </div></div>
   <div class="slide-frame"><div class="slide" data-layout="raw" data-slide-key="demo"
        style="background:#0d1430;color:#fff;display:flex;align-items:center;justify-content:center;position:relative">
      <div style="position:absolute;left:6%;top:7%;font-size:30px;font-weight:800">第 2 页 · 内嵌交互 demo</div>
      <iframe id="demo" title="demo" style="width:64%;height:64%;border:0;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5)"
-        srcdoc='<!doctype html><meta charset=utf-8><style>body{margin:0;font:15px/1.6 -apple-system,sans-serif;background:#0b1020;color:#eaf1ff;height:100vh;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center}h3{margin:0;font-size:20px} .bar{width:72%;height:16px;border-radius:8px;background:#16203a;overflow:hidden} .fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#3a86ff,#7aa2ff);animation:run 2s ease-in-out infinite alternate} @keyframes run{from{width:18%}to{width:92%}} button{font:600 15px/1 inherit;padding:11px 20px;border:0;border-radius:999px;background:#3a86ff;color:#fff;cursor:pointer} input{font:15px inherit;padding:9px 12px;border-radius:8px;border:1px solid #2a3450;background:#0f1730;color:#fff} .hint{font-size:13px;color:#8fa3c8;text-align:center;max-width:80%}</style><h3>🔴 这是一页交互 demo（iframe）</h3><div class="bar"><div class="fill"></div></div><button type="button">点我（焦点进入 demo）</button><input placeholder="或在这里点一下 / 打字"><div class="hint">点按钮或输入框后，键盘焦点就进了这个 demo。现在试试按 → 翻页。</div>'></iframe>
-     <div style="position:absolute;right:6%;bottom:8%;font-size:19px;color:#9fb3d8;max-width:34%;text-align:right">
-        点进左边 demo 后再按 → ——<br>看还能不能翻到第 3 页。</div>
+        srcdoc='<!doctype html><meta charset=utf-8><style>body{margin:0;font:15px/1.6 -apple-system,sans-serif;background:#0b1020;color:#eaf1ff;height:100vh;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center}h3{margin:0;font-size:20px} .bar{width:72%;height:16px;border-radius:8px;background:#16203a;overflow:hidden} .fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#3a86ff,#7aa2ff);animation:run 2s ease-in-out infinite alternate} @keyframes run{from{width:18%}to{width:92%}} button{font:600 15px/1 inherit;padding:11px 20px;border:0;border-radius:999px;background:#3a86ff;color:#fff;cursor:pointer} input{font:15px inherit;padding:9px 12px;border-radius:8px;border:1px solid #2a3450;background:#0f1730;color:#fff} .hint{font-size:13px;color:#8fa3c8;text-align:center;max-width:80%}</style><h3>🔴 这是一页交互 demo（iframe）</h3><div class="bar"><div class="fill"></div></div><button type="button">点我（焦点进入 demo）</button><input placeholder="或在这里点一下 / 打字"><div class="hint">点按钮或输入框后，键盘焦点就进了这个 demo。</div>'></iframe>
+     <div style="position:absolute;right:6%;bottom:8%;font-size:18px;color:#9fb3d8;max-width:34%;text-align:right">
+        在<b>放映窗</b>里点进 demo 后，<br>看底部能不能翻页。</div>
   </div></div>
   <div class="slide-frame"><div class="slide" data-layout="raw" data-slide-key="ok"
        style="background:linear-gradient(135deg,#0a2e1c,#0d1430);color:#fff;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;text-align:center">
-     <div style="font-size:64px">✅</div>
-     <div style="font-size:36px;font-weight:800">翻到第 3 页 = 能正常操作</div>
-     <div style="font-size:21px;color:#bfe6cf">点进 demo 后按 → 还能到这页，就说明键盘没被 demo 卡住。</div>
+     <div style="font-size:64px">✅</div><div style="font-size:34px;font-weight:800">翻到第 3 页 = 能正常操作</div>
+     <div style="font-size:20px;color:#bfe6cf">放映窗点进 demo 后还能用底部控制条翻到这页，就对了。</div>
   </div></div>
   <div class="slide-frame"><div class="slide" data-layout="raw" data-slide-key="end"
        style="background:#0b1020;color:#fff;display:flex;align-items:center;justify-content:center">

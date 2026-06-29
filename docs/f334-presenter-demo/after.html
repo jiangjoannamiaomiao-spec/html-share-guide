@@ -3980,29 +3980,30 @@ body {
 <script>try{localStorage.setItem('fs-deck-mode','present')}catch(e){}</script>
 <div class="deck">
   <div class="slide-frame"><div class="slide" data-layout="raw" data-slide-key="cover"
-       style="background:linear-gradient(135deg,#0b1020,#11183a);color:#fff;display:flex;flex-direction:column;gap:22px;align-items:center;justify-content:center;text-align:center;padding:0 7%">
-     <div style="font-size:40px;font-weight:800">F-334 · 投屏演示者 × demo 动画测试</div>
-     <div style="font-size:25px;color:#54d18c;font-weight:700">修复后</div>
-     <div style="font-size:20px;line-height:1.9;color:#cdd9f5;max-width:1120px;text-align:left">
-       <b>怎么测：</b><br>
-       <b>① 最简复现</b>：按 <b>→</b> 到第 2 页（交互 demo）→ <b>点一下 demo 里的按钮</b>（焦点进 demo）→ 再按 <b>→</b> 想翻页。<br>
-       <b>② 还原同事场景（投屏窗）</b>：按 <b>P</b> 进演示者 → 点 <b>📺 放映窗</b> 开观众窗 → 在观众窗翻到第 2 页 demo → 点进 demo → 想翻页 / 找翻页按钮。
+       style="background:linear-gradient(135deg,#0b1020,#11183a);color:#fff;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:center;text-align:center;padding:0 7%">
+     <div style="font-size:38px;font-weight:800">F-334 · 投屏演示者 × demo 动画</div>
+     <div style="font-size:24px;color:#54d18c;font-weight:700">修复后</div>
+     <div style="font-size:19px;line-height:1.85;color:#cdd9f5;max-width:1160px;text-align:left">
+       <b>同事的投屏场景这样测：</b><br>
+       1. 按 <b>P</b> 进演示者 → 点 <b>📺 放映窗</b> 开观众窗（允许弹窗）。<br>
+       2. 在<b>观众窗</b>里翻到第 2 页（有 demo）。<br>
+       3. <b>点进 demo</b>（焦点被 iframe 吃掉，键盘翻页失灵 —— 这是浏览器标准行为，两版都一样）。<br>
+       4. 第 2 页有 demo → 点进 demo（焦点被它吃掉）→ <b>看底部有没有「‹上一页 / 下一页›」控制条</b>，用鼠标点它翻页。<br>
+       <span style="color:#8fa3c8;font-size:16px">（核心差别在<b>观众窗</b>：修复后底部有翻页控制条，修复前没有。）</span>
      </div>
-     <div style="font-size:17px;color:#8fa3c8">→ ← 翻页 · P 演示者 · F 全屏</div>
   </div></div>
   <div class="slide-frame"><div class="slide" data-layout="raw" data-slide-key="demo"
        style="background:#0d1430;color:#fff;display:flex;align-items:center;justify-content:center;position:relative">
      <div style="position:absolute;left:6%;top:7%;font-size:30px;font-weight:800">第 2 页 · 内嵌交互 demo</div>
      <iframe id="demo" title="demo" style="width:64%;height:64%;border:0;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5)"
-        srcdoc='<!doctype html><meta charset=utf-8><style>body{margin:0;font:15px/1.6 -apple-system,sans-serif;background:#0b1020;color:#eaf1ff;height:100vh;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center}h3{margin:0;font-size:20px} .bar{width:72%;height:16px;border-radius:8px;background:#16203a;overflow:hidden} .fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#3a86ff,#7aa2ff);animation:run 2s ease-in-out infinite alternate} @keyframes run{from{width:18%}to{width:92%}} button{font:600 15px/1 inherit;padding:11px 20px;border:0;border-radius:999px;background:#3a86ff;color:#fff;cursor:pointer} input{font:15px inherit;padding:9px 12px;border-radius:8px;border:1px solid #2a3450;background:#0f1730;color:#fff} .hint{font-size:13px;color:#8fa3c8;text-align:center;max-width:80%}</style><h3>🔴 这是一页交互 demo（iframe）</h3><div class="bar"><div class="fill"></div></div><button type="button">点我（焦点进入 demo）</button><input placeholder="或在这里点一下 / 打字"><div class="hint">点按钮或输入框后，键盘焦点就进了这个 demo。现在试试按 → 翻页。</div>'></iframe>
-     <div style="position:absolute;right:6%;bottom:8%;font-size:19px;color:#9fb3d8;max-width:34%;text-align:right">
-        点进左边 demo 后再按 → ——<br>看还能不能翻到第 3 页。</div>
+        srcdoc='<!doctype html><meta charset=utf-8><style>body{margin:0;font:15px/1.6 -apple-system,sans-serif;background:#0b1020;color:#eaf1ff;height:100vh;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center}h3{margin:0;font-size:20px} .bar{width:72%;height:16px;border-radius:8px;background:#16203a;overflow:hidden} .fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#3a86ff,#7aa2ff);animation:run 2s ease-in-out infinite alternate} @keyframes run{from{width:18%}to{width:92%}} button{font:600 15px/1 inherit;padding:11px 20px;border:0;border-radius:999px;background:#3a86ff;color:#fff;cursor:pointer} input{font:15px inherit;padding:9px 12px;border-radius:8px;border:1px solid #2a3450;background:#0f1730;color:#fff} .hint{font-size:13px;color:#8fa3c8;text-align:center;max-width:80%}</style><h3>🔴 这是一页交互 demo（iframe）</h3><div class="bar"><div class="fill"></div></div><button type="button">点我（焦点进入 demo）</button><input placeholder="或在这里点一下 / 打字"><div class="hint">点按钮或输入框后，键盘焦点就进了这个 demo。</div>'></iframe>
+     <div style="position:absolute;right:6%;bottom:8%;font-size:18px;color:#9fb3d8;max-width:34%;text-align:right">
+        在<b>放映窗</b>里点进 demo 后，<br>看底部能不能翻页。</div>
   </div></div>
   <div class="slide-frame"><div class="slide" data-layout="raw" data-slide-key="ok"
        style="background:linear-gradient(135deg,#0a2e1c,#0d1430);color:#fff;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;text-align:center">
-     <div style="font-size:64px">✅</div>
-     <div style="font-size:36px;font-weight:800">翻到第 3 页 = 能正常操作</div>
-     <div style="font-size:21px;color:#bfe6cf">点进 demo 后按 → 还能到这页，就说明键盘没被 demo 卡住。</div>
+     <div style="font-size:64px">✅</div><div style="font-size:34px;font-weight:800">翻到第 3 页 = 能正常操作</div>
+     <div style="font-size:20px;color:#bfe6cf">放映窗点进 demo 后还能用底部控制条翻到这页，就对了。</div>
   </div></div>
   <div class="slide-frame"><div class="slide" data-layout="raw" data-slide-key="end"
        style="background:#0b1020;color:#fff;display:flex;align-items:center;justify-content:center">
@@ -4503,7 +4504,15 @@ body {
     setupPresenter(deck, frames, signal);
 
     // ---- Keyboard nav (present mode) + F = fullscreen (any mode) ----
-    function onDeckKeydown(e) {
+    // Note (F-334): a focused demo <iframe> swallows keydown — events fire inside
+    // the iframe's document and never bubble here, so keyboard nav goes inert while
+    // the presenter is interacting with a live demo. We deliberately do NOT re-bind
+    // this handler inside demo iframes: that would hijack the demo's own arrow /
+    // space / enter keys (an interactive prototype/game would lose them). The fix
+    // for "can't operate" is the on-screen controls instead — the projector window
+    // control bar (below) and the deck's bottom chrome — which work by mouse no
+    // matter where keyboard focus is. Clicking back onto the deck restores keys.
+    document.addEventListener('keydown', (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (isTypingTarget(e.target)) return;
       if (e.key === 'f' || e.key === 'F') {
@@ -4537,33 +4546,7 @@ body {
           break;
       }
       nudgeIdle();
-    }
-    document.addEventListener('keydown', onDeckKeydown, { signal });
-
-    // F-334 · a focused demo <iframe> swallows keydown: the event fires inside
-    // the iframe's document and never bubbles to ours, so ←/→/Space/P/F/Esc all
-    // go dead the moment the presenter clicks INTO a live demo (the colleague's
-    // "投屏放映窗里有 demo 动画就操作不了演示者" report). For SAME-ORIGIN demos we
-    // re-bind the very same handler inside the iframe document; CROSS-ORIGIN
-    // demos can't be read (browser security) and are covered by the on-screen nav
-    // controls instead (projector control bar + the deck's bottom chrome).
-    function bindIframeKeys(root) {
-      const scope = (root && root.querySelectorAll) ? root : document;
-      scope.querySelectorAll('iframe').forEach((f) => {
-        const attach = () => {
-          let idoc = null;
-          try { idoc = f.contentDocument; } catch (err) { idoc = null; }  // cross-origin → skip
-          if (!idoc || idoc.__fsKeysBound) return;
-          idoc.__fsKeysBound = true;
-          idoc.addEventListener('keydown', onDeckKeydown);
-        };
-        attach();                              // already-loaded (srcdoc / cached)
-        f.addEventListener('load', attach, { signal });  // and after (re)navigation
-      });
-    }
-    bindIframeKeys(document);
-    // Re-scan on every slide entry — covers lazily-rendered demos and revisits.
-    deck.addEventListener('fs-slide-enter', (e) => bindIframeKeys(e.target), { signal });
+    }, { signal });
 
     // ---- F-305 · OS-fullscreen escape hint -------------------------------
     // Esc exits HTML5 (page) fullscreen, but a browser page CANNOT exit the
@@ -5056,18 +5039,23 @@ body {
     // the same deck is neither, so it must NOT mirror navigation (that would be a
     // surprise) — inSession() gates both send and receive on that.
     function inSession() { return isFollower || projAlive(); }
+    // A nav we apply because a PEER told us to must not be re-broadcast — otherwise
+    // two windows driven to different slides at the same instant would ping-pong
+    // forever (each reacting to the other). `applyingRemote` suppresses the echo at
+    // the source, so a remote-driven goto is silent and the loop cannot start.
+    let applyingRemote = false;
     function broadcast(idx) {
-      if (!inSession()) return;
+      if (!inSession() || applyingRemote) return;
       const msg = { type: 'goto', idx: idx, t: Date.now() };
       if (chan) { try { chan.postMessage(msg); } catch (e) {} }
       try { localStorage.setItem(LS_KEY, JSON.stringify(msg)); } catch (e) {}
     }
     function onRemoteGoto(msg) {
       if (!inSession() || !msg || msg.type !== 'goto' || typeof msg.idx !== 'number') return;
-      // Idempotent + echo-stopping: applying a remote goto re-broadcasts the SAME
-      // idx, which every peer is now already on → this guard drops the echo.
-      if (msg.idx === currentIdx(frames)) return;
-      if (frames[msg.idx]) goTo(deck, frames, msg.idx, false);
+      if (msg.idx === currentIdx(frames)) return;        // already there — nothing to do
+      if (!frames[msg.idx]) return;
+      applyingRemote = true;
+      try { goTo(deck, frames, msg.idx, false); } finally { applyingRemote = false; }
     }
     if (chan) chan.onmessage = (e) => onRemoteGoto(e.data);
     window.addEventListener('storage', (e) => {
@@ -5255,8 +5243,14 @@ body {
         'background:rgba(8,12,24,.66);box-shadow:0 8px 30px rgba(0,0,0,.45);' +
         'opacity:.18;transition:opacity .2s;' +
         'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);';
-      bar.addEventListener('mouseenter', () => { bar.style.opacity = '1'; });
-      bar.addEventListener('mouseleave', () => { bar.style.opacity = '.18'; });
+      // Reveal on hover OR keyboard focus — the bar is the projector window's only
+      // navigation, so a Tab-only user must be able to see it when it's focused.
+      const reveal = () => { bar.style.opacity = '1'; };
+      const dim    = () => { if (!bar.contains(document.activeElement)) bar.style.opacity = '.18'; };
+      bar.addEventListener('mouseenter', reveal);
+      bar.addEventListener('mouseleave', dim);
+      bar.addEventListener('focusin', reveal);
+      bar.addEventListener('focusout', dim);
       const mkBtn = (label, title) => {
         const b = document.createElement('button');
         b.type = 'button'; b.textContent = label; b.title = title;
@@ -5264,7 +5258,7 @@ body {
         b.style.cssText =
           'border:0;border-radius:999px;padding:8px 14px;cursor:pointer;color:#fff;' +
           'font:600 14px/1 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;' +
-          'background:rgba(255,255,255,.14);';
+          'background:rgba(255,255,255,.14);outline-offset:2px;';
         b.addEventListener('mouseenter', () => { b.style.background = 'rgba(255,255,255,.26)'; });
         b.addEventListener('mouseleave', () => { b.style.background = 'rgba(255,255,255,.14)'; });
         return b;
@@ -5272,11 +5266,12 @@ body {
       const prev = mkBtn('‹ 上一页', '上一页');
       const next = mkBtn('下一页 ›', '下一页');
       const exit = mkBtn('✕ 关闭', '关闭放映窗');
-      // Navigate the follower locally; __fsOnNav then broadcasts so the leader's
-      // speaker view stays in sync. Clicking also moves focus OUT of any demo
-      // iframe, which revives the keyboard for the next key press.
-      prev.addEventListener('click', () => goTo(deck, frames, stepPrev(frames, currentIdx(frames))));
-      next.addEventListener('click', () => goTo(deck, frames, stepNext(frames, currentIdx(frames))));
+      // Navigate the follower locally with updateHash=FALSE — the projector window
+      // must keep its '#proj' hash (a '#N' rewrite would drop kiosk mode on reload).
+      // __fsOnNav still fires from goTo regardless, so the leader-sync broadcast is
+      // unaffected; clicking also moves focus OUT of any demo iframe.
+      prev.addEventListener('click', () => goTo(deck, frames, stepPrev(frames, currentIdx(frames)), false));
+      next.addEventListener('click', () => goTo(deck, frames, stepNext(frames, currentIdx(frames)), false));
       exit.addEventListener('click', () => { try { window.close(); } catch (e) {} });
       bar.appendChild(prev); bar.appendChild(next); bar.appendChild(exit);
       document.body.appendChild(bar);
@@ -5357,11 +5352,7 @@ body {
   }
 
   function isTypingTarget(target) {
-    // Realm-agnostic (F-334): a keydown forwarded from inside a same-origin demo
-    // iframe carries a target whose Element belongs to the iframe's realm, so
-    // `instanceof Element` (our realm) is false. Duck-type on tagName instead, so
-    // typing in a demo's <input>/<textarea> still suppresses slide navigation.
-    if (!target || typeof target.tagName !== 'string') return false;
+    if (!target || !(target instanceof Element)) return false;
     if (target.isContentEditable) return true;
     const tag = target.tagName;
     return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
