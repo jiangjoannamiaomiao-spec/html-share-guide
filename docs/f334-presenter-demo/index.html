@@ -1,0 +1,35 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>F-334 投屏演示者 × demo 测试</title>
+<style>
+body{margin:0;font:16px/1.7 -apple-system,"PingFang SC",sans-serif;background:#0b1020;color:#eaf1ff;
+display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+.wrap{max-width:760px}h1{font-size:30px;margin:0 0 6px}.sub{color:#8fa3c8;margin-bottom:22px}
+.cards{display:flex;gap:16px;flex-wrap:wrap;margin:18px 0}
+a.card{flex:1;min-width:240px;text-decoration:none;color:#fff;border-radius:16px;padding:20px 22px;
+border:1px solid #243056;background:#111a38;transition:transform .15s,border-color .15s}
+a.card:hover{transform:translateY(-3px)}
+a.before{border-color:#5a2230}a.before:hover{border-color:#ff6b6b}
+a.after{border-color:#1e5a3a}a.after:hover{border-color:#54d18c}
+.tag{font-size:13px;font-weight:700;letter-spacing:.04em}.before .tag{color:#ff8a8a}.after .tag{color:#7be0a6}
+.card h3{margin:8px 0 6px;font-size:21px}.card p{margin:0;color:#bcc8e6;font-size:14px}
+.steps{background:#0f1730;border:1px solid #223052;border-radius:14px;padding:16px 20px;margin-top:8px}
+.steps b{color:#fff}code{background:#1b2votes;padding:1px 6px;border-radius:5px;background:#1d2748}
+.note{color:#8fa3c8;font-size:13px;margin-top:18px}
+</style></head><body><div class="wrap">
+<h1>F-334 · 投屏演示者模式里有 demo 动画就「操作不了」</h1>
+<div class="sub">同事反馈的问题复现 + 修复对照（用桌面 Chrome / Edge 打开）</div>
+<div class="cards">
+  <a class="card before" href="before.html"><div class="tag">修复前</div><h3>复现 Bug ▶</h3>
+     <p>点进 demo 后键盘翻页失灵；投屏窗里没有翻页按钮 = 卡死。</p></a>
+  <a class="card after" href="after.html"><div class="tag">修复后</div><h3>已修复 ▶</h3>
+     <p>同源 demo 键盘自动转发；投屏窗补了 ‹上一页/下一页›/✕ 控制条。</p></a>
+</div>
+<div class="steps">
+<b>怎么测（每页打开后）：</b><br>
+① <b>最简复现</b>：按 <code>→</code> 到第 2 页 demo → 点一下 demo 里的按钮（焦点进 demo）→ 再按 <code>→</code>。
+修复前翻不动、修复后正常翻。<br>
+② <b>同事的投屏场景</b>：按 <code>P</code> 进演示者 → 点 <b>📺 放映窗</b> 开观众窗 → 在观众窗翻到 demo 页 → 点进 demo →
+修复前只有「✕ 关闭」没法翻页，修复后底部有翻页控制条。
+</div>
+<div class="note">注：放映窗用到 <code>window.open</code> + 跨窗同步，需 https（本页即是）；浏览器可能拦截弹窗，允许一次即可。</div>
+</div></body></html>
